@@ -119,11 +119,10 @@ But don’t go further the 767 (0767) permission, otherwise contact your host fo
 CREDITS
 -
 
--	CKEditor for the textarea customization
--	DataTables for the manage news table
--	prettyPhoto for the frontend modal box
--	FitText for the frontend message text dimension
--	DataTables for the table management
--	SwiftMailer  for the email system
--	Bootstrap for the responsive style
--	Noty for the alert system
+-	[CKEditor](http://ckeditor.com/) for the textarea customization
+-	[prettyPhoto](http://www.no-margin-for-errors.com/projects/prettyphoto-jquery-lightbox-clone/) for the frontend modal box
+-	[FitText](http://fittextjs.com/) for the frontend message text dimension
+-	[DataTables](https://datatables.net/) for the table management
+-	[SwiftMailer](http://swiftmailer.org/)  for the email system
+-	[Bootstrap](http://getbootstrap.com/2.3.2/) for the responsive style
+-	[Noty](http://needim.github.io/noty/) for the alert system
