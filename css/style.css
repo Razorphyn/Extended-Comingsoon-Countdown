@@ -1,0 +1,43 @@
+/* ---------- Frontend ---------- */
+body {background:url("images/bg.png") repeat scroll 0 0 #232323;font: 1em/1.5em "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;color: #1f2225}
+
+form{float:left;width:100%}
+.wrapper{background: url("images/bg-light.jpg") no-repeat scroll center top transparent!important}
+
+#logo{position:relative;margin:1.85% auto 0.93% auto;display:block}
+.socialcont{display:block;position:relative;margin:0 auto;text-align:center}
+.divider{background: url("images/divider.png") repeat scroll 0 0 transparent;border: medium none;display: block;height: 2.1px;margin: 0.93% auto;width:100%;text-align:center}
+
+.title{line-height:1!important;font-weight:normal!important;text-align:center!important;color:#22ccff!important;margin-top:40px!important;white-space:normal!important;display:block;width:100%}
+
+.progph{font-size:1.5em;font-weight:bold;text-align:center;color:#fff;margin:1.85% auto;display:block;clear:both}
+
+#cornice{position: relative;padding: 0;margin:6.018% auto 0 auto;height:15%;min-height:120px;display:block;width:80%}
+.progbk{position:absolute;min-height:110px}
+#progressbar{background:none;position:absolute!important;height:35% !important;width:100%;margin: 1.7% 1.11% 1.11% 1.11%;}
+
+.ui-progressbar-value {position:absolute!important}
+.newscol{position:relative; float:left;width:100%;height:80%;display:block;clear:both;margin: 0.93% 0;z-index:5}
+.newscol .ptitle{color:#22ccff;font-size:1em;font-weight:bold;word-wrap: break-word;}
+.newscol .datapost{color:#fff;font-size:0.6em;font-weight:normal}
+.newscol .pmessage{color:#fff;font-size:1em;font-weight:normal;word-wrap: break-word;}
+.newscol .more{color:#fff;display:block;width:100%;clear:both;text-align:center;font-weight:bold;margin-top:0.93%}
+a,a:visited{color:#f2860a}
+
+.sectioncol{text-align:left;font-size:1.5em;color:#fff;font-weight:bold;display:block;clear:both;border-bottom:1px solid #f2f2f2;cursor:pointer;margin-bottom:1.85%}
+.collapsable{display:block;clear:both;width:100%;z-index:6;position:relative;color:#fff;text-align:center!important;display:none}
+
+.sub{font-size:1.1em;font-weight:normal;text-align:left;color:#fff;float:left;width:35%;position:relative;height:100%}
+#mailform{width:65%}
+.subform{position:relative!important;display:block!important;margin:15px auto!important;}
+.footerphrase{color:#fff;font-size:0.53em;text-align:center}
+
+label.error{color:#fff;display:block}
+/* ---------- TIMER ---------- */
+.timer-area {text-align: center;padding: 5em 0 0;display:block;position:relative;height:180px;clear:both}
+.timer-area h1 {color: white}
+ul#countdown {display:block;position:relative;margin:0 auto;width:425px;height:100%}
+ul#countdown li {display: block;background: transparent url('images/timer-piece.png') no-repeat left top;width: 104px;margin-bottom: 4em;text-align: center;position:relative;float:left;}
+ul#countdown li span {font-size: 3em;font-weight: bold;color: #1f2225;height: 108px;line-height: 108px;position: relative}
+ul#countdown li span::before {content: '';width: 100%;height: 1px;position: absolute;top: 31px}
+ul#countdown li p.timeRefDays,ul#countdown li p.timeRefHours,ul#countdown li p.timeRefMinutes,ul#countdown li p.timeRefSeconds {margin-top: 1em;color: #909091;text-transform: uppercase;font-size: .875em}
