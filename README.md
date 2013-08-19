@@ -2,6 +2,7 @@ Extended Comingsoon Countdown
 =============================
 
 A simple but complete comingsoon countdown with Progressbar and Clock
+Check a working [Demo](http://razorphyn.com/products/comingsoon/admin/)
 
 Installation
 -
@@ -18,7 +19,7 @@ Database Files Checking
 -	Check Database Files: check for missed database files and reset the file permissions
 SETUP
 -
-* **Logo** *
+**Logo**
 -	Logo: this is your current logo;
 -	Upload a New Logo:	upload your new logo, accepted extensions: png, jpeg, jpg, gif;
  			Max file size: 5 MB.
@@ -101,20 +102,20 @@ TRANSLATIONS
 -
 All the translation files are inside the folder translator/lang and are in csv format, on the left you have the original string and on the right the translated one.
 The language is retrieved automatically, but if the translation doesn’t exist the English version will be used.
-The file that contains the translated string must be called only with the ISO format (so only the first two letter of the language: English -> en.csv  Italian -> it.csv    German-> de.csv)
+The file that contains the translated string must be called only with the ISO format (so only the first two letter of the language: `````English -> en.csv  Italian -> it.csv    German-> de.csv`````)
 Keep in mind to write the entity name of the needed character that are not part of the simple English keyboard.
 Characters Entity Name
-For example à is &agrave; and è is &egrave;	
+For example à is `````&agrave;````` and è is `````&egrave;`````
 TROUBLESHOOTING
 -
 Can’t create database file: ‘Access Denied’
 This problem is related to your server files permissions, common settings are:
--	File: 644 (0644)
--	Folders: 755 (0755)
+-	`````File: 644 (0644)`````
+-	`````Folders: 755 (0755)`````
 If this doesn’t work,open datacheck.php inside admin folder and try to increment them:
--	$folderperm=0700;  //Folders Permissions
--	$fileperm=0644;  //Files Permissions
-But don’t go further the 767 (0767) permission, otherwise contact your host for further details.
+-	`````$folderperm=0700;  //Folders Permissions`````
+-	`````$fileperm=0644;  //Files Permissions`````
+But don’t go further the `````767 (0767)````` permission, otherwise contact your host for further details.
 
 CREDITS
 -
