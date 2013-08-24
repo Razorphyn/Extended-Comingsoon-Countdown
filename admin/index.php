@@ -17,6 +17,11 @@
 
 	umask(002);
 	if(!is_dir('session')) mkdir('session',0767);
+	if(is_file('../config/pass.txt')){
+		$pass= file('../config/pass.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+		file_put_contents('../config/pass.php','<?php $adminpassword=\''.$pass[0].'\'; ?>');
+		unlink('../config/pass.txt');
+	}
 	require_once '../translator/class.translation.php';
 	if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])){$lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);if(!is_file('../translator/lang/'.$lang.'.csv'))$lang='en';}else $lang='en';$translate = new Translator($lang);
 
@@ -32,8 +37,8 @@
 	session_name("RazorphynExtendedComingsoon");
 	session_start();
 	
+	require_once ('../config/pass.php');
 	$fileconfig='../config/config.txt';
-	$passfile='../config/pass.txt';
 	$socialfile='../config/social.txt';
 	$filefnmail='../config/fnmail.txt';
 	$filefnmessage= '../config/fnmessage.txt';
@@ -41,27 +46,27 @@
 	$filelogo= '../config/logo.txt';
 	$filefrontmess= '../config/frontmess.txt';
 	$frontotinfo= '../config/indexfooter.txt';
-	
-	if(!is_file($passfile) || !is_dir('../config') && !isset($_SESSION['created']) && $_SESSION['created']==true){header('Location: datacheck.php');exit();}
-	
-	$pass= file($passfile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+	if(!isset($adminpassword) || !is_dir('../config') && !isset($_SESSION['created']) && $_SESSION['created']==true){header('Location: datacheck.php');exit();}
 	
 	/*login*/
 	if (isset($_POST['loginb'])){ 
-		if(md5($_POST['pwd'])!=$pass[0] && hash('whirlpool',$_POST['pwd'])!=$pass[0]){
+		if(md5($_POST['pwd'])!=$adminpassword && hash('whirlpool',$_POST['pwd'])!=$adminpassword){
 			$acc=false;
 		}
-		else if(md5($_POST['pwd'])==$pass[0]){
-			$fs=fopen($passfile,"w+");
-			fwrite($fs,hash('whirlpool',$_POST['pwd']));
+		else if(md5($_POST['pwd'])==$adminpassword){
+			$adminpassword=hash('whirlpool',$_POST['pwd']);
+			$fs=fopen('../config/pass.php',"w+");
+			fwrite($fs,'<?php $adminpassword=\''.$adminpassword.'\'; ?>');
 			fclose($fs);
 			$_SESSION['views']=1946;
-			$pass[0]=hash('whirlpool',$_POST['pwd']);
+			$adminpassword=hash('whirlpool',$_POST['pwd']);
 			if(isset($acc)) unset($acc);
 		}
-		else if (hash('whirlpool',$_POST['pwd'])==$pass[0]){
+		else if (hash('whirlpool',$_POST['pwd'])==$adminpassword){
 			$_SESSION['views']=1946;
 			if(isset($acc)) unset($acc);
+			header('Location: '.$_SERVER['REQUEST_URI']);
 		}
 	}
 	/*end login*/
@@ -128,11 +133,11 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 			
 				$fs=fopen($filelogo,"w+");
 				fwrite($fs,basename( $_FILES['uploadedfile']['name']));
-				fclose($fs);	
-				header('Location: '.$_SERVER['REQUEST_URI']);
+				fclose($fs);
 			} else
 				echo "There was an error uploading the file, please try again!";
 		}
+		header('Location: index.php');
 	}
 	
 	if(isset($_POST['fcheck'])){
@@ -177,19 +182,18 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 						<a class="brand" href='index.php'><?php $translate->__("Administration",false); ?></a>
 						<div class="nav-collapse navbar-responsive-collapse collapse">
 							<ul class="nav">
-								<li class='active'><a href='index.php'><?php $translate->__("Setup",false); ?></a></li>
-								<li class="dropdown" role='button'>
-									<a id="drop1" class="dropdown-toggle" role='button' data-toggle="dropdown" href="#">
-										<?php $translate->__("Mail",false); ?>
-										<b class="caret"></b>
-									</a>
+								<li class="dropdown active" role='button'>
+									<a id="drop1" class="dropdown-toggle" role='button' data-toggle="dropdown" href="#"><?php $translate->__("Setup",false); ?><b class="caret"></b></a>
 									<ul class="dropdown-menu" aria-labelledby="drop1" role="menu">
-										<li role="presentation">
-											<a href="mail.php" tabindex="-1" role="menuitem"><?php $translate->__("Send Mail",false); ?></a>
-										</li>
-										<li role="presentation">
-											<a href="managesched.php" tabindex="-1" role="menuitem"><?php $translate->__("Manage Scheduled Mail",false); ?></a>
-										</li>
+										<li role="presentation" class='active'><a href="mail.php" tabindex="-1" role="menuitem"><?php $translate->__("Site",false); ?></a></li>
+										<li role="presentation"><a href="mail_setting.php" tabindex="-1" role="menuitem"><?php $translate->__("Mail",false); ?></a></li>
+									</ul>
+								</li>
+								<li class="dropdown" role='button'>
+									<a id="drop1" class="dropdown-toggle" role='button' data-toggle="dropdown" href="#"><?php $translate->__("Mail",false); ?><b class="caret"></b></a>
+									<ul class="dropdown-menu" aria-labelledby="drop1" role="menu">
+										<li role="presentation"><a href="mail.php" tabindex="-1" role="menuitem"><?php $translate->__("Send Mail",false); ?></a></li>
+										<li role="presentation"><a href="managesched.php" tabindex="-1" role="menuitem"><?php $translate->__("Manage Scheduled Mail",false); ?></a></li>
 									</ul>
 								</li>
 								<li><a href='managesub.php'><?php $translate->__("Manage Subscriptions",false); ?></a></li>
@@ -202,19 +206,6 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 			</div>
 		</div>
 		<div class='main'>
-			<!--<div class='row-fluid'>
-				<div class='span3'>
-					<div data-spy="affix" data-offset-top='50' class="well sidebar-nav sidebar-nav-fixed">
-						<ul class="nav nav-list sidenv">
-							<li><a href="#ckform"><?php $translate->__("Database",false); ?><i class="icon-chevron-right"></i></a></li>
-							<li><a href="#logoform"><?php $translate->__("Settings",false); ?><i class="icon-chevron-right"></i></a></li>
-							<li><a href="#passwordform"><?php $translate->__("Change Password",false); ?><i class="icon-chevron-right"></i></a></li>
-							<li><a href="#socialform"><?php $translate->__("Social Network",false); ?><i class="icon-chevron-right"></i></a></li>
-							<li><a href="#defmailinfo"><?php $translate->__("Mail",false); ?><i class="icon-chevron-right"></i></a></li>
-						</ul>
-					</div>
-				</div>
-				<div class='span9'>-->
 					<div class='formcor' style='text-align:center' ><button onclick='javascript:location.href="../index.php"' value='<?php $translate->__("See Frontend",false); ?>' class='btn btn-info'><?php $translate->__("See Frontend",false); ?></button></div>
 					<form name="ckform" id="ckform"  method="post"  class='formcor form-inline'>
 					<h2 class='titlesec'><?php $translate->__("Database Files Checking",false); ?></h2>
@@ -337,30 +328,6 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 						<input onclick='javascript:return false;' type="submit" name="updatesocial" id="updatesocial" value="<?php $translate->__("Update Information",false); ?>" class="btn btn-success"/>
 					</form>
 					
-					<form name="defmailinfo" id="defmailinfo"  method="post"  class='formcor'>
-						<h2 class='titlesec'><?php $translate->__("Common Email Section",false); ?></h2>
-						<label><?php $translate->__("Footer:",false); ?></label><textarea id='footerfn' name='footerfn' class='footerfn' row-fluids='10' cols='100'><?php if(isset($footermail) && $footermail!='**@****nullo**@****')echo $footermail; ?></textarea>
-						<br/><br/>
-						<input onclick='javascript:return false;' type="submit" name="senddefmail" id="senddefmail" value="<?php $translate->__("Update",false); ?>" class="btn btn-success"/>
-					</form>
-					
-					<form name="completesitemail" id="completesitemail"  method="post"  class='formcor'>
-						<h2 class='titlesec'><?php $translate->__("Completed Site Mail",false); ?></h2>
-							<div class='row-fluid'>
-								<div class='span3'><label><?php $translate->__("Do you want to alert your users once the site is finished?",false); ?></label></div>
-								<div class='span1'><input type="radio" name="warnus" value="yes" <?php if(isset($fnmail[2]) && $fnmail[2]=='yes') echo "checked"; else if(!isset($fnmail[2])) echo "checked";?>/><?php $translate->__("Yes",false); ?> </div>
-								<div class='span1'><input type="radio" name="warnus" value="no" <?php if(isset($fnmail[2]) && $fnmail[2]=='no') echo "checked"; ?>/><?php $translate->__("No",false); ?></div>
-							</div>
-							<br/>
-							<div class='row-fluid'>
-								<div class='span3'><label><?php $translate->__("Sender:",false); ?></label><input	type="text" id="senderfn" 	name="senderfn" <?php if(isset($fnmail[0]) && $fnmail[0]!='**@****nullo**@****') echo 'value="'.$fnmail[0].'"'; ?>/></div>
-								<div class='span3'><label><?php $translate->__("Object:",false); ?></label><input	type="text" id="objectfn" 	name="objectfn" <?php if(isset($fnmail[1]) && $fnmail[1]!='**@****nullo**@****') echo 'value="'.$fnmail[1].'"'; ?>/></div>
-							</div>
-							<label><?php $translate->__("Message:",false); ?></label><textarea id='messagefn' name='messagefn' row-fluids='10' cols='100'><?php if(isset($messagefn) && $messagefn!='**@****nullo**@****') echo $messagefn; ?></textarea>
-							<br/><br/>
-							<input onclick='javascript:return false;' type="submit" name="fnmailbut" id="fnmailbut" value="<?php $translate->__("Update Final Message",false); ?>" class="btn btn-success"/>
-					</form>
-					
 					<form name="logoutfor" id="logoutfor" method="post"  class='formcor'>
 						<input type="submit" name="logout" id="logout" value="Logout" class="btn btn-danger"/>
 					</form>
@@ -399,8 +366,6 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 			CKEDITOR.replace('phrase');
 			CKEDITOR.replace('progph');
 			CKEDITOR.replace('footerph');
-			CKEDITOR.replace('footerfn');
-			CKEDITOR.replace('messagefn');
 			
 			$('#datai').datepicker({ dateFormat: 'yy-mm-dd' });
 			<?php if(isset($var[0]) && $var[0]!='' ){ ?>$("#datai").datepicker("setDate", "<?php echo $var[0] ?>");<?php } ?>
@@ -413,30 +378,6 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 			var dateArray = new String("<?php if(isset($var[0]))echo $var[0];else echo date("Y-m-d");?>").split('-');
 			var dateObject = new Date(dateArray[0], dateArray[1]-1, dateArray[2]);
 			$("#dataf" ).datepicker("option", "minDate", dateObject);
-			
-			$('#senddefmail').click(function(){
-				var footerfn=CKEDITOR.instances.footerfn.getData().replace(/\s+/g,' ');
-				if(footerfn.replace(/\s+/g,'')!=''){
-					var request= $.ajax({
-						type: 'POST',
-						url: 'function.php',
-						data: {act:'save_common_mail',footerfn:footerfn},
-						dataType : 'json',
-						success : function (data){
-							if(data[0]=='Sent')
-								var n = noty({text: '<?php echo $translate->__("The Footer has been saved",true); ?>',type:'success',timeout:9000});
-							else if(data[0]=='Empty')
-								var n = noty({text: '<?php echo $translate->__("Please Complete all the fields",true); ?>',type:'error',timeout:9000});
-							else
-								var n = noty({text: '<?php echo $translate->__("A problem has occured,please try again",true); ?>',type:'error',timeout:9000});
-						}
-					});
-					request.fail(function(jqXHR, textStatus){var n = noty({text: textStatus,type:'error',timeout:9000});});
-				}
-				else
-					var n = noty({text: '<?php echo $translate->__("Empty Field",true); ?>',type:'error',timeout:9000});
-				return false;
-			});
 			
 			$('#datacom').click(function(){
 				var metadesc=$('#metadesc').val().replace(/\s+/g,' ');
@@ -535,33 +476,6 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 				return false;
 			});
 			
-			$('#fnmailbut').click(function(){
-				var warnus=$('input[type=radio][name="warnus"]:checked').val();
-				var senderfn=$('#senderfn').val();
-				var objectfn=$('#objectfn').val();
-				var messagefn=CKEDITOR.instances.messagefn.getData().replace(/\s+/g,' ');
-				if(warnus.replace(/\s+/g,'')!='' && senderfn.replace(/\s+/g,'')!='' && objectfn.replace(/\s+/g,'')!='' && messagefn.replace(/\s+/g,'')!=''){
-					var request= $.ajax({
-						type: 'POST',
-						url: 'function.php',
-						data: {act:'complete_site_mail',warnus:warnus,senderfn:senderfn,objectfn:objectfn,messagefn:messagefn},
-						dataType : 'json',
-						success : function (data) {
-							if(data[0]=='Saved')
-								var n = noty({text: '<?php echo $translate->__("Final Mail Saved",true); ?>',type:'success',timeout:9000});
-							else if(data[0]=='Error')
-								var n = noty({text: '<?php echo $translate->__("A problem has occured,please try again",true); ?>',type:'error',timeout:9000});
-							else if(data[0]=='Empty')
-								var n = noty({text: '<?php echo $translate->__("Please Complete all the fields",true); ?>',type:'error',timeout:9000});
-						}
-					});
-					request.fail(function(jqXHR, textStatus){var n = noty({text: textStatus,type:'error',timeout:9000});});
-				}
-				else
-					var n = noty({text: '<?php echo $translate->__("Please Complete all the fields",true); ?>',type:'error',timeout:9000});
-				return false;
-			});
-			
 			$('#updatesocial').click(function(){
 				var blog=$('#blog').val();
 				var devian=$('#devian').val();
@@ -606,18 +520,6 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 			{
 				rules:{pwd:"required",oldpwd: "required",newpwd: "required",cnewpwd:{required: true,equalTo: "#newpwd"}},
 				messages:{cnewpwd: "Password don't match"}
-			});
-			
-			$("#sendmailform").validate(
-			{
-				rules:{sender: "required",message: "required",object:"required"},
-				messages:{sender: "Complete field",message: "Complete field",object: "Complete field",footerfn: "Complete field"}
-			});
-			
-			$("#completesitemail").validate(
-			{
-				rules:{senderfn: "required",message: "required",objectfn:"required",footerfn: "required"},
-				messages:{senderfn: "Complete field",messagefn: "Complete field",objectfn: "Complete field",footerfn: "Complete field"}
 			});
 			
 			$("#socialform").validate(

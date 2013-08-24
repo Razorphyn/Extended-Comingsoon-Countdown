@@ -28,7 +28,7 @@
 	session_start();
 	
 	$fileconfig='../config/config.txt';
-	$passfile='../config/pass.txt';
+	$passfile='../config/pass.php';
 	$socialfile='../config/social.txt';
 	$filefnmail='../config/fnmail.txt';
 	$filefnmessage= '../config/fnmessage.txt';
@@ -300,11 +300,11 @@
 	}
 	
 	else if(isset($_SESSION['views']) && isset($_POST['act']) && $_POST['act']=='update_password'){
-		$pass= file($passfile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-		if($pass[0]==hash('whirlpool',$_POST['oldpwd'])){
+		include_once $passfile;
+		if($adminpassword==hash('whirlpool',$_POST['oldpwd'])){
 			if($_POST['newpwd']===$_POST['cnewpwd'] && preg_replace('/\s+/',' ',$_POST['cnewpwd'])!=''){
 				$fs=fopen($passfile,"w+");
-					fwrite($fs,hash('whirlpool',$_POST['newpwd']));
+					fwrite($fs,'<?php $adminpassword=\''.hash('whirlpool',$_POST['newpwd']).'\'; ?>');
 				fclose($fs);
 				echo json_encode(array(0=>'Updated'));
 			}
@@ -352,7 +352,6 @@
 			$orai=$horai.':'.$morai.':'.$sorai;
 
 			$url=preg_replace('/\s+/','',$_POST['urls']);
-			$pass= file($passfile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 			/*write file*/
 
 			$_POST['urls']=(rtrim(preg_replace('/\s+/','',$_POST['urls'])==''))? '**@****nullo**@****':$_POST['urls'];

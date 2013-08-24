@@ -36,10 +36,9 @@
 	
 	if(isset($_SESSION["created"]) && $_SESSION["created"]==true) {unset($_SESSION["created"]);header("Location: index.php");}
 	else{
-		
 		$dir="../config";
 		$fileconfig=$dir."/config.txt";
-		$passfile=$dir."/pass.txt";
+		$passfile=$dir."/pass.php";
 		$socialfile=$dir."/social.txt";
 		$dirmail= $dir."/mails/";
 		$filefnmail= $dir."/fnmail.txt";
@@ -66,7 +65,7 @@
 				if(!is_file($filefrontmess))file_put_contents($filefrontmess,"");
 				if(!is_file($filenews))file_put_contents($filenews,"");
 				if(!is_file($fileindexfoot))file_put_contents($fileindexfoot,"");
-				if(!is_file($passfile))file_put_contents($passfile,hash("whirlpool","admin"));
+				if(!is_file($passfile))file_put_contents($passfile,'<?php $adminpassword=\''.(hash("whirlpool","admin")).'\'; ?>');
 				if(!is_file($access))file_put_contents($access,"Deny from All"."\n"."IndexIgnore *");
 				if(!is_file(".htaccess"))file_put_contents(".htaccess","IndexIgnore *");
 				chmod($fileconfig, $fileperm);
@@ -97,7 +96,7 @@
 			if(!is_file($filelogo))file_put_contents($filelogo,"");
 			if(!is_file($filefrontmess))file_put_contents($filefrontmess,"");
 			if(!is_file($filenews))file_put_contents($filenews,"");
-			if(!is_file($passfile))file_put_contents($passfile,hash("whirlpool","admin"));
+			if(!is_file($passfile))file_put_contents($passfile,'<?php $adminpassword=\''.(hash("whirlpool","admin")).'\'; ?>');
 			if(!is_file($access))file_put_contents($access,"Deny from All"."\n"."IndexIgnore *");
 			if(!is_file(".htaccess"))file_put_contents(".htaccess","IndexIgnore *");
 			chmod($fileconfig, $fileperm);

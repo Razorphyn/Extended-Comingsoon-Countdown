@@ -17,6 +17,11 @@
 
 	umask(002);
 	if(!is_dir('session')) mkdir('session',0767);
+	if(is_file('../config/pass.txt')){
+		$pass= file('../config/pass.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+		file_put_contents('../config/pass.php','<?php $adminpassword=\''.$pass[0].'\'; ?>');
+		unlink('../config/pass.txt');
+	}
 	require_once '../translator/class.translation.php';
 	if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])){$lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);if(!is_file('../translator/lang/'.$lang.'.csv'))$lang='en';}else $lang='en';$translate = new Translator($lang);	ini_set('session.auto_start', '0');
 	ini_set('session.auto_start', '0');
@@ -32,31 +37,30 @@
 	session_name("RazorphynExtendedComingsoon");
 	session_start();
 	
+	require_once ('../config/pass.php');
 	$fileconfig='../config/config.txt';
-	$passfile='../config/pass.txt';
 	$filenews= '../config/news.txt';
 	
-	if(!is_file($passfile) || !is_dir('../config'))
-		header('Location: datacheck.php');
-	
-	$pass= file($passfile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+	if(!isset($adminpassword) || !is_dir('../config') && !isset($_SESSION['created']) && $_SESSION['created']==true){header('Location: datacheck.php');exit();}
 	
 	/*login*/
 	if (isset($_POST['loginb'])){ 
-		if(md5($_POST['pwd'])!=$pass[0] && hash('whirlpool',$_POST['pwd'])!=$pass[0]){
+		if(md5($_POST['pwd'])!=$adminpassword && hash('whirlpool',$_POST['pwd'])!=$adminpassword){
 			$acc=false;
 		}
-		else if(md5($_POST['pwd'])==$pass[0]){
-			$fs=fopen($passfile,"w+");
-			fwrite($fs,hash('whirlpool',$_POST['pwd']));
+		else if(md5($_POST['pwd'])==$adminpassword){
+			$adminpassword=hash('whirlpool',$_POST['pwd']);
+			$fs=fopen('../config/pass.php',"w+");
+			fwrite($fs,'<?php $adminpassword=\''.$adminpassword.'\'; ?>');
 			fclose($fs);
 			$_SESSION['views']=1946;
-			$pass[0]=hash('whirlpool',$_POST['pwd']);
+			$adminpassword=hash('whirlpool',$_POST['pwd']);
 			if(isset($acc)) unset($acc);
 		}
-		else if (hash('whirlpool',$_POST['pwd'])==$pass[0]){
+		else if (hash('whirlpool',$_POST['pwd'])==$adminpassword){
 			$_SESSION['views']=1946;
 			if(isset($acc)) unset($acc);
+			header('Location: '.$_SERVER['REQUEST_URI']);
 		}
 	}
 	/*end login*/
@@ -139,19 +143,18 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 						<a class="brand" href='index.php'><?php $translate->__("Administration",false); ?></a>
 						<div class="nav-collapse navbar-responsive-collapse collapse">
 							<ul class="nav">
-								<li ><a href='index.php'><?php $translate->__("Setup",false); ?></a></li>
-								<li class="dropdown">
-									<a id="drop1" class="dropdown-toggle" data-toggle="dropdown" href="#">
-										<?php $translate->__("Mail",false); ?>
-										<b class="caret"></b>
-									</a>
+								<li class="dropdown" role='button'>
+									<a id="drop1" class="dropdown-toggle" role='button' data-toggle="dropdown" href="#"><?php $translate->__("Setup",false); ?><b class="caret"></b></a>
 									<ul class="dropdown-menu" aria-labelledby="drop1" role="menu">
-										<li role="presentation">
-											<a href="mail.php" tabindex="-1" role="menuitem"><?php $translate->__("Send Mail",false); ?></a>
-										</li>
-										<li role="presentation">
-											<a href="managesched.php" tabindex="-1" role="menuitem"><?php $translate->__("Manage Scheduled Mail",false); ?></a>
-										</li>
+										<li role="presentation"><a href="mail.php" tabindex="-1" role="menuitem"><?php $translate->__("Site",false); ?></a></li>
+										<li role="presentation"><a href="mail_setting.php" tabindex="-1" role="menuitem"><?php $translate->__("Mail",false); ?></a></li>
+									</ul>
+								</li>
+								<li class="dropdown" role='button'>
+									<a id="drop1" class="dropdown-toggle" role='button' data-toggle="dropdown" href="#"><?php $translate->__("Mail",false); ?><b class="caret"></b></a>
+									<ul class="dropdown-menu" aria-labelledby="drop1" role="menu">
+										<li role="presentation"><a href="mail.php" tabindex="-1" role="menuitem"><?php $translate->__("Send Mail",false); ?></a></li>
+										<li role="presentation"><a href="managesched.php" tabindex="-1" role="menuitem"><?php $translate->__("Manage Scheduled Mail",false); ?></a></li>
 									</ul>
 								</li>
 								<li><a href='managesub.php'><?php $translate->__("Manage Subscriptions",false); ?></a></li>
