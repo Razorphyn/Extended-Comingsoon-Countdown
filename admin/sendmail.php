@@ -14,9 +14,11 @@
  * @author     	Razorphyn
  * @Site		http://razorphyn.com/
  */
-	if(file_exists('../config/tmpinfo.txt')){
-		umask(002);
+	umask(002);
+	if(file_exists('../config/tmpinfo.txt') && file_exists('../config/stmp.php')){
 		require_once '../lib/Swift/lib/swift_required.php';
+		require_once '../config/stmp.php';
+		
 		$readfile='../config/tmpinfo.txt';
 		$info=file($readfile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 		unlink($readfile);
@@ -26,9 +28,34 @@
 		$message->setFrom($info[2]);
 		$message->setSubject($info[3]);
 		$message->setContentType('text/html; charset=UTF-8');
-		$transport = Swift_SendmailTransport::newInstance('/usr/sbin/sendmail -t');
+		
+		if($smailservice==0)
+			$transport = Swift_SendmailTransport::newInstance('/usr/sbin/sendmail -t');
+		else if($smailservice==1){
+			if($smailssl==0)
+				$transport = Swift_SmtpTransport::newInstance($settingmail,$smailport);
+			else if($smailssl==1)
+				$transport = Swift_SmtpTransport::newInstance($settingmail,$smailport,'ssl');
+			else if($smailssl==2)
+				$transport = Swift_SmtpTransport::newInstance($settingmail,$smailport,'tls');
+			else
+				exit();
+			if($smailauth==1){
+				$transport->setUsername($smailuser);
+				$crypttable=array('X'=>'a','k'=>'b','Z'=>'c',2=>'d','d'=>'e',6=>'f','o'=>'g','R'=>'h',3=>'i','M'=>'j','s'=>'k','j'=>'l',8=>'m','i'=>'n','L'=>'o','W'=>'p',0=>'q',9=>'r','G'=>'s','C'=>'t','t'=>'u',4=>'v',7=>'w','U'=>'x','p'=>'y','F'=>'z','q'=>0,'a'=>1,'H'=>2,'e'=>3,'N'=>4,1=>5,5=>6,'B'=>7,'v'=>8,'y'=>9,'K'=>'A','Q'=>'B','x'=>'C','u'=>'D','f'=>'E','T'=>'F','c'=>'G','w'=>'H','D'=>'I','b'=>'J','z'=>'K','V'=>'L','Y'=>'M','A'=>'N','n'=>'O','r'=>'P','O'=>'Q','g'=>'R','E'=>'S','I'=>'T','J'=>'U','P'=>'V','m'=>'W','S'=>'X','h'=>'Y','l'=>'Z');
+				$smailpassword=str_split($smailpassword, ENT_QUOTES, 'UTF-8');
+				$c=count($smailpassword);
+				for($i=0;$i<$c;$i++){
+					if(array_key_exists($smailpassword[$i],$crypttable))
+						$smailpassword[$i]=$crypttable[$crypttable[$smailpassword[$i]]];
+				}
+				$smailpassword=implode('',$smailpassword);
+				$transport->setPassword($smailpassword);
+			}
+		}
+		else
+			exit();
 		$mailer = Swift_Mailer::newInstance($transport);
-		$plain=convert_html_to_text(str_replace('&','&amp;',str_replace('&nbsp;',' ',$file[1])));
 		
 		if(isset($info[7]) && isset($info[8]) && $info[7]!='none' && $info[8]!='none' && $info[7]!=null && $info[8]!=null) $mailer->registerPlugin(new Swift_Plugins_AntiFloodPlugin($info[7], $info[8]));
 		$count=count($mailist);
@@ -36,16 +63,17 @@
 			for($i=0;$i< $count;$i++){
 				$id=($mailist[$i][0]+1)*8;
 				$unlink="<p>Click <a href='http://".$info[5].$info[6]."/admin/unsubscribe.php?mail=".$mailist[$i][0]."&id=".$id."'>here</a> if you want to unsubscribe</p></div></body></html>";
-				
-				$plain=convert_html_to_text(str_replace('&','&amp;',str_replace('&nbsp;',' ',$manip.$unlink)));
-				$message->setBody($plain,'text/plain');						
+				$plain=str_replace('&nbsp;',' ',str_replace('&','&amp;',$manip.$unlink));
+				$plain=convert_html_to_text($plain);
+				$message->setBody($plain,'text/plain');
 				$message->addPart($manip.$unlink,'text/html');
 				$message->setTo($mailist[$i][0]);
 				$mailer->send($message);
 			}
 		}else{
 			$manip=$manip."</div></body></html>";
-			$plain=convert_html_to_text(str_replace('&','&amp;',str_replace('&nbsp;',' ',$manip)));
+			$palin=str_replace('&nbsp;',' ',str_replace('&','&amp;',$manip));
+			$plain=convert_html_to_text($plain);
 			$message->setBody($plain,'text/plain');						
 			$message->addPart($manip,'text/html');
 			for($i=0;$i< $count;$i++){

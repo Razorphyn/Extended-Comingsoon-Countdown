@@ -218,8 +218,7 @@
 			if($_POST['shtb']=='no'){
 				$c=count($_POST['semail']);
 				for($i=0,$j=0;$i<$count;$i++){
-					$key = array_search($_POST['semail'], $mailist[$i]);
-					if($key==1){
+					if(in_array($mailist[$i][1],$_POST['semail'])){
 						$mailist[$j]=array($mailist[$i][0],$mailist[$i][1]);
 						$j++;
 					}
@@ -233,7 +232,7 @@
 			$footer=preg_replace('/\s+/',' ',$_POST['footerfn']);
 			
 			if($_POST['sched']=='no'){
-				$manip="<html><body>".$bod.'<div id="footer" style="display:block;clear:both;width:100%;position:relative;margin:10px 0;border-top:1px solid #000">'.$footer;
+				$manip="<html><head></head><body>".$bod.'<div id="footer" style="display:block;clear:both;width:100%;position:relative;margin:10px 0;border-top:1px solid #000">'.$footer;
 				file_put_contents('../config/tmpinfo.txt',$manip."\n".json_encode($mailist)."\n".$_POST['sender']."\n".$_POST['object']."\n".$var[11]."\n".$var[12]."\n".$var[13]."\n".$var[14]."\n".$var[15]);
 				$ex="php5-cli ".rtrim(dirname(__FILE__))."/sendmail.php";
 				if(substr(php_uname(), 0, 7) == "Windows")
@@ -320,6 +319,35 @@
 		fwrite($fs,preg_replace('/\s+/',' ',$_POST['footerfn']));
 		fclose($fs);
 		echo json_encode(array(0=>'Sent'));
+	}
+	
+	else if(isset($_SESSION['views']) && isset($_POST['act'])  && $_POST['act']=='save_stmp'){
+		$serv=(is_numeric($_POST['serv'])) ? $_POST['serv']:exit();
+		$mustang=(string)$_POST['name'];
+		$viper=(string)$_POST['mail'];
+		$host=(string)$_POST['host'];
+		$port=(is_numeric($_POST['port'])) ? $_POST['port']:exit();
+		$ssl=(is_numeric($_POST['ssl'])) ? $_POST['ssl']:exit();
+		$auth=(is_numeric($_POST['auth'])) ? $_POST['auth']:exit();
+		
+		$usr=(string)$_POST['usr'];
+		$pass=(string)$_POST['pass'];
+		if(preg_replace('/\s+/','',$_POST['pass'])!=''){
+			$crypttable=array('a'=>'X','b'=>'k','c'=>'Z','d'=>2,'e'=>'d','f'=>6,'g'=>'o','h'=>'R','i'=>3,'j'=>'M','k'=>'s','l'=>'j','m'=>8,'n'=>'i','o'=>'L','p'=>'W','q'=>0,'r'=>9,'s'=>'G','t'=>'C','u'=>'t','v'=>4,'w'=>7,'x'=>'U','y'=>'p','z'=>'F',0=>'q',1=>'a',2=>'H',3=>'e',4=>'N',5=>1,6=>5,7=>'B',8=>'v',9=>'y','A'=>'K','B'=>'Q','C'=>'x','D'=>'u','E'=>'f','F'=>'T','G'=>'c','H'=>'w','I'=>'D','J'=>'b','K'=>'z','L'=>'V','M'=>'Y','N'=>'A','O'=>'n','P'=>'r','Q'=>'O','R'=>'g','S'=>'E','T'=>'I','U'=>'J','V'=>'P','W'=>'m','X'=>'S','Y'=>'h','Z'=>'l');
+			$pass=str_split($pass);
+			$c=count($pass);
+			for($i=0;$i<$c;$i++){
+				if(array_key_exists($pass[$i],$crypttable))
+					$pass[$i]=$crypttable[$crypttable[$pass[$i]]];
+			}
+			$pass=implode('',$pass);
+		}
+		$string='<?php $smailservice='.$serv.";\n".'$smailname=\''.$mustang."';\n".'$settingmail=\''.$viper."';\n".'$smailhost=\''.$host."';\n".'$smailport='.$port.";\n".'$smailssl='.$ssl.";\n".'$smailauth='.$auth.";\n".'$smailuser=\''.$mustang."';\n".'$smailpassword=\''.$mustang."';\n ?>";
+		if(file_put_contents('../config/stmp.php',$string))
+			echo json_encode(array(0=>'Saved'));
+		else
+			echo json_encode(array(0=>'Error'));
+		exit();
 	}
 	
 	else if(isset($_SESSION['views']) && isset($_POST['act']) && $_POST['act']=='save_options'){

@@ -68,8 +68,7 @@
 	/*end login*/
 
 if(isset($_SESSION['views']) && $_SESSION['views']==1946){
-	unset($_POST['loginb']);
-	unset($_POST['pwd']);
+
 	if(isset($_POST['logout'])){
 		$_SESSION = array();
 		if (ini_get("session.use_cookies")) {
@@ -88,50 +87,18 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 	$fnmail= file($filefnmail, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 	$messagefn= file_get_contents($filefnmessage);
 	$footermail= file_get_contents($filefnfooter);
-
-	if(count($var)>1){
-		$var[1]=explode(':',$var[1]);
-		$var[3]=explode(':',$var[3]);
-	}
 	
-	/*
-	0	datai
-	1	orai
-	2	dataf
-	3	oraf
-	4	siteurl
-	5	site title
-	6	perc
-	7	email
-	8	show contact
-	9	show subscribe
-	10	TimeZone
-	11	Unsubscribe
-	12	Domain
-	13	Folder
-	14	Number Email Limit
-	15	Time email limit
-	16	Display Time Countdown
-	17	Display Progresbar
-	18	fitetxt
-	19	pass
-	20	cron
-	*/
-	
-	if(isset($_POST['uploadlogo'])){
-		$target_path = "../css/images/".basename( $_FILES['uploadedfile']['name']);
-		if($_FILES['uploadedfile']['type']=='image/png' || $_FILES['uploadedfile']['type']=='image/jpeg' || $_FILES['uploadedfile']['type']=='image/pjpeg' || $_FILES['uploadedfile']['type']=='image/gif'){
-			if(move_uploaded_file($_FILES['uploadedfile']['tmp_name'], $target_path)) {
-			
-				$fs=fopen($filelogo,"w+");
-				fwrite($fs,basename( $_FILES['uploadedfile']['name']));
-				fclose($fs);	
-				header('Location: '.$_SERVER['REQUEST_URI']);
-			} else
-				echo "There was an error uploading the file, please try again!";
+	if(is_file('../config/stmp.php')) include_once '../config/stmp.php';
+	if(isset($smailpassword)){
+		$crypttable=array('a'=>'X','b'=>'k','c'=>'Z','d'=>2,'e'=>'d','f'=>6,'g'=>'o','h'=>'R','i'=>3,'j'=>'M','k'=>'s','l'=>'j','m'=>8,'n'=>'i','o'=>'L','p'=>'W','q'=>0,'r'=>9,'s'=>'G','t'=>'C','u'=>'t','v'=>4,'w'=>7,'x'=>'U','y'=>'p','z'=>'F',0=>'q',1=>'a',2=>'H',3=>'e',4=>'N',5=>1,6=>5,7=>'B',8=>'v',9=>'y','A'=>'K','B'=>'Q','C'=>'x','D'=>'u','E'=>'f','F'=>'T','G'=>'c','H'=>'w','I'=>'D','J'=>'b','K'=>'z','L'=>'V','M'=>'Y','N'=>'A','O'=>'n','P'=>'r','Q'=>'O','R'=>'g','S'=>'E','T'=>'I','U'=>'J','V'=>'P','W'=>'m','X'=>'S','Y'=>'h','Z'=>'l');
+		$pass=str_split($pass);
+		$c=count($pass);
+		for($i=0;$i<$c;$i++){
+			if(array_key_exists($pass[$i],$crypttable))
+				$pass[$i]=$crypttable[$crypttable[$pass[$i]]];
 		}
+		$pass=implode('',$pass);
 	}
-	
 	if(isset($_POST['fcheck'])){
 		header('Location: datacheck.php');
 	}
@@ -205,6 +172,44 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 				<input type="submit" name="fcheck" id="fcheck" value="<?php $translate->__("Check Database Files",false); ?>" class="btn"/>
 			</form>
 					
+			<form name="completesitemail" id="completesitemail"  method="post"  class='formcor'>
+				<h2 class='titlesec'><?php $translate->__("SMTP Setting",false); ?></h2>
+				<div class='row-fluid stmpinfo' >
+					<div class='row-fluid'>
+						<div class='span2'><label>STMP Service</label></div>
+						<div class='span4'><select id='stmpserv' ><option value='0'>This Server</option><option value='1'>External Service</option></select></div>
+					</div>
+					<div class='row-fluid'>
+							<div class='span2'><label for='stmpname'>Name</label></div>
+							<div class='span4'><input id='stmpname' type='text' value='<?php if(isset($smailname)) echo $smailname;?>' required/></div>
+							<div class='span2'><label for='stmpmail'>Mail Address</label></div>
+							<div class='span4'><input id='stmpmail' type='email' value='<?php if(isset($settingmail)) echo $settingmail; ?>' required /></div>
+					</div>
+					<div class='row-fluid'>
+							<div class='span2'><label for='stmphost'>Hostname</label></div>
+							<div class='span4'><input id='stmphost' type='text' value='<?php if(isset($smailhost)) echo $smailhost; ?>'required  /></div>
+							<div class='span2'><label for='stmpport'>Port</label></div>
+							<div class='span4'><input id='stmpport' type='text' value='<?php if(isset($smailport)) echo $smailport; ?>' required /></div>
+					</div>
+					<div class='row-fluid'>
+							<div class='span2'><label for='stmpsec'>SSL/TLS</label></div>
+							<div class='span4'><select id='stmpsec' ><option value='0'>No</option><option value='1'>SSL</option><option value='2'>TLS</option></select></div>
+					</div>
+					<div class='row-fluid'>
+							<div class='span2'><label for='stmpaut'>Authentication</label></div>
+							<div class='span4'><select id='stmpaut' ><option value='0'>No</option><option value='1'>Yes</option></select></div>
+					</div>
+					<div class='row-fluid'>
+							<div class='span2'><label for='stmpusr'>Username</label></div>
+							<div class='span4'><input id='stmpusr' type='text' value='<?php if(isset($smailuser)) echo $smailuser; ?>' /></div>
+							<div class='span2'><label for='stmppas'>Password</label></div>
+							<div class='span4'><input id='stmppas' type='password' value='<?php if(isset($smailpassword)) echo $smailpassword; ?>' /></div>
+					</div>
+					<br/>
+					<input type='submit' id='savestmp' onclick='javascript:return false;' value='Save' class='btn btn-success'/>
+				</div>
+			</form>
+			
 			<form name="defmailinfo" id="defmailinfo"  method="post"  class='formcor'>
 				<h2 class='titlesec'><?php $translate->__("Common Email Section",false); ?></h2>
 				<label><?php $translate->__("Footer:",false); ?></label><textarea id='footerfn' name='footerfn' class='footerfn' row-fluids='10' cols='100'><?php if(isset($footermail) && $footermail!='**@****nullo**@****')echo $footermail; ?></textarea>
@@ -265,6 +270,34 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 			CKEDITOR.replace('footerfn');
 			CKEDITOR.replace('messagefn');
 			
+			<?php if(isset($stmpserv)){ ?>
+				$('#stmpsec').val(<?php echo $stmpserv; ?>);
+			<?php }if(isset($smailssl)){ ?>
+				$('#stmpsec').val(<?php echo $smailssl; ?>);
+			<?php } if(isset($smailauth)){ ?>
+				$('#stmpaut').val(<?php echo $smailauth; ?>);
+			<?php } ?>
+		
+			$("#savestmp").click(function () {
+				var a = $("#stmpserv").val(),
+					c = $("#stmpname").val(),
+					d = $("#stmphost").val(),
+					e = $("#stmpport").val(),
+					f = $("#stmpsec > option:selected").val(),
+					g = $("#stmpmail").val(),
+					h = $("#stmpaut > option:selected").val(),
+					k = $("#stmpusr").val(),
+					l = $("#stmppas").val();
+				$.ajax({
+					type: "POST",
+					url: "function.php",
+					data: {act: "save_stmp",serv: a,name: c,host: d,port: e,ssl: f,mail: g,auth: h,usr: k,pass: l},
+					dataType: "json",
+					success: function (b) {
+						"Saved" == b[0] ? noty({text: "STMP Information Saved",type: "success",timeout: 9E3}) : noty({text: b[0],type: "error",timeout: 9E3})
+					}
+				}).fail(function (b, a) {noty({text: a,type: "error",timeout: 9E3})})
+			});
 			$('#senddefmail').click(function(){
 				var footerfn=CKEDITOR.instances.footerfn.getData().replace(/\s+/g,' ');
 				if(footerfn.replace(/\s+/g,'')!=''){
