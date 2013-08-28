@@ -146,7 +146,7 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 								<li class="dropdown" role='button'>
 									<a id="drop1" class="dropdown-toggle" role='button' data-toggle="dropdown" href="#"><?php $translate->__("Setup",false); ?><b class="caret"></b></a>
 									<ul class="dropdown-menu" aria-labelledby="drop1" role="menu">
-										<li role="presentation"><a href="mail.php" tabindex="-1" role="menuitem"><?php $translate->__("Site",false); ?></a></li>
+										<li role="presentation"><a href="index.php" tabindex="-1" role="menuitem"><?php $translate->__("Site",false); ?></a></li>
 										<li role="presentation"><a href="mail_setting.php" tabindex="-1" role="menuitem"><?php $translate->__("Mail",false); ?></a></li>
 									</ul>
 								</li>
