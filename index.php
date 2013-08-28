@@ -21,6 +21,7 @@
 	require_once 'translator/class.translation.php';
 	if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])){$lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);if(!is_file('translator/lang/'.$lang.'.csv'))$lang='en';}else $lang='en';$translate = new Translator($lang);
 	
+	if(is_file('config/monintoring.php'))include_once ('config/monintoring.php');
 	$file='config/config.txt';
 	$filelogo= 'config/logo.txt';
 	$filefrontmess= 'config/frontmess.txt';
@@ -83,7 +84,7 @@
 	<script type="text/javascript"  src="<?php echo $siteurl.'min/?b=js&amp;f=jquery-1.10.2.js,countdown.js,jquery-ui-1.10.3.custom.min.js,bootstrap.min.js,jquery.fittext.js&amp;5259487' ?>"></script>
 	
 	<title><?php if(isset($var[5]))echo $var[5];?></title>
-
+	<?php if(isset($monitoringcode)) echo '<script>'.stripslashes($monitoringcode).'</script>'; ?>
 </head>
 <body>
 <div class='wrapper'>

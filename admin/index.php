@@ -38,9 +38,9 @@
 	session_start();
 	
 	require_once ('../config/pass.php');
+	if(is_file('../config/monintoring.php'))include_once ('../config/monintoring.php');
 	$fileconfig='../config/config.txt';
 	$socialfile='../config/social.txt';
-	$filefnmail='../config/fnmail.txt';
 	$filefnmessage= '../config/fnmessage.txt';
 	$filefnfooter= '../config/footermail.txt';
 	$filelogo= '../config/logo.txt';
@@ -89,8 +89,7 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 	
 	$var = file($fileconfig, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 	$social=file($socialfile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-	
-	$fnmail= file($filefnmail, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
 	$messagefn= file_get_contents($filefnmessage);
 	$footermail= file_get_contents($filefnfooter);
 	$logo= file_get_contents($filelogo);
@@ -124,6 +123,7 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 	18	fitetxt
 	19	pass
 	20	cron
+	21	exec parameter
 	*/
 	
 	if(isset($_POST['uploadlogo'])){
@@ -185,7 +185,7 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 								<li class="dropdown active" role='button'>
 									<a id="drop1" class="dropdown-toggle" role='button' data-toggle="dropdown" href="#"><?php $translate->__("Setup",false); ?><b class="caret"></b></a>
 									<ul class="dropdown-menu" aria-labelledby="drop1" role="menu">
-										<li role="presentation" class='active'><a href="mail.php" tabindex="-1" role="menuitem"><?php $translate->__("Site",false); ?></a></li>
+										<li role="presentation" class='active'><a href="index.php" tabindex="-1" role="menuitem"><?php $translate->__("Site",false); ?></a></li>
 										<li role="presentation"><a href="mail_setting.php" tabindex="-1" role="menuitem"><?php $translate->__("Mail",false); ?></a></li>
 									</ul>
 								</li>
@@ -265,29 +265,39 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 							</div>
 							<br/><br/>
 							<div class='row-fluid'>
-								<div class='span3'><label><?php $translate->__("Checking Word:",false); ?></label></div>
-								<div class='span3'><input type="text" id="psphrase" name="psphrase" <?php if(isset($var[19]) && $var[19]!='**@****nullo**@****') echo 'value="'.$var[19].'"'; ?> required/></div>
+								<div class='span4'><label><?php $translate->__("Show Frontend Clock?",false); ?></label><div class='radioform'><div class='span2'><input type="radio" name="dispclock" value="yes" <?php if(isset($var[16]) && $var[16]=='yes') echo "checked";else if(!isset($var[16])) echo "checked";  ?>/><?php $translate->__("Yes",false); ?></div><div class='span2'> <input type="radio" name="dispclock" value="no" <?php if(isset($var[16]) && $var[16]=='no') echo "checked"; ?>/><?php $translate->__("No",false); ?></div></div></div>
+								<div class='span4'><label><?php $translate->__("Show Frontend Progressbar?",false); ?></label><div class='radioform'><div class='span2'><input type="radio" name="dispprog" value="yes" <?php if(isset($var[17]) && $var[17]=='yes') echo "checked";else if(!isset($var[17])) echo "checked";  ?>/><?php $translate->__("Yes",false); ?></div><div class='span2'> <input type="radio" name="dispprog" value="no" <?php if(isset($var[17]) && $var[17]=='no') echo "checked"; ?>/><?php $translate->__("No",false); ?></div></div></div>
 							</div>
-
 							<br/>
 							<div class='row-fluid'>
 								<div class='span3'><label><?php $translate->__("Show Frontend Contact Form?",false); ?></label><div class='radioform'><input type="radio" name="shcf" value="yes" <?php if(isset($var[8]) && $var[8]=='yes') echo "checked";else if(!isset($var[8])) echo "checked";  ?>/> <?php $translate->__("Yes",false); ?> <input type="radio" name="shcf" value="no" <?php if(isset($var[8]) && $var[8]=='no') echo "checked"; ?>/> <?php $translate->__("No",false); ?></div></div>
 								<div class='span3'><label><?php $translate->__("Show Frontend Subscribe Form?",false); ?></label><div class='radioform'><input type="radio" name="shsf" value="yes" <?php if(isset($var[9]) && $var[9]=='yes') echo "checked";else if(!isset($var[9])) echo "checked";  ?>/> <?php $translate->__("Yes",false); ?> <input type="radio" name="shsf" value="no" <?php if(isset($var[9]) && $var[9]=='no') echo "checked"; ?>/> <?php $translate->__("No",false); ?></div></div>
-								<div class='span3'><label><?php $translate->__("Show Unsubscribe Link Inside Email Footer?",false); ?></label><div class='radioform'><input type="radio" name="shunl" value="yes" <?php if(isset($var[11]) && $var[11]=='yes') echo "checked";else if(!isset($var[11])) echo "checked";  ?>/> <?php $translate->__("Yes",false); ?> <input type="radio" name="shunl" value="no" <?php if(isset($var[11]) && $var[11]=='no') echo "checked"; ?>/> <?php $translate->__("No",false); ?></div></div>
-							</div><br/>
+							</div>
+							<br/>
+							<label><?php $translate->__("Progressbar Phrase:",false); ?></label><textarea type="text" id="progph" name="progph" ><?php if(isset($frontph[1]) && $frontph[1]!='**@****nullo**@****') echo stripslashes($frontph[1]); ?></textarea>
+							<br/><br/>
+							<label><?php $translate->__("Footer Phrase:",false); ?></label><textarea type="text" id="footerph" name="footerph"><?php if(isset($frontph[0]) && $frontph[0]!='**@****nullo**@****') echo stripslashes($frontph[0]); ?></textarea>
+							<br/><br/>
+							
 							<label><?php $translate->__("Server Email Restriction",false); ?></label><br/>
 							<div class='row-fluid'>
 								<div class='span2'><?php $translate->__("Number of email",false); ?></div><div class='span4'><input type="text" id="mailimit" name="mailimit" <?php if(isset($var[14]) && $var[14]!='none') echo 'value="'.$var[14].'"'; ?> /></div><div class='span2'><?php $translate->__("per (in seconds)",false); ?></div><div class='span4'><input type="text" id="pertime" name="pertime" <?php if(isset($var[15]) && $var[15]!='none') echo 'value="'.$var[15].'"'; ?> /></div>
 							</div>
 							<br/><br/>
 							<div class='row-fluid'>
-								<div class='span4'><label><?php $translate->__("Show Frontend Clock?",false); ?></label><div class='radioform'><div class='span2'><input type="radio" name="dispclock" value="yes" <?php if(isset($var[16]) && $var[16]=='yes') echo "checked";else if(!isset($var[16])) echo "checked";  ?>/><?php $translate->__("Yes",false); ?></div><div class='span2'> <input type="radio" name="dispclock" value="no" <?php if(isset($var[16]) && $var[16]=='no') echo "checked"; ?>/><?php $translate->__("No",false); ?></div></div></div>
-								<div class='span4'><label><?php $translate->__("Show Frontend Progressbar?",false); ?></label><div class='radioform'><div class='span2'><input type="radio" name="dispprog" value="yes" <?php if(isset($var[17]) && $var[17]=='yes') echo "checked";else if(!isset($var[17])) echo "checked";  ?>/><?php $translate->__("Yes",false); ?></div><div class='span2'> <input type="radio" name="dispprog" value="no" <?php if(isset($var[17]) && $var[17]=='no') echo "checked"; ?>/><?php $translate->__("No",false); ?></div></div></div>
-							</div><br/><br/>
-						<label><?php $translate->__("Progressbar Phrase:",false); ?></label><textarea type="text" id="progph" name="progph" ><?php if(isset($frontph[1]) && $frontph[1]!='**@****nullo**@****') echo stripslashes($frontph[1]); ?></textarea>
-						<br/><br/>
-						<label><?php $translate->__("Footer Phrase:",false); ?></label><textarea type="text" id="footerph" name="footerph"><?php if(isset($frontph[0]) && $frontph[0]!='**@****nullo**@****') echo stripslashes($frontph[0]); ?></textarea>
-						<br/><br/>
+								<div class='span3'><label><?php $translate->__("Show Unsubscribe Link Inside Email Footer?",false); ?></label><div class='radioform'><input type="radio" name="shunl" value="yes" <?php if(isset($var[11]) && $var[11]=='yes') echo "checked";else if(!isset($var[11])) echo "checked";  ?>/> <?php $translate->__("Yes",false); ?> <input type="radio" name="shunl" value="no" <?php if(isset($var[11]) && $var[11]=='no') echo "checked"; ?>/> <?php $translate->__("No",false); ?></div></div>
+							</div>
+							<br/><br/>
+							<div class='row-fluid'>
+								<div class='span3'><label><?php $translate->__("Checking Word:",false); ?></label></div>
+								<div class='span3'><input type="text" id="psphrase" name="psphrase" <?php if(isset($var[19]) && $var[19]!='**@****nullo**@****') echo 'value="'.$var[19].'"'; ?> required/></div>
+							</div>
+							<div class='row-fluid'>
+								<div class='span3'><label for='execpara' ><?php $translate->__("PHP Command Parameter:",false); ?></label></div>
+								<div class='span3'><label for='execpara'><?php $translate->__("Usually 'php5-cli' or 'php -f'",false); ?></label></div>
+								<div class='span3'><input type="text" id="execpara" name="execpara" <?php if(isset($var[21]) && $var[21]!='**@****nullo**@****') echo 'value="'.$var[21].'"'; ?> required /></div>
+							</div>
+							<br/><br/>
 						<input onclick='javascript:return false;' type="submit" name="datacom" id="datacom" value="<?php $translate->__("Set",false); ?>" class="btn btn-success"/>
 					</form>
 					<?php if(isset($var[20])) {?>
@@ -297,6 +307,20 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 							<p id='cronstring'><?php echo $var[20]; ?></p>
 						</div>
 					<?php } ?>
+					
+					<form class='formcor'>
+						<h2 class='titlesec'><?php $translate->__("Monitoring Code",false); ?></h2>
+						
+						<div class='row-fluid'>
+							<div class='span12'><label><?php $translate->__('Write here your monitoring code(no script tags)',false); ?></label></div>
+						</div>
+						<div class='row-fluid'>
+							<div class='span12'><textarea id='analisyscode'><?php if(isset($monitoringcode)) echo stripslashes($monitoringcode); ?></textarea></div>
+						</div>
+						<br/><br/>
+						<input onclick='javascript:return false;' type="submit" name="setmonit" id="setmonit" value="<?php $translate->__("Save Code",false); ?>" class="btn btn-success"/>
+					</form>
+					
 					<form name="passwordform" id="passwordform"  method="post"  class='formcor'>
 					<h2 class='titlesec'><?php $translate->__("Password Change",false); ?></h2>
 					
@@ -398,6 +422,7 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 				var perc=$('#perc').val().replace(/\s+/g,'');
 				var emailad=$('#emailad').val().replace(/\s+/g,'');
 				var psphrase=$('#psphrase').val().replace(/\s+/g,'');
+				var phpexec=$('#execpara').val().replace(/\s+/g,'');
 				var shcf=$('input[type=radio][name="shcf"]:checked').val();
 				var shsf=$('input[type=radio][name="shsf"]:checked').val();
 				var shunl=$('input[type=radio][name="shunl"]:checked').val();
@@ -412,7 +437,7 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 						var request= $.ajax({
 							type: 'POST',
 							url: 'function.php',
-							data: {act:'save_options',metadesc:metadesc,metakey:metakey,pgtit:pgtit,urls:urls,enfitetx:enfitetx,phrase:phrase,tz:tz,datai:datai,horai:horai,morai:morai,sorai:sorai,dataf:dataf,horaf:horaf,moraf:moraf,soraf:soraf,perc:perc,emailad:emailad,psphrase:psphrase,shcf:shcf,shsf:shsf,shunl:shunl,dispclock:dispclock,dispprog:dispprog,mailimit:mailimit,pertime:pertime,progph:progph,footerph:footerph},
+							data: {act:'save_options',metadesc:metadesc,metakey:metakey,pgtit:pgtit,urls:urls,enfitetx:enfitetx,phrase:phrase,tz:tz,datai:datai,horai:horai,morai:morai,sorai:sorai,dataf:dataf,horaf:horaf,moraf:moraf,soraf:soraf,perc:perc,emailad:emailad,psphrase:psphrase,shcf:shcf,shsf:shsf,shunl:shunl,dispclock:dispclock,dispprog:dispprog,mailimit:mailimit,pertime:pertime,progph:progph,footerph:footerph,eparam:phpexec},
 							dataType : 'json',
 							success : function (data) {
 								if(data[0]=='Saved'){
@@ -498,6 +523,27 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 							var n = noty({text: '<?php echo $translate->__("A problem has occured,please try again",true); ?>',type:'error',timeout:9000});
 						else if(data[0]=='Empty')
 							var n = noty({text: '<?php echo $translate->__("Please Complete all the fields",true); ?>',type:'error',timeout:9000});
+					}
+				});
+				request.fail(function(jqXHR, textStatus){var n = noty({text: textStatus,type:'error',timeout:9000});});
+				return false;
+			});
+			
+			$('#setmonit').click(function(){
+				var c=$('#analisyscode').val();
+
+				var request= $.ajax({
+					type: 'POST',
+					url: 'function.php',
+					data: {act:'monitoring_code',code:c},
+					dataType : 'json',
+					success : function (data) {
+						if(data[0]=='Saved')
+							var n = noty({text: '<?php echo $translate->__("Monitoring Code Saved",true); ?>',type:'success',timeout:9000});
+						else if(data[0]=='Error')
+							var n = noty({text: '<?php echo $translate->__("A problem has occured,please try again",true); ?>',type:'error',timeout:9000});
+						else if(data[0]=='Empty')
+							var n = noty({text: '<?php echo $translate->__("Please add the code",true); ?>',type:'error',timeout:9000});
 					}
 				});
 				request.fail(function(jqXHR, textStatus){var n = noty({text: textStatus,type:'error',timeout:9000});});
