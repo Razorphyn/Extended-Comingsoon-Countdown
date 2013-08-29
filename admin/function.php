@@ -85,7 +85,12 @@
 	}
 
 	else if(isset($_POST['act']) && $_POST['act']=='send_mail'){
-		if(preg_replace('/\s+/','',$_POST['senmail'])!='' && preg_replace('/\s+/','',$_POST['senname'])!='' && preg_replace('/\s+/','',$_POST['subject'])!='' && preg_replace('/\s+/','',$_POST['message'])!=''){
+		
+		$_POST['senmail']=trim(preg_replace('/\s+/','',$_POST['senmail']));
+		$_POST['senname']=trim(preg_replace('/\s+/',' ',$_POST['senname']));
+		$_POST['subject']=trim(preg_replace('/\s+/',' ',$_POST['subject']));
+		
+		if($_POST['senmail']!='' && $_POST['senname']!='' && $_POST['subject']!='' && trim(preg_replace('/\s+/','',$_POST['message']))!='' && filter_var($_POST['senmail'], FILTER_VALIDATE_EMAIL)){
 			require_once '../translator/class.translation.php';
 			if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])){$lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);if(is_file('../translator/lang/'.$lang.'.csv'))$translate = new Translator($lang);else $translate = new Translator('en');}else $translate = new Translator('en');
 
@@ -105,9 +110,11 @@
 	}
 	
 	else if(isset($_POST['act']) && $_POST['act']=='subscribe'){
-		if(isset($_POST['nameinput']) && preg_replace('/\s+/','',$_POST['nameinput'])!='' && isset($_POST['mailinput']) && preg_replace('/\s+/','',$_POST['mailinput'])!=''){
+		if(isset($_POST['nameinput']) && trim(preg_replace('/\s+/','',$_POST['nameinput']))!='' && isset($_POST['mailinput']) && trim(preg_replace('/\s+/','',$_POST['mailinput']))!='' && filter_var($_POST['mailinput'], FILTER_VALIDATE_EMAIL)){
+			$_POST['nameinput']=trim(preg_replace('/\s+/',' ',$_POST['nameinput']));
+			$_POST['mailinput']=trim(preg_replace('/\s+/','',$_POST['mailinput']));
 			if(is_file($fileconfig)) $var=file($fileconfig, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-			date_default_timezone_set($var[10]);
+			if(isset($var[10])) date_default_timezone_set($var[10]);
 			/*Update Database*/
 			if(!is_dir($dir)){ if(mkdir($dir,0755))file_put_contents($dir.'/.htaccess','Deny from All'."\n".'IndexIgnore *'); };
 			if(is_file($filemail)){
@@ -128,10 +135,10 @@
 				}
 				unlink($filemail);
 			}
-			$retchar=array("\n","\r");
-			$name=str_replace($retchar,'',preg_replace('/\s+/',' ',$_POST['nameinput']));
-			$lname=str_replace($retchar,'',preg_replace('/\s+/',' ',$_POST['lnameinput']));
-			$mail=str_replace($retchar,'',preg_replace('/\s+/',' ',$_POST['mailinput']));
+
+			$name=trim(preg_replace('/\s+/',' ',$_POST['nameinput']));
+			$lname=trim(preg_replace('/\s+/',' ',$_POST['lnameinput']));
+			$mail=trim(preg_replace('/\s+/','',$_POST['mailinput']));
 			if(is_file($dir.'/'.$mail))
 				echo json_encode(array(0=>'Already'));
 			else{
@@ -147,7 +154,6 @@
 					}
 					$id++;
 				}
-
 				$fs=fopen($filemail,"a+");
 				$ip=retrive_ip();
 				$info=$name."\n".$lname."\n".$mail."\n".date('H:i:s  d/m/Y')."\n\n".$ip."\n".$_SERVER['HTTP_USER_AGENT']."\n".$id;
