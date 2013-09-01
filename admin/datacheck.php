@@ -19,8 +19,9 @@
 	//REMEBER THE FIRST 0
 	$folderperm=0755; //Folders Permissions
 	$fileperm=0644; //Files Permissions
-		
-	if(!is_dir("session")) {mkdir("session",$folderperm);file_put_contents("session/.htaccess","Deny from All"."\n"."IndexIgnore *");}
+
+
+	if(!is_dir("session")) {mkdir("session",$folderperm);file_put_contents("session/.htaccess","Deny from All \n IndexIgnore * \n Header set X-Frame-Options SAMEORIGIN \n Header set X-XSS-Protection '1; mode=block' \n Header set X-Content-Type-Options 'nosniff'");}
 	
 	ini_set("session.auto_start", "0");
 	ini_set("session.hash_function", "sha512");
@@ -53,11 +54,11 @@
 		if(!is_dir($dir)){
 			if(mkdir($dir,0700)){
 				mkdir("../config/scheduled",$folderperm);
-				file_put_contents("../config/scheduled/.htaccess","Deny from All"."\n"."IndexIgnore *");
+				file_put_contents("../config/scheduled/.htaccess","Deny from All"."\n"."IndexIgnore * \n Header set X-Frame-Options SAMEORIGIN \n Header set X-XSS-Protection '1; mode=block' \n Header set X-Content-Type-Options 'nosniff'");
 
 				if(!is_file($fileconfig))file_put_contents($fileconfig,"");
 				if(!is_file($socialfile))file_put_contents($socialfile,"");
-				if(!is_dir($dirmail)){ mkdir($dirmail,$folderperm);file_put_contents($dirmail.".htaccess","Deny from All"."\n"."IndexIgnore *"); };
+				if(!is_dir($dirmail)){ mkdir($dirmail,$folderperm);file_put_contents($dirmail.".htaccess","Deny from All"."\n"."IndexIgnore * \n Header set X-Frame-Options SAMEORIGIN \n Header set X-XSS-Protection '1; mode=block' \n Header set X-Content-Type-Options 'nosniff'"); };
 				if(!is_file($filefnmail))file_put_contents($filefnmail,"");
 				if(!is_file($filefnmessage))file_put_contents($filefnmessage,"");
 				if(!is_file($filefnfooter))file_put_contents($filefnfooter,"");
@@ -66,8 +67,8 @@
 				if(!is_file($filenews))file_put_contents($filenews,"");
 				if(!is_file($fileindexfoot))file_put_contents($fileindexfoot,"");
 				if(!is_file($passfile))file_put_contents($passfile,'<?php $adminpassword=\''.(hash("whirlpool","admin")).'\'; ?>');
-				if(!is_file($access))file_put_contents($access,"Deny from All"."\n"."IndexIgnore *");
-				if(!is_file(".htaccess"))file_put_contents(".htaccess","IndexIgnore *");
+				if(!is_file($access))file_put_contents($access,"Deny from All"."\n"."IndexIgnore * \n Header set X-Frame-Options SAMEORIGIN \n Header set X-XSS-Protection '1; mode=block' \n Header set X-Content-Type-Options 'nosniff'");
+				if(!is_file(".htaccess"))file_put_contents(".htaccess","IndexIgnore * \n Header set X-Frame-Options SAMEORIGIN \n Header set X-XSS-Protection '1; mode=block' \n Header set X-Content-Type-Options 'nosniff'");
 				chmod($fileconfig, $fileperm);
 				chmod($socialfile, $fileperm);
 				chmod($dirmail, $fileperm);
@@ -84,12 +85,12 @@
 		else{
 			if(!is_dir("../config/scheduled")){
 				if(mkdir("../config/scheduled",$folderperm))
-					file_put_contents("../config/scheduled/.htaccess","Deny from All"."\n"."IndexIgnore *");
+					file_put_contents("../config/scheduled/.htaccess","Deny from All"."\n"."IndexIgnore * \n Header set X-Frame-Options SAMEORIGIN \n Header set X-XSS-Protection '1; mode=block' \n Header set X-Content-Type-Options 'nosniff'");
 			}
 			if(!is_file($fileconfig))file_put_contents($fileconfig,"");
 			if(!is_file($fileindexfoot))file_put_contents($fileindexfoot,"");
 			if(!is_file($socialfile))file_put_contents($socialfile,"");
-			if(!is_dir($dirmail)){mkdir($dirmail,folderperm);file_put_contents($dirmail.".htaccess","Deny from All"."\n"."IndexIgnore *"); };
+			if(!is_dir($dirmail)){mkdir($dirmail,folderperm);file_put_contents($dirmail.".htaccess","Deny from All"."\n"."IndexIgnore * \n Header set X-Frame-Options SAMEORIGIN \n Header set X-XSS-Protection '1; mode=block' \n Header set X-Content-Type-Options 'nosniff'"); };
 			if(!is_file($filefnmail))file_put_contents($filefnmail,"");
 			if(!is_file($filefnmessage))file_put_contents($filefnmessage,"");
 			if(!is_file($filefnfooter))file_put_contents($filefnfooter,"");
@@ -98,7 +99,7 @@
 			if(!is_file($filenews))file_put_contents($filenews,"");
 			if(!is_file($passfile))file_put_contents($passfile,'<?php $adminpassword=\''.(hash("whirlpool","admin")).'\'; ?>');
 			if(!is_file($access))file_put_contents($access,"Deny from All"."\n"."IndexIgnore *");
-			if(!is_file(".htaccess"))file_put_contents(".htaccess","IndexIgnore *");
+			if(!is_file(".htaccess"))file_put_contents(".htaccess","IndexIgnore * \n Header set X-Frame-Options SAMEORIGIN \n Header set X-XSS-Protection '1; mode=block' \n Header set X-Content-Type-Options 'nosniff'");
 			chmod($fileconfig, $fileperm);
 			chmod($socialfile, $fileperm);
 			chmod($dirmail, $folderperm);

@@ -43,7 +43,7 @@ $siteurl=$siteurl[0];
 		$news=array_reverse($news);
 		$btn=(int)$_GET['btn'];
 		if(isset($_GET['id'])){
-		$id=(int)$_GET['id'];
+		$id=(is_numeric($_GET['id'])? (int)$_GET['id']:exit();
 	?>
 
 	<title><?php echo htmlspecialchars($news[$id+2],ENT_QUOTES,'UTF-8');; ?></title>

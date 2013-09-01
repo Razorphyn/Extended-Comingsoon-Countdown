@@ -144,9 +144,8 @@
 	}
 	
 	else if(isset($_POST['act']) && $_POST['act']=='subscribe'){
-		
 		if(isset($_POST['nameinput']) && isset($_POST['mailinput'])){
-			
+
 			if(trim(preg_replace('/\s+/','',$_POST['nameinput']))!='' && preg_match('/^[A-Za-z0-9\/\s\'-]+$/',$_POST['nameinput'])) 
 				$name=trim(preg_replace('/\s+/',' ',$_POST['nameinput']));
 			else{
@@ -543,7 +542,7 @@
 				$_POST['metakey']='**@****nullo**@****';
 			
 			$_POST['emailad']= trim(preg_replace('/\s+/','',$_POST['emailad']));
-			if(empty($mail) || !filter_var($mail, FILTER_VALIDATE_EMAIL)){
+			if(empty($_POST['emailad']) || !filter_var($_POST['emailad'], FILTER_VALIDATE_EMAIL)){
 				$_POST['emailad']='**@****nullo**@****';
 			}
 			
@@ -556,7 +555,7 @@
 			$_POST['pertime']=trim(str_replace(' ','',$_POST['pertime']));
 			$_POST['mailimit']=(is_numeric($_POST['mailimit']))? (int)$_POST['mailimit']:'none';
 			$_POST['pertime']=(is_numeric($_POST['pertime']))? (int)$_POST['pertime']:'none';
-			
+
 			$_POST['eparam']=(trim(preg_replace('/\s+/','',$_POST['eparam'])==''))? 'php5-cli':trim(preg_replace('/\s+/','',$_POST['eparam']));
 
 			$horaf=(int)$horaf;

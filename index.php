@@ -235,12 +235,25 @@
 			<?php } ?>
 
 			$(".sectioncol").click(function(){$(this).next(".collapsable").slideToggle(800,function(){$("html,body").animate({scrollTop:$(this).offset().top},1E3)})});$("a[rel^='prettyPhoto']").prettyPhoto({animationSpeed:"normal",social_tools:"",opacity:0.8,showTitle:!0,default_width:"43%",default_height:"80%"});
-			
-			$("#mailform").validate({rules:{mailinput:{required: true,email: true}},messages:{mailinput: "<?php echo $translate->__('Please Insert a Valid Email',true); ?>"}});
-			
-			$("#contactform").validate({rules:{senmail: {required:true,email:true},message: "required",senphone: {accept:"[0-9 +]",required:false}},messages:{senmail: "<?php echo $translate->__('Please complete this field',true); ?>",message: "<?php echo $translate->__('Please complete this field',true); ?>",senphone: "<?php echo $translate->__('Please insert a valid number',true); ?>"}});	
-			
-			$("#sendmail").click(function(){var a=$("#senname").val(),e=$("#senphone").val(),b=$("#senmail").val(),c=$("#subject").val(),d=$("#message").val();""!=a.replace(/\s+/g,"")&&""!=b.replace(/\s+/g,"")&&""!=c.replace(/\s+/g,"")&&""!=d.replace(/\s+/g,"")?$.ajax({type:"POST",url:"admin/function.php",data:{act:"send_mail",senname:a,senphone:e,senmail:b,subject:c,message:d},dataType:"json",success:function(a){"Sent"==a[0]?noty({text:"<?php echo $translate->__('Your email has been sent!',true); ?>",type:"success",timeout:9E3}):noty({text:"<?php echo $translate->__('A problem has occured,please try again',true); ?>",type:"error",timeout:9E3})}}).fail(function(a, b){noty({text:b,type:"error",timeout:9E3})}):noty({text:"<?php echo $translate->__('Complete all the fields',true); ?>",type:"error",timeout:9E3});return!1});
+						
+			$("#sendmail").click(function (){
+				var a = $("#senname").val(),
+					e = $("#senphone").val(),
+					b = $("#senmail").val(),
+					c = $("#subject").val(),
+					d = $("#message").val();
+
+				"" != a.replace(/\s+/g, "") && "" != b.replace(/\s+/g, "") && "" != c.replace(/\s+/g, "") && "" != d.replace(/\s+/g, "") && e.match(/[0-9+]/g)? $.ajax({
+					type: "POST",
+					url: "admin/function.php",
+					data: {act: "send_mail",senname: a,senphone: e,senmail: b,subject: c,message: d},
+					dataType: "json",
+					success: function (a) {
+						"Sent" == a[0] ? noty({text: "<?php echo $translate->__('Your email has been sent!',true); ?>",type: "success",timeout: 9E3}) : noty({text: "<?php echo $translate->__('A problem has occured,please try again',true); ?>",type: "error",timeout: 9E3})
+					}
+				}).fail(function (a, b) {noty({text: b,type: "error",timeout: 9E3})}) : noty({text: "<?php echo $translate->__('Complete all the fields',true); ?>",type: "error",timeout: 9E3});
+				return !1
+			});
 			
 			$("#mailsubmit").click(function () {
 				var c = $("#nameinput").val(),
@@ -256,7 +269,7 @@
 					}
 				}).fail(function (b, a) {noty({text: a,type: "error",timeout: 9E3})}) : noty({text: "<?php echo $translate->__('Please Complete all the fields',true); ?>",type: "error",timeout: 9E3});
 				return !1
-			});		
+			});
 	});
 	</script>
 
