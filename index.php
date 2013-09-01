@@ -149,7 +149,7 @@
 							$lnew[]= "<div class='span3'><h3><p class='ptitle'>".htmlspecialchars($news[$i+2],ENT_QUOTES,'UTF-8')."</p></h3>";
 							$lnew[]="<span class='datapost'>".htmlspecialchars($news[$i+1],ENT_QUOTES,'UTF-8')."</span>";
 							$ns=accorcia($news[$i],$i,$translate->__('Read More',true));
-							$lnew[]="<div class='pmessage'>".htmlspecialchars($ns,ENT_QUOTES,'UTF-8')."</div></div>";
+							$lnew[]="<div class='pmessage'>".$ns."</div></div>";
 						}
 						echo implode('',$lnew);
 						if(count($news)>11) { ?>
@@ -277,7 +277,13 @@
 
 	function dateDifference($startDate, $endDate){list($anno,$mese,$giorno)=explode('-',$startDate);list($fanno,$fmese,$fgiorno)=explode('-',$endDate);$days=gregoriantojd($fmese, $fgiorno, $fanno) -gregoriantojd($mese, $giorno, $anno);return $days;} 
 	function curPageURL() {$pageURL = 'http';if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") $pageURL .= "s";$pageURL .= "://";if (isset($_SERVER["HTTPS"]) && $_SERVER["SERVER_PORT"] != "80") $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];else $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];return $pageURL;}
-	function accorcia($frase,$i,$str){$frase=strip_tags($frase);$len=strlen($frase);if($len>120)$frase=substr($frase,0,100).'...<br/><a rel="prettyPhoto[id]" title="'.$str.'" alt="'.$str.'" href="news.php?id='.$i.'&btn=0?iframe=true" class="visible-desktop">'.$str.'</a><a class="hidden-desktop" title="'.$str.'" alt="'.$str.'" href="news.php?id='.$i.'&btn=1">'.$str.'</a>';return $frase;}
+	function accorcia($frase,$i,$str){
+		$frase=strip_tags($frase);
+		$len=strlen($frase);
+		if($len>120)
+			$frase=substr($frase,0,100).'...<br/><a rel="prettyPhoto[id]" title="'.$str.'" alt="'.$str.'" href="news.php?id='.$i.'&btn=0?iframe=true" class="visible-desktop">'.$str.'</a><a class="hidden-desktop" title="'.$str.'" alt="'.$str.'" href="news.php?id='.$i.'&btn=1">'.$str.'</a>';
+		return $frase;
+	}
 ?>
 </body>
 </html>

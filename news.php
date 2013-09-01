@@ -41,12 +41,14 @@ $siteurl=$siteurl[0];
 		$news = file($filenews, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 		$news=array_values(array_filter($news, "trim"));
 		$news=array_reverse($news);
-		$btn=(int)$_GET['btn'];
-		if(isset($_GET['id'])){
-		$id=(is_numeric($_GET['id'])? (int)$_GET['id']:exit();
+		$btn=$_GET['btn'];
+		if(isset($_GET['id']) && !is_numeric($_GET['id']))
+			exit();
+		else if(isset($_GET['id']) && is_numeric($_GET['id'])){
+			$id=$_GET['id'];
 	?>
 
-	<title><?php echo htmlspecialchars($news[$id+2],ENT_QUOTES,'UTF-8');; ?></title>
+	<title><?php echo htmlspecialchars($news[$id+2],ENT_QUOTES,'UTF-8'); ?></title>
 </head>
 <body>
 	<div class='container'>
@@ -55,7 +57,7 @@ $siteurl=$siteurl[0];
 				<div id='span12 corp' class='newscont'>
 					<p class='titlenews'><?php echo htmlspecialchars($news[$id+2],ENT_QUOTES,'UTF-8'); ?></p>
 					<p class='datenews'><?php $translate->__('Posted on:',false); echo htmlspecialchars($news[$id+1],ENT_QUOTES,'UTF-8'); ?></p>
-					<div class='corpnews'><?php echo htmlspecialchars($news[$id],ENT_QUOTES,'UTF-8'); ?></div>
+					<div class='corpnews'><?php echo$news[$id]; ?></div>
 					<?php if($btn!=0){ ?><a href='index.php' class='moren btn btn-warning'><?php $translate->__('Back to Homepage',false); ?></a><?php } ?>
 				</div>
 			</div>
@@ -63,8 +65,7 @@ $siteurl=$siteurl[0];
 	</div>
 </body>
 
-<?php } else {?>
-	<script type="text/javascript"  src="<?php echo $siteurl.'min/?b=js&amp;f=jquery-1.10.2.js,bootstrap.min.js&amp;5259487' ?>"></script>
+<?php } else if(!isset($_GET['id'])){?>
 	<title><?php $translate->__('News',false); ?></title>
 </head>
 <body>
@@ -81,14 +82,14 @@ $siteurl=$siteurl[0];
 	
 	<script type="text/javascript">
 	var news=new Array();
-	news=jQuery.parseJSON(<?php echo json_encode($news,JSON_HEX_QUOT|JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS); ?>);
+	news=<?php echo json_encode($news); ?>;
 	var i=0;
 	var arrlen=<?php echo count($news); ?>;
 	 $(document).ready(function() {
 		var stmp=new Array();
 		for(i=0;i<12;i+=3){
-			if(i==0)stmp.push("<h2 class='titlenews'>"+news[i+2]+"</h2><p class='datenews'><?php echo $translate->__('Posted on:',true); ?> "+news[i+1]+"</p><div class='corpnews'>"+news[i]+"</div>");
-			else stmp.push("<p class='titlenews'>"+news[i+2]+"</p><p class='datenews'><?php echo $translate->__('Posted on:',true); ?> "+news[i+1]+"</p><div class='corpnews'>"+news[i]+"</div>");
+			if(i==0)stmp.push("<h2 class='titlenews'>"+encodeHTML(news[i+2])+"</h2><p class='datenews'><?php echo $translate->__('Posted on:',true); ?> "+news[i+1]+"</p><div class='corpnews'>"+news[i]+"</div>");
+			else stmp.push("<p class='titlenews'>"+encodeHTML(news[i+2])+"</p><p class='datenews'><?php echo $translate->__('Posted on:',true); ?> "+news[i+1]+"</p><div class='corpnews'>"+news[i]+"</div>");
 			if(i==9 && arrlen>12)stmp.push("<button id='moren' class='moren btn btn-info' onclick='addnews("+i+");' style='position:relative;display:block;margin:0 auto'><?php echo $translate->__('Load More News',true); ?></button>");
 		}
 		$('#corp').append(stmp.join(''));
@@ -103,9 +104,12 @@ $siteurl=$siteurl[0];
 		$('#corp').append(add.join(''));
 	}
 	
+	function encodeHTML(s) {
+		return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g, '&#x2F;');
+	}
 	</script>
 </body>
 
-<?php } ?>
+<?php } else exit(); ?>
 </html>
 <?php function curPageURL() {$pageURL = 'http';if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") $pageURL .= "s";$pageURL .= "://";if (isset($_SERVER["HTTPS"]) && $_SERVER["SERVER_PORT"] != "80") $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];else $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];return $pageURL;}?>
