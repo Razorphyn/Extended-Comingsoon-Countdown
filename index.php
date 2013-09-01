@@ -62,7 +62,8 @@
 	$valore=round(100*$csec/$fsec,2);
 	$interval=$fsec*0.1;
 	
-	$siteurl=curPageURL();
+	$siteurl=explode('?',curPageURL());
+	$siteurl=$siteurl[0];
 	?>
 <!DOCTYPE html>
 <html lang="<?php echo $lang; ?>">
@@ -145,10 +146,10 @@
 						$max=(count($news)>12)? 12:count($news);
 						$lnew=array();
 						for($i=0;$i<$max;$i+=3){
-							$lnew[]= "<div class='span3'><h3><p class='ptitle'>".$news[$i+2]."</p></h3>";
-							$lnew[]="<span class='datapost'>".$news[$i+1]."</span>";
+							$lnew[]= "<div class='span3'><h3><p class='ptitle'>".htmlspecialchars($news[$i+2],ENT_QUOTES,'UTF-8')."</p></h3>";
+							$lnew[]="<span class='datapost'>".htmlspecialchars($news[$i+1],ENT_QUOTES,'UTF-8')."</span>";
 							$ns=accorcia($news[$i],$i,$translate->__('Read More',true));
-							$lnew[]="<div class='pmessage'>".$ns."</div></div>";
+							$lnew[]="<div class='pmessage'>".htmlspecialchars($ns,ENT_QUOTES,'UTF-8')."</div></div>";
 						}
 						echo implode('',$lnew);
 						if(count($news)>11) { ?>
@@ -241,8 +242,22 @@
 			
 			$("#sendmail").click(function(){var a=$("#senname").val(),e=$("#senphone").val(),b=$("#senmail").val(),c=$("#subject").val(),d=$("#message").val();""!=a.replace(/\s+/g,"")&&""!=b.replace(/\s+/g,"")&&""!=c.replace(/\s+/g,"")&&""!=d.replace(/\s+/g,"")?$.ajax({type:"POST",url:"admin/function.php",data:{act:"send_mail",senname:a,senphone:e,senmail:b,subject:c,message:d},dataType:"json",success:function(a){"Sent"==a[0]?noty({text:"<?php echo $translate->__('Your email has been sent!',true); ?>",type:"success",timeout:9E3}):noty({text:"<?php echo $translate->__('A problem has occured,please try again',true); ?>",type:"error",timeout:9E3})}}).fail(function(a, b){noty({text:b,type:"error",timeout:9E3})}):noty({text:"<?php echo $translate->__('Complete all the fields',true); ?>",type:"error",timeout:9E3});return!1});
 			
-			$("#mailsubmit").click(function(){var c=$("#nameinput").val(),d=$("#lnameinput").val(),a=$("#mailinput").val();""!=a.replace(/\s+/g,"")?$.ajax({type:"POST",url:"admin/function.php",data:{act:"subscribe",nameinput:c,lnameinput:d,mailinput:a},dataType:"json",success:function(b){"Added"==b[0]?noty({text:"<?php echo $translate->__('Thank you for subscribing!',true); ?>",type:"success",timeout:9E3}):"Already"==b[0]?noty({text:"<?php echo $translate->__('You are already subscribed to our system',true); ?>",type:"error",timeout:9E3}):"Empty"==b[0]&&noty({text:"<?php echo $translate->__('Please Compleate all the fields',true); ?>",type:"error",timeout:9E3})}}).fail(function(b,a){noty({text:a,type:"error", timeout:9E3})}):noty({text:"<?php echo $translate->__('Please Compleate all the fields',true); ?>",type:"error",timeout:9E3});return!1});
-		});
+			$("#mailsubmit").click(function () {
+				var c = $("#nameinput").val(),
+					d = $("#lnameinput").val(),
+					a = $("#mailinput").val();
+				"" != a.replace(/\s+/g, "") ? $.ajax({
+					type: "POST",
+					url: "admin/function.php",
+					data: {act: "subscribe",nameinput: c,lnameinput: d,mailinput: a},
+					dataType: "json",
+					success: function (b) {
+						"Added" == b[0] ? noty({text: "<?php echo $translate->__('Thank you for subscribing!',true); ?>",type: "success",timeout: 9E3}) : "Already" == b[0] ? noty({text: "<?php echo $translate->__('You are already subscribed to our system',true); ?>",type: "error",timeout: 9E3}) : "Empty" == b[0] && noty({text: "<?php echo $translate->__('Please Complete all the fields',true); ?>",type: "error",timeout: 9E3})
+					}
+				}).fail(function (b, a) {noty({text: a,type: "error",timeout: 9E3})}) : noty({text: "<?php echo $translate->__('Please Complete all the fields',true); ?>",type: "error",timeout: 9E3});
+				return !1
+			});		
+	});
 	</script>
 
 <?php

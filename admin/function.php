@@ -25,7 +25,24 @@
 	ini_set('session.use_only_cookies', '1');
 	ini_set('session.use_trans_sid', '0');
 	session_name("RazorphynExtendedComingsoon");
-	session_start();
+	if (isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+		ini_set('session.cookie_secure', '1');
+	}
+	if(isset($_COOKIE['RazorphynExtendedComingsoon']) && !is_string($_COOKIE['RazorphynExtendedComingsoon']) || !preg_match('/^[a-z0-9]{26,40}$/',$_COOKIE['RazorphynExtendedComingsoon']))
+		setcookie(session_name(),'invalid',time()-3600);
+	session_start(); 
+
+	//Session Check
+	if(isset($_SESSION['time']) && time()-$_SESSION['time']<=1800)
+		$_SESSION['time']=time();
+	else if(isset($_SESSION['id']) && !isset($_SESSION['time']) || isset($_SESSION['time']) && time()-$_SESSION['time']>1800){
+		session_unset();
+		session_destroy();
+	}
+	else if(isset($_SESSION['ip']) && $_SESSION['ip']!=retrive_ip()){
+		session_unset();
+		session_destroy();
+	}
 	
 	$fileconfig='../config/config.txt';
 	$passfile='../config/pass.php';
@@ -85,12 +102,25 @@
 	}
 
 	else if(isset($_POST['act']) && $_POST['act']=='send_mail'){
-		
-		$_POST['senmail']=trim(preg_replace('/\s+/','',$_POST['senmail']));
-		$_POST['senname']=trim(preg_replace('/\s+/',' ',$_POST['senname']));
+
 		$_POST['subject']=trim(preg_replace('/\s+/',' ',$_POST['subject']));
 		
-		if($_POST['senmail']!='' && $_POST['senname']!='' && $_POST['subject']!='' && trim(preg_replace('/\s+/','',$_POST['message']))!='' && filter_var($_POST['senmail'], FILTER_VALIDATE_EMAIL)){
+		if(trim(preg_replace('/\s+/','',$_POST['name']))!='' && preg_match('/^[A-Za-z0-9\/\s\'-]+$/',$_POST['senname'])) 
+			$_POST['senname']=trim(preg_replace('/\s+/',' ',$_POST['senname']));
+		else{
+			header('Content-Type: application/json; charset=utf-8');
+			echo json_encode(array(0=>'Invalid Name: only alphanumeric and single quote allowed'));
+			exit();
+		}
+		
+		$_POST['senmail']= trim(preg_replace('/\s+/','',$_POST['senmail']));
+		if(empty($_POST['senmail']) || !filter_var($_POST['senmail'], FILTER_VALIDATE_EMAIL)){
+			header('Content-Type: application/json; charset=utf-8');
+			echo json_encode(array(0=>'Invalid Mail'));
+			exit();
+		}
+
+		if($_POST['subject']!='' && trim(preg_replace('/\s+/','',$_POST['message']))!=''){
 			require_once '../translator/class.translation.php';
 			if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])){$lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);if(is_file('../translator/lang/'.$lang.'.csv'))$translate = new Translator($lang);else $translate = new Translator('en');}else $translate = new Translator('en');
 
@@ -98,10 +128,14 @@
 			$headers = "From:".$_POST['senmail']."\r\n CC:".$_POST['senmail']."\r\n MIME-Version: 1.0\r\n Content-Type: text/plain; charset=UTF-8\r\n";
 			$body=$_POST['message'];
 			$message="------".$translate->__("Information",true)."------\n".$translate->__("Name",true).": ".$_POST['senname']."\n ".$translate->__("Mail",true).": ".$_POST['senmail']."\n ".$translate->__("Telephone",true).": ".$_POST['senphone']."\n------------\n".$body;
-			if(mail($var[7], $_POST['subject'], $message ,$headers))
+			if(mail($var[7], $_POST['subject'], $message ,$headers)){
+				header('Content-Type: application/json; charset=utf-8');
 				echo json_encode(array(0=>'Sent'));
-			else
+			}
+			else{
+				header('Content-Type: application/json; charset=utf-8');
 				echo json_encode(array(0=>'Error'));
+			}
 		}
 		else{
 			echo json_encode(array(0=>'Error'));
@@ -110,9 +144,32 @@
 	}
 	
 	else if(isset($_POST['act']) && $_POST['act']=='subscribe'){
-		if(isset($_POST['nameinput']) && trim(preg_replace('/\s+/','',$_POST['nameinput']))!='' && isset($_POST['mailinput']) && trim(preg_replace('/\s+/','',$_POST['mailinput']))!='' && filter_var($_POST['mailinput'], FILTER_VALIDATE_EMAIL)){
-			$_POST['nameinput']=trim(preg_replace('/\s+/',' ',$_POST['nameinput']));
-			$_POST['mailinput']=trim(preg_replace('/\s+/','',$_POST['mailinput']));
+		
+		if(isset($_POST['nameinput']) && isset($_POST['mailinput'])){
+			
+			if(trim(preg_replace('/\s+/','',$_POST['nameinput']))!='' && preg_match('/^[A-Za-z0-9\/\s\'-]+$/',$_POST['nameinput'])) 
+				$name=trim(preg_replace('/\s+/',' ',$_POST['nameinput']));
+			else{
+				header('Content-Type: application/json; charset=utf-8');
+				echo json_encode(array(0=>'Invalid Name: only alphanumeric and single quote allowed'));
+				exit();
+			}
+			
+			if(trim(preg_replace('/\s+/','',$_POST['lnameinput']))!='' && preg_match('/^[A-Za-z0-9\/\s\'-]+$/',$_POST['lnameinput'])) 
+				$lname=trim(preg_replace('/\s+/',' ',$_POST['lnameinput']));
+			else{
+				header('Content-Type: application/json; charset=utf-8');
+				echo json_encode(array(0=>'Invalid Last Name: only alphanumeric and single quote allowed'));
+				exit();
+			}
+			
+			$mail= trim(preg_replace('/\s+/','',$_POST['mailinput']));
+			if(empty($mail) || !filter_var($mail, FILTER_VALIDATE_EMAIL)){
+				header('Content-Type: application/json; charset=utf-8');
+				echo json_encode(array(0=>'Invalid Mail'));
+				exit();
+			}
+		
 			if(is_file($fileconfig)) $var=file($fileconfig, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 			if(isset($var[10])) date_default_timezone_set($var[10]);
 			/*Update Database*/
@@ -136,9 +193,7 @@
 				unlink($filemail);
 			}
 
-			$name=trim(preg_replace('/\s+/',' ',$_POST['nameinput']));
-			$lname=trim(preg_replace('/\s+/',' ',$_POST['lnameinput']));
-			$mail=trim(preg_replace('/\s+/','',$_POST['mailinput']));
+
 			if(is_file($dir.'/'.$mail))
 				echo json_encode(array(0=>'Already'));
 			else{
@@ -167,17 +222,32 @@
 
 	else if(isset($_SESSION['views']) && isset($_POST['act']) && $_POST['act']=='post_news'){
 		if(isset($_POST['tnews']) && preg_replace('/\s+/','',$_POST['tnews'])!='' && isset($_POST['nnews']) && preg_replace('/\s+/','',$_POST['nnews'])!=''){
+		
+			if(trim(preg_replace('/\s+/','',$_POST['tnews']))!=''){
+				$_POST['tnews']=trim(preg_replace('/\s+/',' ',$_POST['tnews']));
+				require_once 'htmlpurifier/HTMLPurifier.auto.php';
+				$config = HTMLPurifier_Config::createDefault();
+				$purifier = new HTMLPurifier($config);
+				$_POST['tnews'] = $purifier->purify($_POST['tnews']);
+				$check=trim(strip_tags($_POST['tnews']));
+				if(empty($check)){
+					$error[]='The News Contains Dangerous Code';
+				}
+			}
+			else
+				$error[]='Empty News Body';
+				
 			$file='../config/config.txt';
 			$filenews= '../config/news.txt';
 			if(is_file($file)) $var=file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 			if(!is_file($filenews)) file_put_contets($filenews,'');
 			date_default_timezone_set($var[10]);
 			$fs=fopen($filenews,"a+");
-			if(rtrim(file_get_contents($filenews))=='')
-				fwrite($fs,rtrim(preg_replace('/\s+/',' ',$_POST['tnews']))."\n");
+			if(trim(file_get_contents($filenews))=='')
+				fwrite($fs,trim(preg_replace('/\s+/',' ',$_POST['tnews']))."\n");
 			else
-				fwrite($fs,"\n".rtrim($_POST['tnews'])."\n");
-			fwrite($fs,date("d-m-Y H:i:s")."\n".rtrim(preg_replace('/\s+/',' ',$_POST['nnews'])));
+				fwrite($fs,"\n".trim($_POST['tnews'])."\n");
+			fwrite($fs,date("d-m-Y H:i:s")."\n".trim(preg_replace('/\s+/',' ',$_POST['nnews'])));
 			fclose($fs);
 			echo json_encode(array(0=>'Added'));
 		}
@@ -240,7 +310,7 @@
 			if($_POST['sched']=='no'){
 				$manip="<html><head></head><body>".$bod.'<div id="footer" style="display:block;clear:both;width:100%;position:relative;margin:10px 0;border-top:1px solid #000">'.$footer;
 				file_put_contents('../config/tmpinfo.txt',$manip."\n".json_encode($mailist)."\n".$_POST['sender']."\n".$_POST['object']."\n".$var[11]."\n".$var[12]."\n".$var[13]."\n".$var[14]."\n".$var[15]);
-				$ex=$var[21].' '.rtrim(dirname(__FILE__))."/sendmail.php";
+				$ex=$var[21].' '.trim(dirname(__FILE__))."/sendmail.php";
 				if(substr(php_uname(), 0, 7) == "Windows")
 					pclose(popen("start /B ".$ex,"r"));
 				else
@@ -299,7 +369,7 @@
 			fwrite($fs,$_POST['senderfn']."\n".$_POST['objectfn']."\n".$_POST['warnus']);
 		fclose($fs);
 		$fs=fopen($filefnmessage,"w+");
-			fwrite($fs,rtrim(preg_replace('/\s+/',' ',$_POST['messagefn'])));
+			fwrite($fs,trim(preg_replace('/\s+/',' ',$_POST['messagefn'])));
 		fclose($fs);
 		echo json_encode(array(0=>'Saved'));
 	}
@@ -358,7 +428,7 @@
 	
 	else if(isset($_SESSION['views']) && isset($_POST['act'])  && $_POST['act']=='monitoring_code'){
 
-		if(rtrim(preg_replace('/\s+/','',$_POST['code'])!='')){
+		if(trim(preg_replace('/\s+/','',$_POST['code'])!='')){
 			$string='<?php $monitoringcode=\''.addslashes($_POST['code']).'\'; ?>';
 			if(file_put_contents('../config/monintoring.php',$string))
 				echo json_encode(array(0=>'Saved'));
@@ -371,16 +441,16 @@
 	}
 	
 	else if(isset($_SESSION['views']) && isset($_POST['act']) && $_POST['act']=='save_options'){
-		if(preg_replace('/\s+/','',$_POST['dataf'])!='' && preg_replace('/\s+/','',$_POST['datai'])!='' && rtrim(preg_replace('/\s+/','',$_POST['tz'])!='')){
+		if(preg_replace('/\s+/','',$_POST['dataf'])!='' && preg_replace('/\s+/','',$_POST['datai'])!='' && trim(preg_replace('/\s+/','',$_POST['tz'])!='')){
 			$var = file($fileconfig, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 			
-			$dataf=rtrim(preg_replace('/\s+/','',$_POST['dataf']));
+			$dataf=trim(preg_replace('/\s+/','',$_POST['dataf']));
 			
 			list($anno, $mese, $giorno)=explode('-',$dataf);
 			
-			$horaf=rtrim(preg_replace('/\s+/','',$_POST['horaf']));
-			$moraf=rtrim(preg_replace('/\s+/','',$_POST['moraf']));
-			$soraf=rtrim(preg_replace('/\s+/','',$_POST['soraf']));
+			$horaf=trim(preg_replace('/\s+/','',$_POST['horaf']));
+			$moraf=trim(preg_replace('/\s+/','',$_POST['moraf']));
+			$soraf=trim(preg_replace('/\s+/','',$_POST['soraf']));
 			
 			$horaf=($horaf!='' && is_numeric($horaf))? $horaf:'00';
 			$moraf=($moraf!='' && is_numeric($moraf))? $moraf:'00';
@@ -388,10 +458,10 @@
 
 			$oraf=$horaf.':'.$moraf.':'.$soraf;
 
-			$datai=rtrim(preg_replace('/\s+/','',$_POST['datai']));
-			$horai=rtrim(preg_replace('/\s+/','',$_POST['horai']));
-			$morai=rtrim(preg_replace('/\s+/','',$_POST['morai']));
-			$sorai=rtrim(preg_replace('/\s+/','',$_POST['sorai']));
+			$datai=trim(preg_replace('/\s+/','',$_POST['datai']));
+			$horai=trim(preg_replace('/\s+/','',$_POST['horai']));
+			$morai=trim(preg_replace('/\s+/','',$_POST['morai']));
+			$sorai=trim(preg_replace('/\s+/','',$_POST['sorai']));
 			
 			$horai=($horai!='' && is_numeric($horai))? $horai:'00';
 			$morai=($morai!='' && is_numeric($morai))? $morai:'00';
@@ -401,29 +471,98 @@
 
 			$url=preg_replace('/\s+/','',$_POST['urls']);
 			/*write file*/
+			
+			require_once 'htmlpurifier/HTMLPurifier.auto.php';
+			$config = HTMLPurifier_Config::createDefault();
+			$purifier = new HTMLPurifier($config);
+				
+			if(trim(preg_replace('/\s+/','',$_POST['phrase']))!=''){
+				$_POST['phrase']=trim(preg_replace('/\s+/',' ',$_POST['phrase']));
+				$_POST['phrase'] = $purifier->purify($_POST['phrase']);
+				$check=trim(strip_tags($_POST['phrase']));
+				if(empty($check)){
+					$_POST['phrase']='**@****nullo**@****';
+				}
+			}
+			else
+				$_POST['phrase']='**@****nullo**@****';
+			
+			if(trim(preg_replace('/\s+/','',$_POST['footerph']))!=''){
+				$_POST['footerph']=trim(preg_replace('/\s+/',' ',$_POST['footerph']));
+				$_POST['footerph'] = $purifier->purify($_POST['footerph']);
+				$check=trim(strip_tags($_POST['footerph']));
+				if(empty($check)){
+					$_POST['footerph']='**@****nullo**@****';
+				}
+			}
+			else
+				$_POST['footerph']='**@****nullo**@****';
+			
+			if(trim(preg_replace('/\s+/','',$_POST['progph']))!=''){
+				$_POST['progph']=trim(preg_replace('/\s+/',' ',$_POST['progph']));
+				$_POST['progph'] = $purifier->purify($_POST['progph']);
+				$check=trim(strip_tags($_POST['progph']));
+				if(empty($check)){
+					$_POST['progph']='**@****nullo**@****';
+				}
+			}
+			else
+				$_POST['progph']='**@****nullo**@****';
+			
+			if(trim(preg_replace('/\s+/','',$_POST['psphrase']))!=''){
+				$_POST['psphrase']=trim(preg_replace('/\s+/',' ',$_POST['psphrase']));
+				$_POST['psphrase'] = $purifier->purify($_POST['psphrase']);
+				$check=trim(strip_tags($_POST['psphrase']));
+				if(empty($check)){
+					$_POST['psphrase']='**@****nullo**@****';
+				}
+			}
+			else
+				$_POST['psphrase']='**@****nullo**@****';
+			
+			if(trim(preg_replace('/\s+/','',$_POST['metadesc']))!=''){
+				$_POST['metadesc']=trim(preg_replace('/\s+/',' ',$_POST['metadesc']));
+				$_POST['metadesc'] = $purifier->purify($_POST['metadesc']);
+				$check=trim(strip_tags($_POST['metadesc']));
+				if(empty($check)){
+					$_POST['metadesc']='**@****nullo**@****';
+				}
+			}
+			else
+				$_POST['metadesc']='**@****nullo**@****';
+			
+			if(trim(preg_replace('/\s+/','',$_POST['metakey']))!=''){
+				$_POST['metakey']=trim(preg_replace('/\s+/',' ',$_POST['metakey']));
+				$_POST['metakey'] = $purifier->purify($_POST['metakey']);
+				$check=trim(strip_tags($_POST['metakey']));
+				if(empty($check)){
+					$_POST['metakey']='**@****nullo**@****';
+				}
+			}
+			else
+				$_POST['metakey']='**@****nullo**@****';
+			
+			$_POST['emailad']= trim(preg_replace('/\s+/','',$_POST['emailad']));
+			if(empty($mail) || !filter_var($mail, FILTER_VALIDATE_EMAIL)){
+				$_POST['emailad']='**@****nullo**@****';
+			}
+			
+			$_POST['urls']=(trim(preg_replace('/\s+/','',$_POST['urls'])==''))? '**@****nullo**@****':$_POST['urls'];
+			$_POST['perc']=(trim(preg_replace('/\s+/','',$_POST['perc'])==''))? '**@****nullo**@****':$_POST['perc'];
+			$_POST['tz']=(trim(preg_replace('/\s+/','',$_POST['tz'])==''))? '**@****nullo**@****':preg_replace('/\s+/','',$_POST['tz']);
+			$_POST['enfitetx']=(trim(preg_replace('/\s+/','',$_POST['enfitetx'])=='yes'))? 'yes':'no';
 
-			$_POST['urls']=(rtrim(preg_replace('/\s+/','',$_POST['urls'])==''))? '**@****nullo**@****':$_POST['urls'];
-			$_POST['phrase']=(rtrim(preg_replace('/\s+/','',$_POST['phrase'])==''))? '**@****nullo**@****':preg_replace('/\s+/',' ',$_POST['phrase']);
-			$_POST['footerph']=(rtrim(preg_replace('/\s+/','',$_POST['footerph'])==''))? '**@****nullo**@****':rtrim(preg_replace('/\s+/',' ',$_POST['footerph']));
-			$_POST['progph']=(rtrim(preg_replace('/\s+/','',$_POST['progph'])==''))? '**@****nullo**@****':rtrim(preg_replace('/\s+/',' ',$_POST['progph']));
-			$_POST['metadesc']=(rtrim(preg_replace('/\s+/','',$_POST['metadesc'])==''))? '**@****nullo**@****':rtrim(preg_replace('/\s+/',' ',$_POST['metadesc']));
-			$_POST['metakey']=(rtrim(preg_replace('/\s+/','',$_POST['metakey'])==''))? '**@****nullo**@****':rtrim(preg_replace('/\s+/',' ',$_POST['metakey']));
-			$_POST['psphrase']=(rtrim(preg_replace('/\s+/','',$_POST['psphrase'])==''))? '**@****nullo**@****':rtrim(preg_replace('/\s+/',' ',$_POST['psphrase']));
-			$_POST['perc']=(rtrim(preg_replace('/\s+/','',$_POST['perc'])==''))? '**@****nullo**@****':$_POST['perc'];
-			$_POST['emailad']=(rtrim(preg_replace('/\s+/','',$_POST['emailad'])==''))? '**@****nullo**@****':preg_replace('/\s+/',' ',$_POST['emailad']);
-			$_POST['tz']=(rtrim(preg_replace('/\s+/','',$_POST['tz'])==''))? '**@****nullo**@****':preg_replace('/\s+/','',$_POST['tz']);
-			$_POST['enfitetx']=(rtrim(preg_replace('/\s+/','',$_POST['enfitetx'])=='yes'))? 'yes':'no';
-
-			$_POST['mailimit']=rtrim(str_replace(' ','',$_POST['mailimit']));
-			$_POST['pertime']=rtrim(str_replace(' ','',$_POST['pertime']));
+			$_POST['mailimit']=trim(str_replace(' ','',$_POST['mailimit']));
+			$_POST['pertime']=trim(str_replace(' ','',$_POST['pertime']));
 			$_POST['mailimit']=(is_numeric($_POST['mailimit']))? (int)$_POST['mailimit']:'none';
 			$_POST['pertime']=(is_numeric($_POST['pertime']))? (int)$_POST['pertime']:'none';
-			$_POST['eparam']=(rtrim(preg_replace('/\s+/','',$_POST['eparam'])==''))? 'php5-cli':rtrim(preg_replace('/\s+/','',$_POST['eparam']));
+			
+			$_POST['eparam']=(trim(preg_replace('/\s+/','',$_POST['eparam'])==''))? 'php5-cli':trim(preg_replace('/\s+/','',$_POST['eparam']));
 
 			$horaf=(int)$horaf;
 			$giorno=(int)$giorno;
 			$mese=(int)$mese;
-			$anno=(int)$anno;	
+			$anno=(int)$anno;
 
 			$diff=(int)get_timezone_offset($_POST['tz']);
 			if($diff!=0)

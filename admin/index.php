@@ -35,7 +35,24 @@
 	ini_set('session.use_only_cookies', '1');
 	ini_set('session.use_trans_sid', '0');
 	session_name("RazorphynExtendedComingsoon");
-	session_start();
+	if (isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+		ini_set('session.cookie_secure', '1');
+	}
+	if(isset($_COOKIE['RazorphynExtendedComingsoon']) && !is_string($_COOKIE['RazorphynExtendedComingsoon']) || !preg_match('/^[a-z0-9]{26,40}$/',$_COOKIE['RazorphynExtendedComingsoon']))
+		setcookie(session_name(),'invalid',time()-3600);
+	session_start(); 
+
+	//Session Check
+	if(isset($_SESSION['time']) && time()-$_SESSION['time']<=1800)
+		$_SESSION['time']=time();
+	else if(isset($_SESSION['id']) && !isset($_SESSION['time']) || isset($_SESSION['time']) && time()-$_SESSION['time']>1800){
+		session_unset();
+		session_destroy();
+	}
+	else if(isset($_SESSION['ip']) && $_SESSION['ip']!=retrive_ip()){
+		session_unset();
+		session_destroy();
+	}
 	
 	require_once ('../config/pass.php');
 	if(is_file('../config/monintoring.php'))include_once ('../config/monintoring.php');
@@ -60,11 +77,15 @@
 			fwrite($fs,'<?php $adminpassword=\''.$adminpassword.'\'; ?>');
 			fclose($fs);
 			$_SESSION['views']=1946;
+			$_SESSION['time']=time();
+			$_SESSION['ip']=retrive_ip();
 			$adminpassword=hash('whirlpool',$_POST['pwd']);
 			if(isset($acc)) unset($acc);
 		}
 		else if (hash('whirlpool',$_POST['pwd'])==$adminpassword){
 			$_SESSION['views']=1946;
+			$_SESSION['time']=time();
+			$_SESSION['ip']=retrive_ip();
 			if(isset($acc)) unset($acc);
 			header('Location: '.$_SERVER['REQUEST_URI']);
 		}
@@ -578,3 +599,4 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 	<?php } ?>
 	</body>
 </html>
+<?php function retrive_ip(){if (isset($_SERVER['HTTP_CLIENT_IP']) && !empty($_SERVER['HTTP_CLIENT_IP'])){$ip=$_SERVER['HTTP_CLIENT_IP'];}elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && !empty($_SERVER['HTTP_X_FORWARDED_FOR'])){$ip=$_SERVER['HTTP_X_FORWARDED_FOR'];}else{$ip=$_SERVER['REMOTE_ADDR'];}return $ip;} ?>
