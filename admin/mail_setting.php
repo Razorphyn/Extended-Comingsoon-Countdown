@@ -329,17 +329,17 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 						dataType : 'json',
 						success : function (data){
 							if(data[0]=='Sent')
-								var n = noty({text: '<?php echo $translate->__("The Footer has been saved",true); ?>',type:'success',timeout:9000});
+								var n = noty({text: "<?php echo $translate->__("The Footer has been saved",true); ?>",type:'success',timeout:9000});
 							else if(data[0]=='Empty')
-								var n = noty({text: '<?php echo $translate->__("Please Complete all the fields",true); ?>',type:'error',timeout:9000});
+								var n = noty({text: "<?php echo $translate->__("Please Complete all the fields",true); ?>",type:'error',timeout:9000});
 							else
-								var n = noty({text: '<?php echo $translate->__("A problem has occured,please try again",true); ?>',type:'error',timeout:9000});
+								var n = noty({text: "<?php echo $translate->__("A problem has occured,please try again",true); ?>",type:'error',timeout:9000});
 						}
 					});
 					request.fail(function(jqXHR, textStatus){var n = noty({text: textStatus,type:'error',timeout:9000});});
 				}
 				else
-					var n = noty({text: '<?php echo $translate->__("Empty Field",true); ?>',type:'error',timeout:9000});
+					var n = noty({text: "<?php echo $translate->__("Empty Field",true); ?>",type:'error',timeout:9000});
 				return false;
 			});
 			
@@ -356,17 +356,17 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 						dataType : 'json',
 						success : function (data) {
 							if(data[0]=='Saved')
-								var n = noty({text: '<?php echo $translate->__("Final Mail Saved",true); ?>',type:'success',timeout:9000});
+								var n = noty({text: "<?php echo $translate->__("Final Mail Saved",true); ?>",type:'success',timeout:9000});
 							else if(data[0]=='Error')
-								var n = noty({text: '<?php echo $translate->__("A problem has occured,please try again",true); ?>',type:'error',timeout:9000});
+								var n = noty({text: "<?php echo $translate->__("A problem has occured,please try again",true); ?>",type:'error',timeout:9000});
 							else if(data[0]=='Empty')
-								var n = noty({text: '<?php echo $translate->__("Please Complete all the fields",true); ?>',type:'error',timeout:9000});
+								var n = noty({text: "<?php echo $translate->__("Please Complete all the fields",true); ?>",type:'error',timeout:9000});
 						}
 					});
 					request.fail(function(jqXHR, textStatus){var n = noty({text: textStatus,type:'error',timeout:9000});});
 				}
 				else
-					var n = noty({text: '<?php echo $translate->__("Please Complete all the fields",true); ?>',type:'error',timeout:9000});
+					var n = noty({text: "<?php echo $translate->__("Please Complete all the fields",true); ?>",type:'error',timeout:9000});
 				return false;
 			});
 			

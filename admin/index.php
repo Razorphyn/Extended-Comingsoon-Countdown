@@ -67,14 +67,14 @@
 	if(!isset($adminpassword) || !is_dir('../config') && !isset($_SESSION['created']) && $_SESSION['created']==true){header('Location: datacheck.php');exit();}
 	
 	/*login*/
-	if (isset($_POST['loginb'])){ 
+	if (isset($_POST['loginb'])){
 		if(md5($_POST['pwd'])!=$adminpassword && hash('whirlpool',$_POST['pwd'])!=$adminpassword){
 			$acc=false;
 		}
 		else if(md5($_POST['pwd'])==$adminpassword){
 			$adminpassword=hash('whirlpool',$_POST['pwd']);
 			$fs=fopen('../config/pass.php',"w+");
-			fwrite($fs,'<?php $adminpassword=\''.$adminpassword.'\'; ?>');
+				fwrite($fs,'<?php $adminpassword=\''.$adminpassword.'\'; ?>');
 			fclose($fs);
 			$_SESSION['views']=1946;
 			$_SESSION['time']=time();
@@ -463,30 +463,30 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 							success : function (data) {
 								if(data[0]=='Saved'){
 									if(data.length>1){
-										var n = noty({text: '<?php echo $translate->__("The settings have been saved",true); ?>',type:'success',timeout:9000});
+										var n = noty({text: "<?php echo $translate->__("The settings have been saved",true); ?>",type:'success',timeout:9000});
 										if($('#cronstring').length)
 											$('#cronstring').html(data[1]);
 										else
-											$('#formdata').after('<div class="formcor"><h2 class="titlesec"><?php echo $translate->__("Cronjob String",true); ?></h2><p><?php echo $translate->__("If you can't automatically update the Cronjob trough the php function you can try set it by your own, this is the string with the information:",true); ?></p><br/><p id="cronstring">'+data[1]+'</p></div>');
+											$('#formdata').after("<div class='formcor'><h2 class='titlesec'><?php echo $translate->__("Cronjob String",true); ?></h2><p><?php echo $translate->__("If you can't automatically update the Cronjob trough the php function you can try set it by your own, this is the string with the information:",true); ?></p><br/><p id='cronstring'>"+data[1]+"</p></div>");
 									}
 									else{
-										var n = noty({text: '<?php echo $translate->__("This is the first time,the page will be reloaded",true); ?>',type:'success',timeout:9000});
+										var n = noty({text: "<?php echo $translate->__("This is the first time,the page will be reloaded",true); ?>",type:'success',timeout:9000});
 										window.location.reload();
 									}
 								}
 								else if(data[0]=='Empty')
-									var n = noty({text: '<?php echo $translate->__("Please Complete all the fields",true); ?>',type:'error',timeout:9000});
+									var n = noty({text: "<?php echo $translate->__("Please Complete all the fields",true); ?>",type:'error',timeout:9000});
 								else
-									var n = noty({text: '<?php echo $translate->__("A problem has occured,please try again",true); ?>',type:'error',timeout:9000});
+									var n = noty({text: "<?php echo $translate->__("A problem has occured,please try again",true); ?>",type:'error',timeout:9000});
 							}
 						});
 						request.fail(function(jqXHR, textStatus){var n = noty({text: textStatus,type:'error',timeout:9000});});
 					}
 					else
-						var n = noty({text: '<?php echo $translate->__("Please Complete all the fields",true); ?>',type:'error',timeout:9000});
+						var n = noty({text: "<?php echo $translate->__("Please Complete all the fields",true); ?>",type:'error',timeout:9000});
 				}
 				else
-					var n = noty({text: '<?php echo $translate->__("The Checking Word must be only one word.",true); ?>',type:'error',timeout:9000});
+					var n = noty({text: "<?php echo $translate->__("The Checking Word must be only one word.",true); ?>",type:'error',timeout:9000});
 				return false;
 			});
 			
@@ -505,20 +505,20 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 								$('#oldpwd').val('');
 								$('#newpwd').val('');
 								$('#cnewpwd').val('');
-								var n = noty({text: '<?php echo $translate->__("Password Updated",true); ?>',type:'success',timeout:9000});
+								var n = noty({text: "<?php echo $translate->__("Password Updated",true); ?>",type:'success',timeout:9000});
 							}
 							else if(data[0]=='Error')
-								var n = noty({text: '<?php echo $translate->__("A problem has occured,please try again",true); ?>',type:'error',timeout:9000});
+								var n = noty({text: "<?php echo $translate->__("A problem has occured,please try again",true); ?>",type:'error',timeout:9000});
 							else if(data[0]=='Empty')
-								var n = noty({text: '<?php echo $translate->__("Please Complete all the fields",true); ?>',type:'error',timeout:9000});
+								var n = noty({text: "<?php echo $translate->__("Please Complete all the fields",true); ?>",type:'error',timeout:9000});
 							else if(data[0]=='Wrong')
-								var n = noty({text: '<?php echo $translate->__("Wrong Password",true); ?>',type:'error',timeout:9000});
+								var n = noty({text: "<?php echo $translate->__("Wrong Password",true); ?>",type:'error',timeout:9000});
 						}
 					});
 					request.fail(function(jqXHR, textStatus){var n = noty({text: textStatus,type:'error',timeout:9000});});
 				}
 				else
-					var n = noty({text: '<?php echo $translate->__("The new passwords don't correspond",true); ?>',type:'error',timeout:9000});
+					var n = noty({text: "<?php echo $translate->__("The new passwords don't correspond",true); ?>",type:'error',timeout:9000});
 				return false;
 			});
 			
@@ -539,11 +539,11 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 					dataType : 'json',
 					success : function (data) {
 						if(data[0]=='Saved')
-							var n = noty({text: '<?php echo $translate->__("Social Network Links Saved",true); ?>',type:'success',timeout:9000});
+							var n = noty({text: "<?php echo $translate->__("Social Network Links Saved",true); ?>",type:'success',timeout:9000});
 						else if(data[0]=='Error')
-							var n = noty({text: '<?php echo $translate->__("A problem has occured,please try again",true); ?>',type:'error',timeout:9000});
+							var n = noty({text: "<?php echo $translate->__("A problem has occured,please try again",true); ?>",type:'error',timeout:9000});
 						else if(data[0]=='Empty')
-							var n = noty({text: '<?php echo $translate->__("Please Complete all the fields",true); ?>',type:'error',timeout:9000});
+							var n = noty({text: "<?php echo $translate->__("Please Complete all the fields",true); ?>",type:'error',timeout:9000});
 					}
 				});
 				request.fail(function(jqXHR, textStatus){var n = noty({text: textStatus,type:'error',timeout:9000});});
@@ -560,11 +560,11 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 					dataType : 'json',
 					success : function (data) {
 						if(data[0]=='Saved')
-							var n = noty({text: '<?php echo $translate->__("Monitoring Code Saved",true); ?>',type:'success',timeout:9000});
+							var n = noty({text: "<?php echo $translate->__("Monitoring Code Saved",true); ?>",type:'success',timeout:9000});
 						else if(data[0]=='Error')
-							var n = noty({text: '<?php echo $translate->__("A problem has occured,please try again",true); ?>',type:'error',timeout:9000});
+							var n = noty({text: "<?php echo $translate->__("A problem has occured,please try again",true); ?>",type:'error',timeout:9000});
 						else if(data[0]=='Empty')
-							var n = noty({text: '<?php echo $translate->__("Please add the code",true); ?>',type:'error',timeout:9000});
+							var n = noty({text: "<?php echo $translate->__("Please add the code",true); ?>",type:'error',timeout:9000});
 					}
 				});
 				request.fail(function(jqXHR, textStatus){var n = noty({text: textStatus,type:'error',timeout:9000});});
