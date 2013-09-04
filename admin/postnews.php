@@ -53,7 +53,8 @@
 		session_unset();
 		session_destroy();
 	}
-	
+	if(!is_file('../config/pass.php') || !is_dir('../config') && !isset($_SESSION['created']) && $_SESSION['created']==true){header('Location: datacheck.php');exit();}
+
 	require_once ('../config/pass.php');
 	$fileconfig='../config/config.txt';
 	$filenews= '../config/news.txt';

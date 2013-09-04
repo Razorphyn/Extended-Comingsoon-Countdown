@@ -54,6 +54,8 @@
 		session_destroy();
 	}
 	
+	if(!is_file('../config/pass.php') || !is_dir('../config') && !isset($_SESSION['created']) && $_SESSION['created']==true){header('Location: datacheck.php');exit();}
+	
 	require_once ('../config/pass.php');
 	if(is_file('../config/monintoring.php'))include_once ('../config/monintoring.php');
 	$fileconfig='../config/config.txt';
@@ -65,7 +67,7 @@
 	$frontotinfo= '../config/indexfooter.txt';
 
 	if(!isset($adminpassword) || !is_dir('../config') && !isset($_SESSION['created']) && $_SESSION['created']==true){header('Location: datacheck.php');exit();}
-	
+		
 	/*login*/
 	if (isset($_POST['loginb'])){
 		if(md5($_POST['pwd'])!=$adminpassword && hash('whirlpool',$_POST['pwd'])!=$adminpassword){
