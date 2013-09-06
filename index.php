@@ -249,7 +249,7 @@
 					data: {act: "send_mail",senname: a,senphone: e,senmail: b,subject: c,message: d},
 					dataType: "json",
 					success: function (a) {
-						"Sent" == a[0] ? noty({text: "<?php echo $translate->__('Your email has been sent!',true); ?>",type: "success",timeout: 9E3}) : noty({text: "<?php echo $translate->__('A problem has occured,please try again',true); ?>",type: "error",timeout: 9E3})
+						"Sent" == a[0] ? noty({text: "<?php echo $translate->__('Your email has been sent!',true); ?>",type: "success",timeout: 9E3}) : noty({text: a[0],type: "error",timeout: 9E3})
 					}
 				}).fail(function (a, b) {noty({text: b,type: "error",timeout: 9E3})}) : noty({text: "<?php echo $translate->__('Complete all the fields',true); ?>",type: "error",timeout: 9E3});
 				return !1
@@ -265,7 +265,14 @@
 					data: {act: "subscribe",nameinput: c,lnameinput: d,mailinput: a},
 					dataType: "json",
 					success: function (b) {
-						"Added" == b[0] ? noty({text: "<?php echo $translate->__('Thank you for subscribing!',true); ?>",type: "success",timeout: 9E3}) : "Already" == b[0] ? noty({text: "<?php echo $translate->__('You are already subscribed to our system',true); ?>",type: "error",timeout: 9E3}) : "Empty" == b[0] && noty({text: "<?php echo $translate->__('Please Complete all the fields',true); ?>",type: "error",timeout: 9E3})
+						if("Added" == b[0]) 
+							noty({text: "<?php echo $translate->__('Thank you for subscribing!',true); ?>",type: "success",timeout: 9E3}) 
+						else if("Already" == b[0])
+							noty({text: "<?php echo $translate->__('You are already subscribed to our system',true); ?>",type: "information",timeout: 9E3})
+						else if("Empty" == b[0])
+							noty({text: "<?php echo $translate->__('Please Complete all the fields',true); ?>",type: "error",timeout: 9E3})
+						else
+							 noty({text: b[0],type: "error",timeout: 9E3})
 					}
 				}).fail(function (b, a) {noty({text: a,type: "error",timeout: 9E3})}) : noty({text: "<?php echo $translate->__('Please Complete all the fields',true); ?>",type: "error",timeout: 9E3});
 				return !1

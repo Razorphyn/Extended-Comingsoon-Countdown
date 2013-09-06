@@ -71,7 +71,7 @@
 				if(!is_file(".htaccess"))file_put_contents(".htaccess","IndexIgnore * \n Header set X-Frame-Options SAMEORIGIN \n Header set X-XSS-Protection '1; mode=block' \n Header set X-Content-Type-Options 'nosniff'");
 				chmod($fileconfig, $fileperm);
 				chmod($socialfile, $fileperm);
-				chmod($dirmail, $fileperm);
+				chmod($dirmail, $folderperm);
 				chmod($filefnmail, $fileperm);
 				chmod($filefnmessage, $fileperm);
 				chmod($filefnfooter, $fileperm);
