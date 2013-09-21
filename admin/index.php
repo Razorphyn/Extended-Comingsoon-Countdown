@@ -445,7 +445,7 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 				var perc=$('#perc').val().replace(/\s+/g,'');
 				var emailad=$('#emailad').val().replace(/\s+/g,'');
 				var psphrase=$('#psphrase').val().replace(/\s+/g,'');
-				var phpexec=$('#execpara').val().replace(/\s+/g,'');
+				var phpexec=$('#execpara').val().replace(/\s+/g,' ');
 				var shcf=$('input[type=radio][name="shcf"]:checked').val();
 				var shsf=$('input[type=radio][name="shsf"]:checked').val();
 				var shunl=$('input[type=radio][name="shunl"]:checked').val();
@@ -582,19 +582,19 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 			$("#formdata").validate(
 			{
 				rules:{folurl:{required:true,url:true},urls:{required:true,url:true},perc:{max:100,min:0},datai: "required",dataf: "required",shcf: "required",shsf: "required",tz:'required',pgtit: 'required',horai:{digits:true,minlength:2,maxlength :2,min:00,max:23},morai:{digits:true,minlength:2,maxlength :2,min:00,max:59},sorai:{digits:true,minlength:2,maxlength :2,min:00,max:59},horaf:{digits:true,minlength:2,maxlength :2,min:00,max:23},moraf:{digits:true,minlength:2,maxlength :2,min:00,max:59},soraf:{digits:true,minlength:2,maxlength :2,min:00,max:59},mailimit:{digits:true},pertime:{digits:true}},
-				messages:{datai: "Select data",dataf: "Select data ",horaf: "Two digits( ex: 09 12), 00-23",moraf: "Two digits( ex: 09 12), 00-59",soraf: "Two digits( ex: 09 12), 00-59",horai: "Two digits( ex: 09 12), 00-23",morai: "Two digits( ex: 09 12), 00-59",sorai: "Two digits( ex: 09 12), 00-59",urls: "Invalid url ex: http://site.com",folurl: "Invalid url ex: http://site.com/comingsoon/",shcf: "Please choose",shsf: "Please choose",tz: "Please select."}
+				messages:{datai: "<?php echo $translate->__("Select data",true); ?>",dataf: "<?php echo $translate->__("Select data",true); ?>",horaf: "<?php echo $translate->__("Two digits: 00-23",true); ?>",moraf: "<?php echo $translate->__("Two digits: 00-59",true); ?>",soraf: "<?php echo $translate->__("Two digits: 00-59",true); ?>",horai: "<?php echo $translate->__("Two digits: 00-23",true); ?>",morai: "<?php echo $translate->__("Two digits: 00-59",true); ?>",sorai: "<?php echo $translate->__("Two digits: 00-59",true); ?>",urls: "<?php echo $translate->__("Invalid url ex: http://site.com",true); ?>",folurl: "<?php echo $translate->__("Invalid url ex: http://site.com",true); ?>",shcf: "<?php echo $translate->__("Please choose",true); ?>",shsf: "<?php echo $translate->__("Please choose",true); ?>",tz: "<?php echo $translate->__("Please Complete",true); ?>"}
 			});
 			
 			$("#passwordform").validate(
 			{
 				rules:{pwd:"required",oldpwd: "required",newpwd: "required",cnewpwd:{required: true,equalTo: "#newpwd"}},
-				messages:{cnewpwd: "Password don't match"}
+				messages:{cnewpwd: "<?php echo $translate->__("The new passwords don't correspond",true); ?>"}
 			});
 			
 			$("#socialform").validate(
 			{
 				rules:{blog:{url:true},devian:{url:true},fb:{url:true},fl:{url:true},linkedin:{url:true},tw:{url:true},word:{url:true},yb:{url:true}},
-				messages:{blog: "Invalid url ex: http://site.com",devian: "Invalid url ex: http://site.com",fb: "Invalid url ex: http://site.com",fl: "Invalid url ex: http://site.com",linkedin: "Invalid url ex: http://site.com",tw: "Invalid url ex: http://site.com",word: "Invalid url ex: http://site.com",yb: "Invalid url ex: http://site.com"}
+				messages:{blog: "<?php echo $translate->__("Invalid url ex: http://site.com",true); ?>",devian: "<?php echo $translate->__("Invalid url ex: http://site.com",true); ?>",fb: "<?php echo $translate->__("Invalid url ex: http://site.com",true); ?>",fl: "<?php echo $translate->__("Invalid url ex: http://site.com",true); ?>",linkedin: "<?php echo $translate->__("Invalid url ex: http://site.com",true); ?>",tw: "<?php echo $translate->__("Invalid url ex: http://site.com",true); ?>",word: "<?php echo $translate->__("Invalid url ex: http://site.com",true); ?>",yb: "<?php echo $translate->__("Invalid url ex: http://site.com",true); ?>"}
 			});
 		});
 		</script>
