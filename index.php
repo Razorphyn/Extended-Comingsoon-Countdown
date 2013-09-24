@@ -80,7 +80,7 @@
 
 	<!--[if lt IE 9]><script src="js/html5shiv-printshiv.js"></script><![endif]-->
 	
-	<link rel="stylesheet" type="text/css" href="<?php echo $siteurl.'min/?b=css&amp;f=style.css,bootstrap.css,bootstrap-responsive.css,jquery-ui.css,prettyPhoto.css&amp;5259487' ?>"/>
+	<link rel="stylesheet" type="text/css" href="<?php echo $siteurl.'min/?b=css&amp;f=style.css,bootstrap.css,bootstrap-responsive.css,jquery-ui.css,magnific-popup.css&amp;5259487' ?>"/>
 	
 	<script type="text/javascript"  src="<?php echo $siteurl.'min/?b=js&amp;f=jquery-1.10.2.js,countdown.js,jquery-ui-1.10.3.custom.min.js,bootstrap.min.js,jquery.fittext.js&amp;5259487' ?>"></script>
 	
@@ -148,12 +148,12 @@
 						for($i=0;$i<$max;$i+=3){
 							$lnew[]= "<div class='span3'><h3><p class='ptitle'>".htmlspecialchars($news[$i+2],ENT_QUOTES,'UTF-8')."</p></h3>";
 							$lnew[]="<span class='datapost'>".htmlspecialchars($news[$i+1],ENT_QUOTES,'UTF-8')."</span>";
-							$ns=accorcia($news[$i],$i,$translate->__('Read More',true));
+							$ns=accorcia($news[$i],$i,$translate->__('Read More',true),$siteurl);
 							$lnew[]="<div class='pmessage'>".$ns."</div></div>";
 						}
 						echo implode('',$lnew);
 						if(count($news)>11) { ?>
-							<span class='more'><a id='readmore' rel='prettyPhoto' title='<?php $translate->__("Read More News",false) ?>' alt='<?php $translate->__("Read More News",false); ?>' href='news.php?btn=0&iframe=true' class='visible-desktop'><?php $translate->__('Read More News',false); ?></a><a class='hidden-desktop' id='readmore' title='Read More News' alt='<?php $translate->__('Read More News',false); ?>' href='news.php?btn=1'><?php $translate->__('Read More News',false); ?></a></span>
+							<span class='more'><a id='readmore' title='<?php $translate->__("Read More News",false) ?>' alt='<?php $translate->__("Read More News",false); ?>' href='<?php echo $siteurl; ?>/news.php?btn=0' class='visible-desktop snews'><?php $translate->__('Read More News',false); ?></a><a class='hidden-desktop' id='readmore' title='Read More News' alt='<?php $translate->__('Read More News',false); ?>' href='<?php echo $siteurl; ?>/news.php?btn=1'><?php $translate->__('Read More News',false); ?></a></span>
 						<?php } ?>
 					</div>
 			<?php } ?>
@@ -215,7 +215,7 @@
 	</div>
 </div>
 	
-	<script type="text/javascript"  src="<?php echo $siteurl.'min/?b=js&amp;f=jquery.validate.min.js,jquery.prettyPhoto.js,noty/jquery.noty.js,noty/layouts/top.js,noty/themes/default.js&amp;5259487' ?>"></script>
+	<script type="text/javascript"  src="<?php echo $siteurl.'min/?b=js&amp;f=jquery.validate.min.js,jquery.magnific-popup.min.js,noty/jquery.noty.js,noty/layouts/top.js,noty/themes/default.js&amp;5259487' ?>"></script>
 	<script type='text/javascript'>
 	  $(document).ready(function() {
 			<?php if(isset($var[18]) && $var[18]=='yes'){ ?> $("#title").fitText(); <?php } ?>
@@ -234,8 +234,21 @@
 			$("#countdown").countdown({date:'<?php if(isset($info2) && isset($var[3])) echo $info2.' '.$var[3]; ?>',format:'on'},function(){<?php if(isset($var[4]) && $var[4]!='**@****nullo**@****')echo 'window.location = "'.$var[4].'";'; ?>},"<?php echo $translate->__('Day',true); ?>","<?php echo $translate->__('Days',true); ?>","<?php echo $translate->__('Hour',true); ?>","<?php echo $translate->__('Hours',true); ?>","<?php echo $translate->__('Minute',true); ?>","<?php echo $translate->__('Minutes',true); ?>","<?php echo $translate->__('Second',true); ?>","<?php echo $translate->__('Seconds',true); ?>");
 			<?php } ?>
 
-			$(".sectioncol").click(function(){$(this).next(".collapsable").slideToggle(800,function(){$("html,body").animate({scrollTop:$(this).offset().top},1E3)})});$("a[rel^='prettyPhoto']").prettyPhoto({animationSpeed:"normal",social_tools:"",opacity:0.8,showTitle:!0,default_width:"43%",default_height:"80%"});
-						
+			$(".sectioncol").click(function(){$(this).next(".collapsable").slideToggle(800,function(){$("html,body").animate({scrollTop:$(this).offset().top},1E3)})});
+			
+			$('.snews').magnificPopup({
+				type: 'iframe',
+				iframe: {
+					patterns: {
+						news: {
+							index: '<?php echo $siteurl; ?>',
+							id: '?',
+							src: '<?php echo $siteurl.'news.php?%id%'; ?>'
+						}
+					}
+				}
+			});
+			
 			$("#sendmail").click(function (){
 				var a = $("#senname").val(),
 					e = $("#senphone").val(),
@@ -284,11 +297,11 @@
 
 	function dateDifference($startDate, $endDate){list($anno,$mese,$giorno)=explode('-',$startDate);list($fanno,$fmese,$fgiorno)=explode('-',$endDate);$days=gregoriantojd($fmese, $fgiorno, $fanno) -gregoriantojd($mese, $giorno, $anno);return $days;} 
 	function curPageURL() {$pageURL = 'http';if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") $pageURL .= "s";$pageURL .= "://";if (isset($_SERVER["HTTPS"]) && $_SERVER["SERVER_PORT"] != "80") $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];else $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];return $pageURL;}
-	function accorcia($frase,$i,$str){
+	function accorcia($frase,$i,$str,$siteurl){
 		$frase=strip_tags($frase);
 		$len=strlen($frase);
 		if($len>120)
-			$frase=substr($frase,0,100).'...<br/><a rel="prettyPhoto[id]" title="'.$str.'" alt="'.$str.'" href="news.php?id='.$i.'&btn=0?iframe=true" class="visible-desktop">'.$str.'</a><a class="hidden-desktop" title="'.$str.'" alt="'.$str.'" href="news.php?id='.$i.'&btn=1">'.$str.'</a>';
+			$frase=substr($frase,0,100).'...<br/><a title="'.$str.'" alt="'.$str.'" href="'.$siteurl.'/news.php?id='.$i.'&btn=0" class="visible-desktop snews">'.$str.'</a><a class="hidden-desktop" title="'.$str.'" alt="'.$str.'" href="'.$siteurl.'/news.php?id='.$i.'&btn=1">'.$str.'</a>';
 		return $frase;
 	}
 ?>
