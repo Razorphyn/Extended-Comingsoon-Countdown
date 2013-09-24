@@ -120,10 +120,11 @@ But don’t go further the `````767 (0767)````` permission, otherwise contact yo
 CREDITS
 -
 
--	[CKEditor](http://ckeditor.com/) for the textarea customization
--	[prettyPhoto](http://www.no-margin-for-errors.com/projects/prettyphoto-jquery-lightbox-clone/) for the frontend modal box
--	[FitText](http://fittextjs.com/) for the frontend message text dimension
--	[DataTables](https://datatables.net/) for the table management
--	[SwiftMailer](http://swiftmailer.org/)  for the email system
 -	[Bootstrap](http://getbootstrap.com/2.3.2/) for the responsive style
+-	[CKEditor](http://ckeditor.com/) for the textarea customization
+-	[DataTables](https://datatables.net/) for the table management
+-	[FitText](http://fittextjs.com/) for the frontend message text dimension
+-	[Magnific Popup](http://dimsemenov.com/plugins/magnific-popup/) for the frontend modal box
 -	[Noty](http://needim.github.io/noty/) for the alert system
+-	[SwiftMailer](http://swiftmailer.org/)  for the email system
+
