@@ -1,16 +1,16 @@
 /* ---------- Frontend ---------- */
-body {background:url("images/bg.png") repeat scroll 0 0 #232323;font: 1em/1.5em "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;color: #1f2225}
+body {background:url("images/bg.png") repeat scroll 0 0 #232323;font: 1em/1.5em "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;color: #1f2225;transition: all 400ms ease;-webkit-transition: all 400ms ease;}
 
 form{float:left;width:100%}
 .wrapper{background: url("images/bg-light.jpg") no-repeat scroll center top transparent!important}
 
-#logo{position:relative;margin:1.85% auto 0.93% auto;display:block}
-.socialcont{display:block;position:relative;margin:0 auto;text-align:center}
+#logo{position:relative;margin:1.85% auto 0.93% auto;display:block;transition: all 400ms ease;-webkit-transition: all 400ms ease}
+.socialcont{display:block;position:relative;margin:0 auto;text-align:center;transition: all 400ms ease;-webkit-transition: all 400ms ease}
 .divider{background: url("images/divider.png") repeat scroll 0 0 transparent;border: medium none;display: block;height: 2.1px;margin: 0.93% auto;width:100%;text-align:center}
 
-.title{line-height:1!important;font-weight:normal!important;text-align:center!important;color:#22ccff!important;margin-top:40px!important;white-space:normal!important;display:block;width:100%}
+.title{line-height:1!important;font-weight:normal!important;text-align:center!important;color:#22ccff!important;margin-top:40px!important;white-space:normal!important;display:block;width:100%;transition: all 400ms ease;-webkit-transition: all 400ms ease}
 
-.progph{font-size:1.5em;font-weight:bold;text-align:center;color:#fff;margin:1.85% auto;display:block;clear:both}
+.progph{font-size:1.5em;font-weight:bold;text-align:center;color:#fff;margin:1.85% auto;display:block;clear:both;transition: all 400ms ease;-webkit-transition: all 400ms ease}
 
 #cornice{position: relative;padding: 0;margin:6.018% auto 0 auto;height:15%;min-height:120px;display:block;width:80%}
 .progbk{position:absolute;min-height:110px}
@@ -29,8 +29,8 @@ a,a:visited{color:#f2860a}
 
 .sub{font-size:1.1em;font-weight:normal;text-align:left;color:#fff;float:left;width:35%;position:relative;height:100%}
 #mailform{width:65%}
-.subform{position:relative!important;display:block!important;margin:15px auto!important;}
-.footerphrase{color:#fff;font-size:0.53em;text-align:center}
+.subform{position:relative!important;display:block!important;margin:15px auto!important;transition: all 400ms ease;-webkit-transition: all 400ms ease}
+.footerphrase{color:#fff;font-size:0.53em;text-align:center;transition: all 400ms ease;-webkit-transition: all 400ms ease}
 
 label.error{color:#fff;display:block}
 /* ---------- TIMER ---------- */
