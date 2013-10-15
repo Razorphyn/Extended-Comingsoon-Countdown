@@ -236,9 +236,20 @@
 				$('.container').resize(function (){var presize=($('.container').width()*48.4375/100).toFixed(0);
 				$("#progressbar").children('.ui-progressbar').css('max-width',presize);});
 
-			<?php } if(isset($var[16]) && $var[16]=='yes'){?>
-			$("#countdown").countdown({date:'<?php if(isset($info2) && isset($var[3])) echo $info2.' '.$var[3]; ?>',format:'on'},function(){<?php if(isset($var[4]) && $var[4]!='**@****nullo**@****')echo 'window.location = "'.$var[4].'";'; ?>},"<?php echo $translate->__('Day',true); ?>","<?php echo $translate->__('Days',true); ?>","<?php echo $translate->__('Hour',true); ?>","<?php echo $translate->__('Hours',true); ?>","<?php echo $translate->__('Minute',true); ?>","<?php echo $translate->__('Minutes',true); ?>","<?php echo $translate->__('Second',true); ?>","<?php echo $translate->__('Seconds',true); ?>");
-			<?php } ?>
+			<?php } 
+				if(isset($var[16]) && $var[16]=='yes'){
+					if(isset($var[23]) && $var[23]=='yes'){
+			?>
+						$("#countdown").countdown({date:'<?php if(isset($info2) && isset($var[3])) echo $info2.' '.$var[3]; ?>',format:'on'},function(){<?php if(isset($var[4]) && $var[4]!='**@****nullo**@****')echo 'window.location = "'.$var[4].'";'; ?>},"<?php echo $translate->__('Day',true); ?>","<?php echo $translate->__('Days',true); ?>","<?php echo $translate->__('Hour',true); ?>","<?php echo $translate->__('Hours',true); ?>","<?php echo $translate->__('Minute',true); ?>","<?php echo $translate->__('Minutes',true); ?>","<?php echo $translate->__('Second',true); ?>","<?php echo $translate->__('Seconds',true); ?>");
+			<?php 
+					}
+					else{
+			?>
+						$("#countdown").countdown({date:'<?php if(isset($info2) && isset($var[3])) echo $info2.' '.$var[3]; ?>',format:'on'},null,"<?php echo $translate->__('Day',true); ?>","<?php echo $translate->__('Days',true); ?>","<?php echo $translate->__('Hour',true); ?>","<?php echo $translate->__('Hours',true); ?>","<?php echo $translate->__('Minute',true); ?>","<?php echo $translate->__('Minutes',true); ?>","<?php echo $translate->__('Second',true); ?>","<?php echo $translate->__('Seconds',true); ?>");
+			<?php
+					}
+				} 
+			?>
 
 			$(".sectioncol").click(function(){$(this).next(".collapsable").slideToggle(800,function(){$("html,body").animate({scrollTop:$(this).offset().top},1E3)})});
 			
