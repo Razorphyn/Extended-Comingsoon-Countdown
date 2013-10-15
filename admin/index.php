@@ -14,7 +14,7 @@
  * @author     	Razorphyn
  * @Site		http://razorphyn.com/
  */
-
+	
 	umask(002);
 	if(!is_dir('session')) mkdir('session',0767);
 	if(is_file('../config/pass.txt')){
@@ -57,7 +57,12 @@
 	if(!is_file('../config/pass.php') || !is_dir('../config') && !isset($_SESSION['created']) && $_SESSION['created']==true){header('Location: datacheck.php');exit();}
 	
 	require_once ('../config/pass.php');
-	if(is_file('../config/monintoring.php'))include_once ('../config/monintoring.php');
+	if(is_file('../config/monintoring.php')){
+		include_once('../config/monintoring.php');
+		if(file_put_contents('../config/monintoring.txt',$monitoringcode))
+			unlink('../config/monintoring.php');
+	}
+	$filemonitor='../config/monintoring.txt';
 	$fileconfig='../config/config.txt';
 	$socialfile='../config/social.txt';
 	$filefnmessage= '../config/fnmessage.txt';
@@ -95,8 +100,6 @@
 	/*end login*/
 
 if(isset($_SESSION['views']) && $_SESSION['views']==1946){
-	unset($_POST['loginb']);
-	unset($_POST['pwd']);
 	if(isset($_POST['logout'])){
 		$_SESSION = array();
 		if (ini_get("session.use_cookies")) {
@@ -112,7 +115,9 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 	
 	$var = file($fileconfig, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 	$social=file($socialfile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-
+	
+	if(is_file($filemonitor)){$monitoringcode=file($filemonitor, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);$monitoringcode=implode("\n",$monitoringcode);}
+	
 	$messagefn= file_get_contents($filefnmessage);
 	$footermail= file_get_contents($filefnfooter);
 	$logo= file_get_contents($filelogo);
@@ -146,7 +151,9 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 	18	fitetxt
 	19	pass
 	20	cron
-	21	exec parameter
+	21	instant parameter
+	22	exec parameter
+	23	en redirect
 	*/
 	
 	if(isset($_POST['uploadlogo'])){
@@ -255,10 +262,22 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 						<br/><br/>
 						<h2 class='titlesec'><?php $translate->__("Frontend",false); ?></h2>
 						
-							<label><?php $translate->__("Site Title:",false); ?></label><input type="text" id="pgtit" name="pgtit" <?php if(isset($var[5]) && $var[5]!='**@****nullo**@****') echo 'value="'.$var[5].'"'; ?> required />
+							<label><?php $translate->__("Site Title:",false); ?>*</label><input type="text" id="pgtit" name="pgtit" <?php if(isset($var[5]) && $var[5]!='**@****nullo**@****') echo 'value="'.$var[5].'"'; ?> required />
 						
-						
-							<label><?php $translate->__("Finished Site Url:",false); ?></label><input type="text" id="urls" name="urls" <?php if(isset($var[4]) && $var[4]!='**@****nullo**@****') echo 'value="'.$var[4].'"'; ?> required />
+							<div class='row-fluid'>
+								<div class='span4'>
+									<label><?php $translate->__("Enable Redirect?",false); ?></label>
+								</div>
+								<div class='radioform'>
+									<div class='span2'>
+										<input type="radio" name="enredirect" value="yes" <?php if(isset($var[23]) && $var[23]=='yes') echo "checked";else if(!isset($var[23])) echo "checked";  ?>/><?php $translate->__("Yes",false); ?>
+									</div>
+									<div class='span2'>
+										<input type="radio" name="enredirect" value="no" <?php if(isset($var[23]) && $var[23]=='no') echo "checked"; ?>/><?php $translate->__("No",false); ?>
+									</div>
+								</div>
+							</div>
+							<label><?php $translate->__("Finished Site Url:",false); ?>*</label><input type="text" id="urls" name="urls" <?php if(isset($var[4]) && $var[4]!='**@****nullo**@****') echo 'value="'.$var[4].'"'; ?> required />
 						
 							<div class='row-fluid'>
 								<div class='span2'><label><?php $translate->__("Use",false); ?> <a href='http://fittextjs.com/' target='_blank'>FitText</a>?</label></div>
@@ -268,16 +287,16 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 							<br/><br/>
 							<label><?php $translate->__("Site phrase:",false); ?></label><textarea type="text" id="phrase" name="phrase"><?php if(isset($phrase) && $phrase!='**@****nullo**@****') echo stripslashes($phrase); ?></textarea>
 							<br/><br/>
-							<label><?php $translate->__("Time Zone:",false); ?></label><input type="text" id="tz" name="tz" <?php if(isset($var[10]) && $var[10]!='**@****nullo**@****') echo 'value="'.$var[10].'"'; ?> required />
+							<label><?php $translate->__("Time Zone:",false); ?>*</label><input type="text" id="tz" name="tz" <?php if(isset($var[10]) && $var[10]!='**@****nullo**@****') echo 'value="'.$var[10].'"'; ?> required />
 							<div class='row-fluid'>
-								<div class='span3'><label for='datai'><?php $translate->__("Starting data:",false); ?></label><input type="text" id="datai" name="datai" <?php if(isset($var[0]) && $var[0]!='**@****nullo**@****') echo 'value="'.$var[0].'"'; ?> required /></div>
+								<div class='span3'><label for='datai'><?php $translate->__("Starting data:",false); ?>*</label><input type="text" id="datai" name="datai" <?php if(isset($var[0]) && $var[0]!='**@****nullo**@****') echo 'value="'.$var[0].'"'; ?> required /></div>
 				
 								<div class='span3'><label for='horai'><?php $translate->__("Starting hour(hh):",false); ?></label><input type="text" name='horai' id='horai' value='<?php if(count($var)>1)echo $var[1][0];else echo '00'; ?>'/></div>
 								<div class='span3'><label for='morai'><?php $translate->__("Starting minute (mm):",false); ?></label><input type="text" name='morai' id='morai' value='<?php if(count($var)>1)echo $var[1][1];else echo '00'; ?>'/></div>
 								<div class='span3'><label for='sorai'><?php $translate->__("Starting second(ss):",false); ?></label><input type="text" name='sorai' id='sorai' value='<?php if(count($var)>1)echo $var[1][2];else echo '00'; ?>'/></div>
 							</div>
 							<div class='row-fluid'>
-								<div class='span3'><label for='dataf'><?php $translate->__("Relase date:",false); ?></label><input type="text" id="dataf" name="dataf" <?php if(isset($var[2]) && $var[2]!='**@****nullo**@****') echo 'value="'.$var[2].'"'; ?> required /></div>
+								<div class='span3'><label for='dataf'><?php $translate->__("Relase date:",false); ?>*</label><input type="text" id="dataf" name="dataf" <?php if(isset($var[2]) && $var[2]!='**@****nullo**@****') echo 'value="'.$var[2].'"'; ?> required /></div>
 								<div class='span3'><label for='horaf'><?php $translate->__("Relase hour (hh):",false); ?></label><input type="text" name='horaf' id='horaf' value='<?php if(count($var)>1)echo $var[3][0];else echo '00'; ?>'/></div>
 								<div class='span3'><label for='moraf'><?php $translate->__("Relase minute (mm):",false); ?></label><input type="text" name='moraf' id='moraf' value='<?php if(count($var)>1)echo $var[3][1];else echo '00'; ?>'/></div>
 								<div class='span3'><label for='soraf'><?php $translate->__("Relase second (ss):",false); ?></label><input type="text" name='soraf' id='soraf' value='<?php if(count($var)>1)echo $var[3][2];else echo '00'; ?>'/></div>
@@ -302,6 +321,7 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 							<label><?php $translate->__("Footer Phrase:",false); ?></label><textarea type="text" id="footerph" name="footerph"><?php if(isset($frontph[0]) && $frontph[0]!='**@****nullo**@****') echo stripslashes($frontph[0]); ?></textarea>
 							<br/><br/>
 							
+							<h3>Email Setting</h3>
 							<label><?php $translate->__("Server Email Restriction",false); ?></label><br/>
 							<div class='row-fluid'>
 								<div class='span2'><?php $translate->__("Number of email",false); ?></div><div class='span4'><input type="text" id="mailimit" name="mailimit" <?php if(isset($var[14]) && $var[14]!='none') echo 'value="'.$var[14].'"'; ?> /></div><div class='span2'><?php $translate->__("per (in seconds)",false); ?></div><div class='span4'><input type="text" id="pertime" name="pertime" <?php if(isset($var[15]) && $var[15]!='none') echo 'value="'.$var[15].'"'; ?> /></div>
@@ -310,15 +330,21 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 							<div class='row-fluid'>
 								<div class='span3'><label><?php $translate->__("Show Unsubscribe Link Inside Email Footer?",false); ?></label><div class='radioform'><input type="radio" name="shunl" value="yes" <?php if(isset($var[11]) && $var[11]=='yes') echo "checked";else if(!isset($var[11])) echo "checked";  ?>/> <?php $translate->__("Yes",false); ?> <input type="radio" name="shunl" value="no" <?php if(isset($var[11]) && $var[11]=='no') echo "checked"; ?>/> <?php $translate->__("No",false); ?></div></div>
 							</div>
+							<p><?php $translate->__("Once you have saved these settings you can complete the email configuration under <a href='mail_setting.php'>Setup->Mail</a>",false); ?></p>
 							<br/><br/>
+
+							<h3>Cronjob Setting</h3>
 							<div class='row-fluid'>
-								<div class='span3'><label><?php $translate->__("Checking Word:",false); ?></label></div>
+								<div class='span3'><label><?php $translate->__("Checking Word:",false); ?>*</label></div>
 								<div class='span3'><input type="text" id="psphrase" name="psphrase" <?php if(isset($var[19]) && $var[19]!='**@****nullo**@****') echo 'value="'.$var[19].'"'; ?> required/></div>
 							</div>
 							<div class='row-fluid'>
-								<div class='span3'><label for='execpara' ><?php $translate->__("PHP Command Parameter:",false); ?></label></div>
-								<div class='span3'><label for='execpara'><?php $translate->__("Usually 'php5-cli' or 'php -f'",false); ?></label></div>
+								<div class='span3'><label for='execpara' ><?php $translate->__("PHP Command Parameter(instant sending):",false); ?>*</label></div>
 								<div class='span3'><input type="text" id="execpara" name="execpara" <?php if(isset($var[21]) && $var[21]!='**@****nullo**@****') echo 'value="'.$var[21].'"'; ?> required /></div>
+							</div>
+							<div class='row-fluid'>
+								<div class='span3'><label for='cronpara' ><?php $translate->__("PHP Command Parameter(cronjob):",false); ?>*</label></div>
+								<div class='span3'><input type="text" id="cronpara" name="cronpara" <?php if(isset($var[22]) && $var[22]!='**@****nullo**@****') echo 'value="'.$var[22].'"'; ?> required /></div>
 							</div>
 							<br/><br/>
 						<input onclick='javascript:return false;' type="submit" name="datacom" id="datacom" value="<?php $translate->__("Set",false); ?>" class="btn btn-success"/>
@@ -416,79 +442,80 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 			
 			$('#datai').datepicker({ dateFormat: 'yy-mm-dd' });
 			<?php if(isset($var[0]) && $var[0]!='' ){ ?>$("#datai").datepicker("setDate", "<?php echo $var[0] ?>");<?php } ?>
-			var dateArray = new String("<?php echo date("Y-m-d");?>").split('-');
-			var dateObject = new Date(dateArray[0], dateArray[1]-1, dateArray[2]);
+			var dateArray = new String("<?php echo date("Y-m-d");?>").split('-'),
+				dateObject = new Date(dateArray[0], dateArray[1]-1, dateArray[2]);
 			$("#datai" ).datepicker("option", "maxDate", dateObject);
 			
 			$('#dataf').datepicker({ dateFormat: 'yy-mm-dd' });
 			<?php if(isset($var[2]) && $var[2]!='' ){ ?>$("#dataf" ).datepicker("setDate", "<?php echo $var[2] ?>");<?php } ?>
-			var dateArray = new String("<?php if(isset($var[0]))echo $var[0];else echo date("Y-m-d");?>").split('-');
-			var dateObject = new Date(dateArray[0], dateArray[1]-1, dateArray[2]);
+			var dateArray = new String("<?php if(isset($var[0]))echo $var[0];else echo date("Y-m-d");?>").split('-'),
+				dateObject = new Date(dateArray[0], dateArray[1]-1, dateArray[2]);
 			$("#dataf" ).datepicker("option", "minDate", dateObject);
 			
 			$('#datacom').click(function(){
-				var metadesc=$('#metadesc').val().replace(/\s+/g,' ');
-				var metakey=$('#metakey').val().replace(/\s+/g,' ');
-				var pgtit=$('#pgtit').val().replace(/\s+/g,' ');
-				var urls=$('#urls').val().replace(/\s+/g,' ');
-				var enfitetx=$('input[type=radio][name="enfitetx"]:checked').val();
-				var phrase=CKEDITOR.instances.phrase.getData().replace(/\s+/g,' ');
-				var tz=$('#tz').val().replace(/\s+/g,'');
-				var datai=$('#datai').val().replace(/\s+/g,'');
-				var horai=$('#horai').val().replace(/\s+/g,'');
-				var morai=$('#morai').val().replace(/\s+/g,'');
-				var sorai=$('#sorai').val().replace(/\s+/g,'');
-				var dataf=$('#dataf').val().replace(/\s+/g,'');
-				var horaf=$('#horaf').val().replace(/\s+/g,'');
-				var moraf=$('#moraf').val().replace(/\s+/g,'');
-				var soraf=$('#soraf').val().replace(/\s+/g,'');
-				var perc=$('#perc').val().replace(/\s+/g,'');
-				var emailad=$('#emailad').val().replace(/\s+/g,'');
-				var psphrase=$('#psphrase').val().replace(/\s+/g,'');
-				var phpexec=$('#execpara').val().replace(/\s+/g,' ');
-				var shcf=$('input[type=radio][name="shcf"]:checked').val();
-				var shsf=$('input[type=radio][name="shsf"]:checked').val();
-				var shunl=$('input[type=radio][name="shunl"]:checked').val();
-				var dispclock=$('input[type=radio][name="dispclock"]:checked').val();
-				var dispprog=$('input[type=radio][name="dispprog"]:checked').val();
-				var mailimit=$('#mailimit').val().replace(/\s+/g,'');
-				var pertime=$('#pertime').val().replace(/\s+/g,'');
-				var progph=CKEDITOR.instances.progph.getData().replace(/\s+/g,' ');
-				var footerph=CKEDITOR.instances.footerph.getData().replace(/\s+/g,' ');
+				var metadesc=$('#metadesc').val().replace(/\s+/g,' '),
+					metakey=$('#metakey').val().replace(/\s+/g,' '),
+					pgtit=$('#pgtit').val().replace(/\s+/g,' '),
+					enredirect=$('input[type=radio][name="enredirect"]:checked').val(),
+					urls=$('#urls').val().replace(/\s+/g,' '),
+					enfitetx=$('input[type=radio][name="enfitetx"]:checked').val(),
+					phrase=CKEDITOR.instances.phrase.getData().replace(/\s+/g,' '),
+					tz=$('#tz').val().replace(/\s+/g,''),
+					datai=$('#datai').val().replace(/\s+/g,''),
+					horai=$('#horai').val().replace(/\s+/g,''),
+					morai=$('#morai').val().replace(/\s+/g,''),
+					sorai=$('#sorai').val().replace(/\s+/g,''),
+					dataf=$('#dataf').val().replace(/\s+/g,''),
+					horaf=$('#horaf').val().replace(/\s+/g,''),
+					moraf=$('#moraf').val().replace(/\s+/g,''),
+					soraf=$('#soraf').val().replace(/\s+/g,''),
+					perc=$('#perc').val().replace(/\s+/g,''),
+					emailad=$('#emailad').val().replace(/\s+/g,''),
+					psphrase=$('#psphrase').val().replace(/\s+/g,''),
+					phpexec=$('#execpara').val().replace(/\s+/g,' '),
+					cronpara=$('#cronpara').val().replace(/\s+/g,' '),
+					shcf=$('input[type=radio][name="shcf"]:checked').val(),
+					shsf=$('input[type=radio][name="shsf"]:checked').val(),
+					shunl=$('input[type=radio][name="shunl"]:checked').val(),
+					dispclock=$('input[type=radio][name="dispclock"]:checked').val(),
+					dispprog=$('input[type=radio][name="dispprog"]:checked').val(),
+					mailimit=$('#mailimit').val().replace(/\s+/g,''),
+					pertime=$('#pertime').val().replace(/\s+/g,''),
+					progph=CKEDITOR.instances.progph.getData().replace(/\s+/g,' '),
+					footerph=CKEDITOR.instances.footerph.getData().replace(/\s+/g,' ');
 				if($("#psphrase").val().split(/\s+/).length==1){
 					if(pgtit.replace(/\s+/g,'')!='' && urls.replace(/\s+/g,'')!='' && tz.replace(/\s+/g,'')!='' && datai.replace(/\s+/g,'')!='' && dataf.replace(/\s+/g,'')!='' && psphrase.replace(/\s+/g,'')!=''){
-						var request= $.ajax({
+						$.ajax({
 							type: 'POST',
 							url: 'function.php',
-							data: {act:'save_options',metadesc:metadesc,metakey:metakey,pgtit:pgtit,urls:urls,enfitetx:enfitetx,phrase:phrase,tz:tz,datai:datai,horai:horai,morai:morai,sorai:sorai,dataf:dataf,horaf:horaf,moraf:moraf,soraf:soraf,perc:perc,emailad:emailad,psphrase:psphrase,shcf:shcf,shsf:shsf,shunl:shunl,dispclock:dispclock,dispprog:dispprog,mailimit:mailimit,pertime:pertime,progph:progph,footerph:footerph,eparam:phpexec},
+							data: {act:'save_options',metadesc:metadesc,metakey:metakey,pgtit:pgtit,enredirect:enredirect,urls:urls,enfitetx:enfitetx,phrase:phrase,tz:tz,datai:datai,horai:horai,morai:morai,sorai:sorai,dataf:dataf,horaf:horaf,moraf:moraf,soraf:soraf,perc:perc,emailad:emailad,psphrase:psphrase,shcf:shcf,shsf:shsf,shunl:shunl,dispclock:dispclock,dispprog:dispprog,mailimit:mailimit,pertime:pertime,progph:progph,footerph:footerph,eparam:phpexec,cronpara:cronpara},
 							dataType : 'json',
 							success : function (data) {
 								if(data[0]=='Saved'){
 									if(data.length>1){
-										var n = noty({text: "<?php echo $translate->__("The settings have been saved",true); ?>",type:'success',timeout:9000});
+										noty({text: "<?php echo $translate->__("The settings have been saved",true); ?>",type:'success',timeout:9000});
 										if($('#cronstring').length)
 											$('#cronstring').html(data[1]);
 										else
 											$('#formdata').after("<div class='formcor'><h2 class='titlesec'><?php echo $translate->__("Cronjob String",true); ?></h2><p><?php echo $translate->__("If you can't automatically update the Cronjob trough the php function you can try set it by your own, this is the string with the information:",true); ?></p><br/><p id='cronstring'>"+data[1]+"</p></div>");
 									}
 									else{
-										var n = noty({text: "<?php echo $translate->__("This is the first time,the page will be reloaded",true); ?>",type:'success',timeout:9000});
+										noty({text: "<?php echo $translate->__("This is the first time,the page will be reloaded",true); ?>",type:'success',timeout:9000});
 										window.location.reload();
 									}
 								}
 								else if(data[0]=='Empty')
-									var n = noty({text: "<?php echo $translate->__("Please Complete all the fields",true); ?>",type:'error',timeout:9000});
+									noty({text: "<?php echo $translate->__("Please Complete all the fields",true); ?>",type:'error',timeout:9000});
 								else
-									var n = noty({text: "<?php echo $translate->__("A problem has occured,please try again",true); ?>",type:'error',timeout:9000});
+									noty({text: "<?php echo $translate->__("A problem has occured,please try again",true); ?>",type:'error',timeout:9000});
 							}
-						});
-						request.fail(function(jqXHR, textStatus){var n = noty({text: textStatus,type:'error',timeout:9000});});
+						}).fail(function(jqXHR, textStatus){noty({text: textStatus,type:'error',timeout:9000});});
 					}
 					else
-						var n = noty({text: "<?php echo $translate->__("Please Complete all the fields",true); ?>",type:'error',timeout:9000});
+						noty({text: "<?php echo $translate->__("Please Complete all the fields",true); ?>",type:'error',timeout:9000});
 				}
 				else
-					var n = noty({text: "<?php echo $translate->__("The Checking Word must be only one word.",true); ?>",type:'error',timeout:9000});
+					noty({text: "<?php echo $translate->__("The Checking Word must be only one word.",true); ?>",type:'error',timeout:9000});
 				return false;
 			});
 			
@@ -497,7 +524,7 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 				var newpwd=$('#newpwd').val();
 				var cnewpwd=$('#cnewpwd').val();
 				if(oldpwd.replace(/\s+/g,'')!='' && newpwd.replace(/\s+/g,'')!='' && cnewpwd.replace(/\s+/g,'')!='' && cnewpwd===newpwd){
-					var request= $.ajax({
+					$.ajax({
 						type: 'POST',
 						url: 'function.php',
 						data: {act:'update_password',oldpwd:oldpwd,newpwd:newpwd,cnewpwd:cnewpwd},
@@ -507,69 +534,66 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 								$('#oldpwd').val('');
 								$('#newpwd').val('');
 								$('#cnewpwd').val('');
-								var n = noty({text: "<?php echo $translate->__("Password Updated",true); ?>",type:'success',timeout:9000});
+								noty({text: "<?php echo $translate->__("Password Updated",true); ?>",type:'success',timeout:9000});
 							}
 							else if(data[0]=='Error')
-								var n = noty({text: "<?php echo $translate->__("A problem has occured,please try again",true); ?>",type:'error',timeout:9000});
+								noty({text: "<?php echo $translate->__("A problem has occured,please try again",true); ?>",type:'error',timeout:9000});
 							else if(data[0]=='Empty')
-								var n = noty({text: "<?php echo $translate->__("Please Complete all the fields",true); ?>",type:'error',timeout:9000});
+								noty({text: "<?php echo $translate->__("Please Complete all the fields",true); ?>",type:'error',timeout:9000});
 							else if(data[0]=='Wrong')
-								var n = noty({text: "<?php echo $translate->__("Wrong Password",true); ?>",type:'error',timeout:9000});
+								noty({text: "<?php echo $translate->__("Wrong Password",true); ?>",type:'error',timeout:9000});
 						}
-					});
-					request.fail(function(jqXHR, textStatus){var n = noty({text: textStatus,type:'error',timeout:9000});});
+					}).fail(function(jqXHR, textStatus){noty({text: textStatus,type:'error',timeout:9000});});
 				}
 				else
-					var n = noty({text: "<?php echo $translate->__("The new passwords don't correspond",true); ?>",type:'error',timeout:9000});
+					noty({text: "<?php echo $translate->__("The new passwords don't correspond",true); ?>",type:'error',timeout:9000});
 				return false;
 			});
 			
 			$('#updatesocial').click(function(){
-				var blog=$('#blog').val();
-				var devian=$('#devian').val();
-				var fb=$('#fb').val();
-				var fl=$('#fl').val();
-				var linkedin=$('#linkedin').val();
-				var tw=$('#tw').val();
-				var word=$('#word').val();
-				var yb=$('#yb').val();
+				var blog=$('#blog').val(),
+					devian=$('#devian').val(),
+					fb=$('#fb').val(),
+					fl=$('#fl').val(),
+					linkedin=$('#linkedin').val(),
+					tw=$('#tw').val(),
+					word=$('#word').val(),
+					yb=$('#yb').val();
 				
-				var request= $.ajax({
+				$.ajax({
 					type: 'POST',
 					url: 'function.php',
 					data: {act:'update_social',blog:blog,devian:devian,fb:fb,fl:fl,linkedin:linkedin,tw:tw,word:word,yb:yb},
 					dataType : 'json',
 					success : function (data) {
 						if(data[0]=='Saved')
-							var n = noty({text: "<?php echo $translate->__("Social Network Links Saved",true); ?>",type:'success',timeout:9000});
+							noty({text: "<?php echo $translate->__("Social Network Links Saved",true); ?>",type:'success',timeout:9000});
 						else if(data[0]=='Error')
-							var n = noty({text: "<?php echo $translate->__("A problem has occured,please try again",true); ?>",type:'error',timeout:9000});
+							noty({text: "<?php echo $translate->__("A problem has occured,please try again",true); ?>",type:'error',timeout:9000});
 						else if(data[0]=='Empty')
-							var n = noty({text: "<?php echo $translate->__("Please Complete all the fields",true); ?>",type:'error',timeout:9000});
+							noty({text: "<?php echo $translate->__("Please Complete all the fields",true); ?>",type:'error',timeout:9000});
 					}
-				});
-				request.fail(function(jqXHR, textStatus){var n = noty({text: textStatus,type:'error',timeout:9000});});
+				}).fail(function(jqXHR, textStatus){noty({text: textStatus,type:'error',timeout:9000});});
 				return false;
 			});
 			
 			$('#setmonit').click(function(){
 				var c=$('#analisyscode').val();
 
-				var request= $.ajax({
+				$.ajax({
 					type: 'POST',
 					url: 'function.php',
 					data: {act:'monitoring_code',code:c},
 					dataType : 'json',
 					success : function (data) {
 						if(data[0]=='Saved')
-							var n = noty({text: "<?php echo $translate->__("Monitoring Code Saved",true); ?>",type:'success',timeout:9000});
+							noty({text: "<?php echo $translate->__("Monitoring Code Saved",true); ?>",type:'success',timeout:9000});
 						else if(data[0]=='Error')
-							var n = noty({text: "<?php echo $translate->__("A problem has occured,please try again",true); ?>",type:'error',timeout:9000});
+							noty({text: "<?php echo $translate->__("A problem has occured,please try again",true); ?>",type:'error',timeout:9000});
 						else if(data[0]=='Empty')
-							var n = noty({text: "<?php echo $translate->__("Please add the code",true); ?>",type:'error',timeout:9000});
+							noty({text: "<?php echo $translate->__("Please add the code",true); ?>",type:'error',timeout:9000});
 					}
-				});
-				request.fail(function(jqXHR, textStatus){var n = noty({text: textStatus,type:'error',timeout:9000});});
+				}).fail(function(jqXHR, textStatus){noty({text: textStatus,type:'error',timeout:9000});});
 				return false;
 			});
 			

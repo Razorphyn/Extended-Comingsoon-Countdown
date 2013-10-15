@@ -437,10 +437,13 @@
 	}
 	
 	else if(isset($_SESSION['views']) && isset($_POST['act'])  && $_POST['act']=='monitoring_code'){
-
+		if(is_file('../config/monintoring.php')){
+			include_once('../config/monintoring.php');
+			if(file_put_contents('../config/monintoring.txt',$monitoringcode))
+				unlink('../config/monintoring.php');
+		}
 		if(trim(preg_replace('/\s+/','',$_POST['code'])!='')){
-			$string='<?php $monitoringcode=\''.addslashes($_POST['code']).'\'; ?>';
-			if(file_put_contents('../config/monintoring.php',$string))
+			if(file_put_contents('../config/monintoring.txt',$_POST['code']))
 				echo json_encode(array(0=>'Saved'));
 			else
 				echo json_encode(array(0=>'Error'));
@@ -560,6 +563,7 @@
 			$_POST['urls']=(trim(preg_replace('/\s+/','',$_POST['urls'])==''))? '**@****nullo**@****':$_POST['urls'];
 			$_POST['perc']=(trim(preg_replace('/\s+/','',$_POST['perc'])==''))? '**@****nullo**@****':$_POST['perc'];
 			$_POST['tz']=(trim(preg_replace('/\s+/','',$_POST['tz'])==''))? '**@****nullo**@****':preg_replace('/\s+/','',$_POST['tz']);
+			$_POST['enredirect']=(trim(preg_replace('/\s+/','',$_POST['enredirect'])=='yes'))? 'yes':'no';
 			$_POST['enfitetx']=(trim(preg_replace('/\s+/','',$_POST['enfitetx'])=='yes'))? 'yes':'no';
 
 			$_POST['mailimit']=trim(str_replace(' ','',$_POST['mailimit']));
@@ -568,6 +572,7 @@
 			$_POST['pertime']=(is_numeric($_POST['pertime']))? (int)$_POST['pertime']:'none';
 
 			$_POST['eparam']=(trim(preg_replace('/\s+/','',$_POST['eparam'])==''))? 'php5-cli':trim(preg_replace('/\s+/',' ',$_POST['eparam']));
+			$_POST['cronpara']=(trim(preg_replace('/\s+/','',$_POST['cronpara'])==''))? 'php -f':trim(preg_replace('/\s+/',' ',$_POST['cronpara']));
 
 			$horaf=(int)$horaf;
 			$giorno=(int)$giorno;
@@ -590,7 +595,7 @@
 
 			$fs=fopen($fileconfig,"w+");
 				fwrite($fs,$datai."\n".$orai."\n".$dataf."\n".$oraf."\n".$_POST['urls']."\n".$_POST['pgtit']."\n".$_POST['perc']."\n".$_POST['emailad']."\n".$_POST['shcf']."\n".$_POST['shsf']."\n".$_POST['tz']."\n".$_POST['shunl']."\n".$_SERVER['SERVER_NAME']."\n");
-				fwrite($fs,dirname(dirname($_SERVER['SCRIPT_NAME']))."\n".$_POST['mailimit']."\n".$_POST['pertime']."\n".$_POST['dispclock']."\n".$_POST['dispprog']."\n".$_POST['enfitetx']."\n".$_POST['psphrase']."\n".$add."\n".$_POST['eparam']);
+				fwrite($fs,dirname(dirname($_SERVER['SCRIPT_NAME']))."\n".$_POST['mailimit']."\n".$_POST['pertime']."\n".$_POST['dispclock']."\n".$_POST['dispprog']."\n".$_POST['enfitetx']."\n".$_POST['psphrase']."\n".$add."\n".$_POST['eparam']."\n".$_POST['cronpara']."\n".$_POST['enredirect']);
 			fclose($fs);
 
 			$output = shell_exec('crontab -l');

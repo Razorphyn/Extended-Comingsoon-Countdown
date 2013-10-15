@@ -21,7 +21,12 @@
 	require_once 'translator/class.translation.php';
 	if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])){$lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);if(!is_file('translator/lang/'.$lang.'.csv'))$lang='en';}else $lang='en';$translate = new Translator($lang);
 	
-	if(is_file('config/monintoring.php'))include_once ('config/monintoring.php');
+	if(is_file('../config/monintoring.php')){
+		include_once('../config/monintoring.php');
+		if(file_put_contents('../config/monintoring.txt',$monitoringcode))
+			unlink('../config/monintoring.php');
+	}
+
 	$file='config/config.txt';
 	$filelogo= 'config/logo.txt';
 	$filefrontmess= 'config/frontmess.txt';
@@ -40,6 +45,7 @@
 	
 	$var=file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 	if(!isset($var[1]) || $var[1]=='' || $var[1]==null){echo "<script type='text/javascript'>location.href = 'admin/index.php';</script>";exit();}
+	if(is_file($filemonitor)){$monitoringcode=file($filemonitor, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);$monitoringcode=implode("\n",$monitoringcode);}
 	if(is_file($filelogo)) $logo=file_get_contents($filelogo);
 	if(is_file($filefrontmess)) $phrase=file_get_contents($filefrontmess);
 	if(is_file($frontotinfo)) $frontph=file($frontotinfo, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -220,12 +226,12 @@
 	  $(document).ready(function() {
 			<?php if(isset($var[18]) && $var[18]=='yes'){ ?> $("#title").fitText(); <?php } ?>
 			<?php if(isset($var[17]) && $var[17]=='yes'){ ?>
-				var perc=<?php if( isset($var[6]) && $var[6]!='**@****nullo**@****')echo $var[6];else echo $valore=($valore>100)?100:$valore; ?>;
+				var perc=<?php if( isset($var[6]) && $var[6]!='**@****nullo**@****')echo $var[6];else echo $valore=($valore>100)?100:$valore; ?>,
+					up= (parseInt(screen.height)*3.7037/100).toFixed(0)+'';
 				
 				$("#progressbar").progressbar({ value: perc,max:100 });
 				$("#progressbar").attr('title','<?php echo $translate->__('Complete',true); ?>: '+perc+'%');
 				
-				var up= (parseInt(screen.height)*3.7037/100).toFixed(0)+'';
 				$("#progressbar").tooltip({ position: { my: "top center", at: "top top-"+up, collision: "flipfit" } });
 				$('.container').resize(function (){var presize=($('.container').width()*48.4375/100).toFixed(0);
 				$("#progressbar").children('.ui-progressbar').css('max-width',presize);});

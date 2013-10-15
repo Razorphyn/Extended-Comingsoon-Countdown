@@ -14,19 +14,21 @@
  * @author     	Razorphyn
  * @Site		http://razorphyn.com/
  */
+ 
 umask(002);
-require_once $argv[2].'/lib/Swift/lib/swift_required.php';
-require_once $argv[2].'/config/stmp.php';
 
-$fileconfig =$argv[2].'/config/config.txt';
+require_once '../lib/Swift/lib/swift_required.php';
+require_once '../config/stmp.php';
+
+$fileconfig ='../config/config.txt';
 $var = file($fileconfig, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 if($argv[1]==$var[19] || $argv[1]==$var[20]){
-	$dir=$argv[2].'/config/mails';
-	$filemail =$argv[2].'/config/mail.txt';
-	$filefnmail =$argv[2].'/config/fnmail.txt';
-	$filefnmessage = $argv[2].'/config/fnmessage.txt';
-	$filefnfooter = $argv[2].'/config/footermail.txt';
-	
+	$dir='../config/mails';
+	$filemail ='../config/mail.txt';
+	$filefnmail ='../config/fnmail.txt';
+	$filefnmessage = '../config/fnmessage.txt';
+	$filefnfooter = '../config/footermail.txt';
+
 	/*Update Database*/
 	if(!is_dir($dir)){ if(mkdir($dir,0755))file_put_contents($dir.'/.htaccess','Deny from All'."\n".'IndexIgnore *'); };
 	if(is_file($filemail)){
@@ -61,9 +63,10 @@ if($argv[1]==$var[19] || $argv[1]==$var[20]){
 	$bod= file_get_contents($filefnmessage);
 	$footer= file_get_contents($filefnfooter);
 	if (isset($var[10]))date_default_timezone_set($var[10]);
-	list($anno, $mese, $giorno)=explode('-',rtrim($var[2]));
+	list($anno, $mese, $giorno)=explode('-',trim($var[2]));
 
-	if(date("Y")== $anno && rtrim($misc[2])=='yes'){
+	if(date("Y")== $anno && trim($misc[2])=='yes'){
+		file_put_contents('if2','');
 		$message=Swift_Message::newInstance();
 		$message->setFrom($misc[0]);
 		$message->setSubject($misc[1]);
@@ -102,7 +105,7 @@ if($argv[1]==$var[19] || $argv[1]==$var[20]){
 		
 		$main="<html><body>".$bod.'<div id="footer" style="display:block;clear:both;width:100%;position:relative;margin:10px 0;border-top:1px solid #000">'.$footer;
 		$count=count($mailist);
-		if(rtrim($var[11])=='yes'){
+		if(trim($var[11])=='yes'){
 			for($i=0;$i< $count;$i++){
 				$unlink="<p>Click <a href='http://".$var[12].$var[13]."/admin/unsubscribe.php?mail=".$mailist[$i][0]."&id=".(($mailist[$i][1]+1)*8)."'>here</a> if you want to unsubscribe</p></div></body></html>";
 				$plain=str_replace('&nbsp;',' ',str_replace('&','&amp;',$main.$unlink));
