@@ -583,7 +583,7 @@
 			if($diff!=0)
 				list($horaf, $giorno ,$mese)=explode('-',serverinsdata($diff,$horaf,$giorno,$mese,$anno));
 
-			$add="$moraf $horaf $giorno $mese * ".$_POST['eparam']." ".realpath(dirname(__FILE__)).'/sendmailcron.php '.$_POST['psphrase'].' '.realpath(dirname(dirname(__FILE__)));
+			$add="$moraf $horaf $giorno $mese * ".$_POST['cronpara']." ".realpath(dirname(__FILE__)).'/sendmailcron.php '.$_POST['psphrase'].' '.realpath(dirname(dirname(__FILE__)));
 
 			$fs=fopen($filefrontmess,"w+");
 				fwrite($fs,$_POST['phrase']);
