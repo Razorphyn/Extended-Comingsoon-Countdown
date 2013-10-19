@@ -445,13 +445,15 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 			var dateArray = new String("<?php echo date("Y-m-d");?>").split('-'),
 				dateObject = new Date(dateArray[0], dateArray[1]-1, dateArray[2]);
 			$("#datai" ).datepicker("option", "maxDate", dateObject);
-			
+
 			$('#dataf').datepicker({ dateFormat: 'yy-mm-dd' });
-			<?php if(isset($var[2]) && $var[2]!='' ){ ?>$("#dataf" ).datepicker("setDate", "<?php echo $var[2] ?>");<?php } ?>
+			<?php if(isset($var[2]) && $var[2]!='' ){ ?>
+				$("#dataf" ).datepicker("setDate", "<?php echo $var[2] ?>");
+			<?php } ?>
 			var dateArray = new String("<?php if(isset($var[0]))echo $var[0];else echo date("Y-m-d");?>").split('-'),
 				dateObject = new Date(dateArray[0], dateArray[1]-1, dateArray[2]);
 			$("#dataf" ).datepicker("option", "minDate", dateObject);
-			
+
 			$('#datacom').click(function(){
 				var metadesc=$('#metadesc').val().replace(/\s+/g,' '),
 					metakey=$('#metakey').val().replace(/\s+/g,' '),

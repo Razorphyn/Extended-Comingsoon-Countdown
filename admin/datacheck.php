@@ -33,6 +33,9 @@
 	ini_set("session.use_only_cookies", "1");
 	ini_set("session.use_trans_sid", "0");
 	session_name("RazorphynExtendedComingsoon");
+	if (isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+		ini_set('session.cookie_secure', '1');
+	}
 	session_start();
 	
 	if(isset($_SESSION["created"]) && $_SESSION["created"]==true) {unset($_SESSION["created"]);header("Location: index.php");}

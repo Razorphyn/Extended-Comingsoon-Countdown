@@ -54,6 +54,7 @@
 	
 	date_default_timezone_set($var[10]);
 	
+	list($annoi,$mesei,$giornoi)=explode('-',$var[0]);
 	list($anno, $mese, $giorno)=explode('-',$var[2]);
 	$info2=$mese.'/'.$giorno.'/'.$anno;
 
@@ -62,14 +63,15 @@
 	list($orac,$minuc,$secc)=explode(':',$ora);
 	list($orai,$minui,$seci)=explode(':',$var[1]);
 	
-	$fsec=dateDifference($var[0],$var[2])*86400+($oraf-$orai)*3600+($minuf-$minui)*60+($secf-$seci);
-	$csec=dateDifference($var[0],$data)*86400+($orac-$orai)*3600+($minuc-$minui)*60+($secc-$seci);
+	$fsec=dateDifference($var[0],$var[2])*86400+(abs($oraf-$orai))*3600+(abs($minuf-$minui))*60+(abs($secf-$seci));
+	$csec=dateDifference($var[0],$data)*86400+(abs($orac-$orai))*3600+(abs($minuc-$minui))*60+(abs($secc-$seci));
 
 	$valore=round(100*$csec/$fsec,2);
-	$interval=$fsec*0.1;
 	
 	$siteurl=explode('?',curPageURL());
 	$siteurl=$siteurl[0];
+	
+	$interval=$fsec*0.1;
 	?>
 <!DOCTYPE html>
 <html lang="<?php echo $lang; ?>">
@@ -224,19 +226,41 @@
 	<script type="text/javascript"  src="<?php echo $siteurl.'min/?b=js&amp;f=jquery.validate.min.js,jquery.magnific-popup.min.js,noty/jquery.noty.js,noty/layouts/top.js,noty/themes/default.js&amp;5259487' ?>"></script>
 	<script type='text/javascript'>
 	  $(document).ready(function() {
-			<?php if(isset($var[18]) && $var[18]=='yes'){ ?> $("#title").fitText(); <?php } ?>
-			<?php if(isset($var[17]) && $var[17]=='yes'){ ?>
+			<?php if(isset($var[18]) && $var[18]=='yes'){ ?> 
+				$("#title").fitText();
+			<?php }if(isset($var[17]) && $var[17]=='yes'){ ?>
 				var perc=<?php if( isset($var[6]) && $var[6]!='**@****nullo**@****')echo $var[6];else echo $valore=($valore>100)?100:$valore; ?>,
-					up= (parseInt(screen.height)*3.7037/100).toFixed(0)+'';
-				
+					up= (parseInt(screen.height)*3.7037/100).toFixed(0)+'',
+					initial_millisec=(new Date(<?php echo  $annoi;?>,<?php echo  $mesei;?>-1,<?php echo  $giornoi;?>,<?php echo  $orai;?>,<?php echo  $minui;?>,<?php echo  $seci;?>)).getTime(),
+					final_millisec=(new Date(<?php echo  $anno;?>,<?php echo  $mese;?>-1,<?php echo  $giorno;?>,<?php echo  $oraf;?>,<?php echo  $minuf;?>,<?php echo  $secf;?>)).getTime()-initial_millisec,
+					interval=1000;
 				$("#progressbar").progressbar({ value: perc,max:100 });
 				$("#progressbar").attr('title','<?php echo $translate->__('Complete',true); ?>: '+perc+'%');
-				
+
 				$("#progressbar").tooltip({ position: { my: "top center", at: "top top-"+up, collision: "flipfit" } });
 				$('.container').resize(function (){var presize=($('.container').width()*48.4375/100).toFixed(0);
 				$("#progressbar").children('.ui-progressbar').css('max-width',presize);});
 
-			<?php } 
+				var upeprc = setInterval( function(){
+					var d = (new Date()).getTime();
+					d=d-initial_millisec;
+					var new_perc=parseFloat((d*100/final_millisec).toFixed(2));
+					if(new_perc!=perc){
+						interval=<?php echo $interval; ?>;
+						if(new_perc >=100){
+							$("#progressbar").attr('title','<?php echo $translate->__('Complete',true); ?>: 100%');
+							$("#progressbar").progressbar( "option", "value", 100 );
+							clearInterval(upeprc);
+						}
+						else{
+							$("#progressbar").attr('title','<?php echo $translate->__('Complete',true); ?>: '+new_perc+'%');
+							$("#progressbar").progressbar( "option", "value", new_perc );
+						}
+						perc=new_perc;
+					}
+				},interval);
+
+			<?php }
 				if(isset($var[16]) && $var[16]=='yes'){
 					if(isset($var[23]) && $var[23]=='yes'){
 			?>
