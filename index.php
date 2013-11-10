@@ -53,25 +53,31 @@
 	if(is_file($filenews)) $news=file($filenews, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 	
 	date_default_timezone_set($var[10]);
-	
+
 	list($annoi,$mesei,$giornoi)=explode('-',$var[0]);
 	list($anno, $mese, $giorno)=explode('-',$var[2]);
-	$info2=$mese.'/'.$giorno.'/'.$anno;
-
-	list($data, $ora)=explode(' ',date("Y-m-d H:i:s"));
 	list($oraf,$minuf,$secf)=explode(':',$var[3]);
-	list($orac,$minuc,$secc)=explode(':',$ora);
 	list($orai,$minui,$seci)=explode(':',$var[1]);
 	
-	$fsec=dateDifference($var[0],$var[2])*86400+(abs($oraf-$orai))*3600+(abs($minuf-$minui))*60+(abs($secf-$seci));
-	$csec=dateDifference($var[0],$data)*86400+(abs($orac-$orai))*3600+(abs($minuc-$minui))*60+(abs($secc-$seci));
-
-	$valore=round(100*$csec/$fsec,2);
+	$info2=$mese.'/'.$giorno.'/'.$anno;
 	
+	$offset=get_timezone_offset($var[10]);
+
 	$siteurl=explode('?',curPageURL());
 	$siteurl=$siteurl[0];
-	
-	$interval=$fsec*0.1;
+
+	$interval=round($fsec*0.1,0);
+
+	function get_timezone_offset($remote_tz) {
+		$origin_tz = 'Europe/London';
+		$origin_dtz = new DateTimeZone($origin_tz);
+		$remote_dtz = new DateTimeZone($remote_tz);
+		$origin_dt = new DateTime("now", $origin_dtz);
+		$remote_dt = new DateTime("now", $remote_dtz);
+		$offset = $origin_dtz->getOffset($origin_dt) - $remote_dtz->getOffset($remote_dt);
+		return $offset*1000;
+	}
+
 	?>
 <!DOCTYPE html>
 <html lang="<?php echo $lang; ?>">
@@ -223,17 +229,26 @@
 	</div>
 </div>
 	
-	<script type="text/javascript"  src="<?php echo $siteurl.'min/?b=js&amp;f=jquery.validate.min.js,jquery.magnific-popup.min.js,noty/jquery.noty.js,noty/layouts/top.js,noty/themes/default.js&amp;5259487' ?>"></script>
-	<script type='text/javascript'>
+<script type="text/javascript"  src="<?php echo $siteurl.'min/?b=js&amp;f=jquery.validate.min.js,jquery.magnific-popup.min.js,noty/jquery.noty.js,noty/layouts/top.js,noty/themes/default.js&amp;5259487' ?>"></script>
+<script type='text/javascript'>
 	  $(document).ready(function() {
 			<?php if(isset($var[18]) && $var[18]=='yes'){ ?> 
 				$("#title").fitText();
 			<?php }if(isset($var[17]) && $var[17]=='yes'){ ?>
-				var perc=<?php if( isset($var[6]) && $var[6]!='**@****nullo**@****')echo $var[6];else echo $valore=($valore>100)?100:$valore; ?>,
-					up= (parseInt(screen.height)*3.7037/100).toFixed(0)+'',
-					initial_millisec=(new Date(<?php echo  $annoi;?>,<?php echo  $mesei;?>-1,<?php echo  $giornoi;?>,<?php echo  $orai;?>,<?php echo  $minui;?>,<?php echo  $seci;?>)).getTime(),
-					final_millisec=(new Date(<?php echo  $anno;?>,<?php echo  $mese;?>-1,<?php echo  $giorno;?>,<?php echo  $oraf;?>,<?php echo  $minuf;?>,<?php echo  $secf;?>)).getTime()-initial_millisec,
-					interval=1000;
+				var up= (parseInt(screen.height)*3.7037/100).toFixed(0)+'',
+					offset=<?php echo $offset; ?>-new Date().getTimezoneOffset()*60*1000,
+					initial_milli=new Date(<?php echo $annoi; ?>,<?php echo $mesei-1; ?>,<?php echo $giornoi; ?>,<?php echo $orai; ?>,<?php echo $minui; ?>,<?php echo $seci; ?>).getTime(),
+					final_milli=new Date(<?php echo $anno; ?>,<?php echo $mese-1; ?>,<?php echo $giorno; ?>,<?php echo $oraf; ?>,<?php echo $minuf; ?>,<?php echo $secf; ?>).getTime()-initial_milli,
+					perc=(new Date().getTime()-offset-initial_milli)*100/final_milli,
+					snap=(new Date()).getTime()-offset,
+					interval=snap-(<?php echo $interval; ?>)*(Math.round(snap/<?php echo $interval; ?>)),
+					upeprc;
+
+				if(perc>100)
+					perc=100;
+				else
+					perc=parseFloat(perc.toFixed(2));
+
 				$("#progressbar").progressbar({ value: perc,max:100 });
 				$("#progressbar").attr('title','<?php echo $translate->__('Complete',true); ?>: '+perc+'%');
 
@@ -241,35 +256,44 @@
 				$('.container').resize(function (){var presize=($('.container').width()*48.4375/100).toFixed(0);
 				$("#progressbar").children('.ui-progressbar').css('max-width',presize);});
 
-				var upeprc = setInterval( function(){
-					var d = (new Date()).getTime();
-					d=d-initial_millisec;
-					var new_perc=parseFloat((d*100/final_millisec).toFixed(2));
-					if(new_perc!=perc){
-						interval=<?php echo $interval; ?>;
-						if(new_perc >=100){
-							$("#progressbar").attr('title','<?php echo $translate->__('Complete',true); ?>: 100%');
-							$("#progressbar").progressbar( "option", "value", 100 );
-							clearInterval(upeprc);
-						}
-						else{
-							$("#progressbar").attr('title','<?php echo $translate->__('Complete',true); ?>: '+new_perc+'%');
-							$("#progressbar").progressbar( "option", "value", new_perc );
-						}
-						perc=new_perc;
+			<?php if( isset($var[6]) && $var[6]=='**@****nullo**@****'){ ?>
+				
+				setTimeout(function(){
+					perc=(new Date().getTime()-offset-initial_milli)*100/final_milli,
+					perc=parseFloat(perc.toFixed(2));
+					if(perc >=100){
+						$("#progressbar").attr('title','<?php echo $translate->__('Complete',true); ?>: 100%');
+						$("#progressbar").progressbar( "option", "value", 100 );
+					}
+					else{
+						$("#progressbar").attr('title','<?php echo $translate->__('Complete',true); ?>: '+perc+'%');
+						$("#progressbar").progressbar( "option", "value", perc );
+						upeprc = setInterval( function(){
+								perc+=0.01;
+								perc=parseFloat(perc.toFixed(2));
+								if(perc >=100){
+									$("#progressbar").attr('title','<?php echo $translate->__('Complete',true); ?>: 100%');
+									$("#progressbar").progressbar( "option", "value", 100 );
+									clearInterval(upeprc);
+								}
+								else{
+									$("#progressbar").attr('title','<?php echo $translate->__('Complete',true); ?>: '+perc+'%');
+									$("#progressbar").progressbar( "option", "value", perc );
+								}
+						},<?php echo $interval; ?>);
 					}
 				},interval);
-
-			<?php }
+				
+			<?php }}
 				if(isset($var[16]) && $var[16]=='yes'){
 					if(isset($var[23]) && $var[23]=='yes'){
 			?>
-						$("#countdown").countdown({date:'<?php if(isset($info2) && isset($var[3])) echo $info2.' '.$var[3]; ?>',format:'on'},function(){<?php if(isset($var[4]) && $var[4]!='**@****nullo**@****')echo 'window.location = "'.$var[4].'";'; ?>},"<?php echo $translate->__('Day',true); ?>","<?php echo $translate->__('Days',true); ?>","<?php echo $translate->__('Hour',true); ?>","<?php echo $translate->__('Hours',true); ?>","<?php echo $translate->__('Minute',true); ?>","<?php echo $translate->__('Minutes',true); ?>","<?php echo $translate->__('Second',true); ?>","<?php echo $translate->__('Seconds',true); ?>");
+						$("#countdown").countdown({date:'<?php if(isset($info2) && isset($var[3])) echo $info2.' '.$var[3]; ?>',format:'on'},function(){<?php if(isset($var[4]) && $var[4]!='**@****nullo**@****')echo 'window.location = "'.$var[4].'";'; ?>},"<?php echo $translate->__('Day',true); ?>","<?php echo $translate->__('Days',true); ?>","<?php echo $translate->__('Hour',true); ?>","<?php echo $translate->__('Hours',true); ?>","<?php echo $translate->__('Minute',true); ?>","<?php echo $translate->__('Minutes',true); ?>","<?php echo $translate->__('Second',true); ?>","<?php echo $translate->__('Seconds',true); ?>",<?php echo $offset; ?>);
 			<?php 
 					}
 					else{
 			?>
-						$("#countdown").countdown({date:'<?php if(isset($info2) && isset($var[3])) echo $info2.' '.$var[3]; ?>',format:'on'},null,"<?php echo $translate->__('Day',true); ?>","<?php echo $translate->__('Days',true); ?>","<?php echo $translate->__('Hour',true); ?>","<?php echo $translate->__('Hours',true); ?>","<?php echo $translate->__('Minute',true); ?>","<?php echo $translate->__('Minutes',true); ?>","<?php echo $translate->__('Second',true); ?>","<?php echo $translate->__('Seconds',true); ?>");
+						$("#countdown").countdown({date:'<?php if(isset($info2) && isset($var[3])) echo $info2.' '.$var[3]; ?>',format:'on'},null,"<?php echo $translate->__('Day',true); ?>","<?php echo $translate->__('Days',true); ?>","<?php echo $translate->__('Hour',true); ?>","<?php echo $translate->__('Hours',true); ?>","<?php echo $translate->__('Minute',true); ?>","<?php echo $translate->__('Minutes',true); ?>","<?php echo $translate->__('Second',true); ?>","<?php echo $translate->__('Seconds',true); ?>",<?php echo $offset; ?>);
 			<?php
 					}
 				} 
