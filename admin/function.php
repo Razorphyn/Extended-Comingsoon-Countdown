@@ -103,43 +103,48 @@
 
 	else if(isset($_POST['act']) && $_POST['act']=='send_mail'){
 
-		$_POST['subject']=trim(preg_replace('/\s+/',' ',$_POST['subject']));
+		if(!empty($_POST[$_SESSION['tokens']['smailf']]) || !empty($_POST[$_SESSION['tokens']['smailf']])){
+			header('Content-Type: application/json; charset=utf-8');
+			echo json_encode(array(0=>'Don\'t even think about it'));
+			exit();
+		}
+		$_POST[$_SESSION['tokens']['subject']]=trim(preg_replace('/\s+/',' ',$_POST[$_SESSION['tokens']['subject']]));
 		
-		if(trim(preg_replace('/\s+/','',$_POST['senname']))!='' && preg_match('/^[A-Za-z0-9\/\s\'-]+$/',$_POST['senname'])) 
-			$_POST['senname']=trim(preg_replace('/\s+/',' ',$_POST['senname']));
+		if(trim(preg_replace('/\s+/','',$_POST[$_SESSION['tokens']['senname']]))!='' && preg_match('/^[A-Za-z0-9 \'-]+$/',$_POST[$_SESSION['tokens']['senname']])) 
+			$_POST[$_SESSION['tokens']['senname']]=trim(preg_replace('/\s+/',' ',$_POST[$_SESSION['tokens']['senname']]));
 		else{
 			header('Content-Type: application/json; charset=utf-8');
 			echo json_encode(array(0=>'Invalid Name: only alphanumeric and single quote allowed'));
 			exit();
 		}
 		
-		$_POST['senmail']= trim(preg_replace('/\s+/','',$_POST['senmail']));
-		if(empty($_POST['senmail']) || !filter_var($_POST['senmail'], FILTER_VALIDATE_EMAIL)){
+		$_POST[$_SESSION['tokens']['senmail']]= trim(preg_replace('/\s+/','',$_POST[$_SESSION['tokens']['senmail']]));
+		if(empty($_POST[$_SESSION['tokens']['senmail']]) || !filter_var($_POST[$_SESSION['tokens']['senmail']], FILTER_VALIDATE_EMAIL)){
 			header('Content-Type: application/json; charset=utf-8');
 			echo json_encode(array(0=>'Invalid Mail'));
 			exit();
 		}
 		
-		$_POST['subject']=trim(preg_replace('/\s+/',' ',$_POST['subject']));
-		if($_POST['subject']!='' && trim(preg_replace('/\s+/','',$_POST['message']))!=''){
+		$_POST[$_SESSION['tokens']['subject']]=trim(preg_replace('/\s+/',' ',$_POST[$_SESSION['tokens']['subject']]));
+		if($_POST[$_SESSION['tokens']['subject']]!='' && trim(preg_replace('/\s+/','',$_POST[$_SESSION['tokens']['message']]))!=''){
 			require_once '../translator/class.translation.php';
 			if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])){$lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);if(is_file('../translator/lang/'.$lang.'.csv'))$translate = new Translator($lang);else $translate = new Translator('en');}else $translate = new Translator('en');
 
 			$var=file($fileconfig, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 			
 			$headers = array();
-			$headers[] = "Subject: ".$_POST['subject'];
-			$headers[] = "From: ".$_POST['senmail'];
-			$headers[] = "CC: ".$_POST['senmail'];
-			$headers[] = "Reply-To: ".$_POST['senmail'];
+			$headers[] = "Subject: ".$_POST[$_SESSION['tokens']['subject']];
+			$headers[] = "From: ".$_POST[$_SESSION['tokens']['senmail']];
+			$headers[] = "CC: ".$_POST[$_SESSION['tokens']['senmail']];
+			$headers[] = "Reply-To: ".$_POST[$_SESSION['tokens']['senmail']];
 			$headers[] = "X-Mailer: PHP/".phpversion();
 			$headers[] = "MIME-Version: 1.0";
 			$headers[] = "Content-type: text/plain; charset=UTF-8";
 			$headers=implode("\r\n", $headers);
 			
-			$body=$_POST['message'];
-			$message="------".$translate->__("Information",true)."------\n".$translate->__("Name",true).": ".$_POST['senname']."\n ".$translate->__("Mail",true).": ".$_POST['senmail']."\n ".$translate->__("Telephone",true).": ".$_POST['senphone']."\n------------\n".$body;
-			if(mail($var[7], $_POST['subject'], $message ,$headers)){
+			$body=$_POST[$_SESSION['tokens']['message']];
+			$message="------".$translate->__("Information",true)."------\n".$translate->__("Name",true).": ".$_POST[$_SESSION['tokens']['senname']]."\n ".$translate->__("Mail",true).": ".$_POST[$_SESSION['tokens']['senmail']]."\n ".$translate->__("Telephone",true).": ".$_POST[$_SESSION['tokens']['senphone']]."\n------------\n".$body;
+			if(mail($var[7], $_POST[$_SESSION['tokens']['subject']], $message ,$headers)){
 				header('Content-Type: application/json; charset=utf-8');
 				echo json_encode(array(0=>'Sent'));
 			}

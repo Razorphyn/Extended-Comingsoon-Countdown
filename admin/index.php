@@ -262,27 +262,40 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 						<br/><br/>
 						<h2 class='titlesec'><?php $translate->__("Frontend",false); ?></h2>
 						
-							<label><?php $translate->__("Site Title:",false); ?>*</label><input type="text" id="pgtit" name="pgtit" <?php if(isset($var[5]) && $var[5]!='**@****nullo**@****') echo 'value="'.$var[5].'"'; ?> required />
-						
 							<div class='row-fluid'>
-								<div class='span4'>
-									<label><?php $translate->__("Enable Redirect?",false); ?></label>
+								<div class='span2'>
+									<label><?php $translate->__("Site Title:",false); ?>*</label>
 								</div>
-								<div class='radioform'>
-									<div class='span2'>
-										<input type="radio" name="enredirect" value="yes" <?php if(isset($var[23]) && $var[23]=='yes') echo "checked";else if(!isset($var[23])) echo "checked";  ?>/><?php $translate->__("Yes",false); ?>
-									</div>
-									<div class='span2'>
-										<input type="radio" name="enredirect" value="no" <?php if(isset($var[23]) && $var[23]=='no') echo "checked"; ?>/><?php $translate->__("No",false); ?>
-									</div>
+								<div class='span3'>
+									<input type="text" id="pgtit" name="pgtit" <?php if(isset($var[5]) && $var[5]!='**@****nullo**@****') echo 'value="'.$var[5].'"'; ?> required />
 								</div>
 							</div>
-							<label><?php $translate->__("Finished Site Url:",false); ?>*</label><input type="text" id="urls" name="urls" <?php if(isset($var[4]) && $var[4]!='**@****nullo**@****') echo 'value="'.$var[4].'"'; ?> required />
-						
+							
+							<div class='row-fluid'>
+								<div class='span2'>
+									<label><?php $translate->__("Enable Redirect?",false); ?></label>
+								</div>
+								<div class='span3'>
+									<select name='enredirect' id='enredirect'>
+										<option value='yes'>Yes</option>
+										<option value='no'>No</option>
+									</select>
+								</div>
+								<div class='span2'>
+									<label><?php $translate->__("Finished Site Url:",false); ?>*</label>
+								</div>
+								<div class='span3'>
+									<input type="text" id="urls" name="urls" <?php if(isset($var[4]) && $var[4]!='**@****nullo**@****') echo 'value="'.$var[4].'"'; ?> />
+								</div>
+							</div>
 							<div class='row-fluid'>
 								<div class='span2'><label><?php $translate->__("Use",false); ?> <a href='http://fittextjs.com/' target='_blank'>FitText</a>?</label></div>
-								<div class='span1'><input type="radio" name="enfitetx" value="yes" <?php if(isset($var[18]) && $var[18]=='yes') echo "checked";else if(!isset($var[18])) echo "checked";  ?>/><?php $translate->__("Yes",false); ?> </div>
-								<div class='span1'><input type="radio" name="enfitetx" value="no" <?php if(isset($var[18]) && $var[18]=='no') echo "checked"; ?>/><?php $translate->__("No",false); ?></div>
+								<div class='span3'>
+									<select name='enfitetx' id='enfitetx'>
+										<option value='yes'>Yes</option>
+										<option value='no'>No</option>
+									</select>
+								</div>
 							</div>
 							<br/><br/>
 							<label><?php $translate->__("Site phrase:",false); ?></label><textarea type="text" id="phrase" name="phrase"><?php if(isset($phrase) && $phrase!='**@****nullo**@****') echo stripslashes($phrase); ?></textarea>
@@ -307,13 +320,31 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 							</div>
 							<br/><br/>
 							<div class='row-fluid'>
-								<div class='span4'><label><?php $translate->__("Show Frontend Clock?",false); ?></label><div class='radioform'><div class='span2'><input type="radio" name="dispclock" value="yes" <?php if(isset($var[16]) && $var[16]=='yes') echo "checked";else if(!isset($var[16])) echo "checked";  ?>/><?php $translate->__("Yes",false); ?></div><div class='span2'> <input type="radio" name="dispclock" value="no" <?php if(isset($var[16]) && $var[16]=='no') echo "checked"; ?>/><?php $translate->__("No",false); ?></div></div></div>
-								<div class='span4'><label><?php $translate->__("Show Frontend Progressbar?",false); ?></label><div class='radioform'><div class='span2'><input type="radio" name="dispprog" value="yes" <?php if(isset($var[17]) && $var[17]=='yes') echo "checked";else if(!isset($var[17])) echo "checked";  ?>/><?php $translate->__("Yes",false); ?></div><div class='span2'> <input type="radio" name="dispprog" value="no" <?php if(isset($var[17]) && $var[17]=='no') echo "checked"; ?>/><?php $translate->__("No",false); ?></div></div></div>
+								<div class='span3'><label><?php $translate->__("Show Frontend Clock?",false); ?></label></div>
+								<div class='span3'>
+									<select name='dispclock' id='dispclock'>
+										<option value='yes'>Yes</option>
+										<option value='no'>No</option>
+									</select>
+								</div>
 							</div>
-							<br/>
 							<div class='row-fluid'>
-								<div class='span3'><label><?php $translate->__("Show Frontend Contact Form?",false); ?></label><div class='radioform'><input type="radio" name="shcf" value="yes" <?php if(isset($var[8]) && $var[8]=='yes') echo "checked";else if(!isset($var[8])) echo "checked";  ?>/> <?php $translate->__("Yes",false); ?> <input type="radio" name="shcf" value="no" <?php if(isset($var[8]) && $var[8]=='no') echo "checked"; ?>/> <?php $translate->__("No",false); ?></div></div>
-								<div class='span3'><label><?php $translate->__("Show Frontend Subscribe Form?",false); ?></label><div class='radioform'><input type="radio" name="shsf" value="yes" <?php if(isset($var[9]) && $var[9]=='yes') echo "checked";else if(!isset($var[9])) echo "checked";  ?>/> <?php $translate->__("Yes",false); ?> <input type="radio" name="shsf" value="no" <?php if(isset($var[9]) && $var[9]=='no') echo "checked"; ?>/> <?php $translate->__("No",false); ?></div></div>
+								<div class='span3'><label><?php $translate->__("Show Frontend Contact Form?",false); ?></label></div>
+								<div class='span3'>
+									<select name='shcf' id='shcf'>
+										<option value='yes'>Yes</option>
+										<option value='no'>No</option>
+									</select>
+								</div>
+							</div>
+							<div class='row-fluid'>
+								<div class='span3'><label><?php $translate->__("Show Frontend Subscribe Form?",false); ?></label></div>
+								<div class='span3'>
+									<select name='shsf' id='shsf'>
+										<option value='yes'>Yes</option>
+										<option value='no'>No</option>
+									</select>
+								</div>
 							</div>
 							<br/>
 							<label><?php $translate->__("Progressbar Phrase:",false); ?></label><textarea type="text" id="progph" name="progph" ><?php if(isset($frontph[1]) && $frontph[1]!='**@****nullo**@****') echo stripslashes($frontph[1]); ?></textarea>
@@ -324,11 +355,20 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 							<h3>Email Setting</h3>
 							<label><?php $translate->__("Server Email Restriction",false); ?></label><br/>
 							<div class='row-fluid'>
-								<div class='span2'><?php $translate->__("Number of email",false); ?></div><div class='span4'><input type="text" id="mailimit" name="mailimit" <?php if(isset($var[14]) && $var[14]!='none') echo 'value="'.$var[14].'"'; ?> /></div><div class='span2'><?php $translate->__("per (in seconds)",false); ?></div><div class='span4'><input type="text" id="pertime" name="pertime" <?php if(isset($var[15]) && $var[15]!='none') echo 'value="'.$var[15].'"'; ?> /></div>
+								<div class='span2'><?php $translate->__("Number of email",false); ?></div>
+								<div class='span3'><input type="text" id="mailimit" name="mailimit" <?php if(isset($var[14]) && $var[14]!='none') echo 'value="'.$var[14].'"'; ?> /></div>
+								<div class='span2'><?php $translate->__("per (in seconds)",false); ?></div>
+								<div class='span3'><input type="text" id="pertime" name="pertime" <?php if(isset($var[15]) && $var[15]!='none') echo 'value="'.$var[15].'"'; ?> /></div>
 							</div>
 							<br/><br/>
 							<div class='row-fluid'>
-								<div class='span3'><label><?php $translate->__("Show Unsubscribe Link Inside Email Footer?",false); ?></label><div class='radioform'><input type="radio" name="shunl" value="yes" <?php if(isset($var[11]) && $var[11]=='yes') echo "checked";else if(!isset($var[11])) echo "checked";  ?>/> <?php $translate->__("Yes",false); ?> <input type="radio" name="shunl" value="no" <?php if(isset($var[11]) && $var[11]=='no') echo "checked"; ?>/> <?php $translate->__("No",false); ?></div></div>
+								<div class='span3'><label><?php $translate->__("Show Unsubscribe Link Inside Email Footer?",false); ?></label></div>
+								<div class='span3'>
+									<select name='shunl' id='shunl'>
+										<option value='yes'>Yes</option>
+										<option value='no'>No</option>
+									</select>
+								</div>
 							</div>
 							<p><?php $translate->__("Once you have saved these settings you can complete the email configuration under <a href='mail_setting.php'>Setup->Mail</a>",false); ?></p>
 							<br/><br/>
@@ -435,11 +475,27 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 		<script type="text/javascript"  src="../js/noty/themes/default.js"></script>
 		<script type="text/javascript">
 		$(document).ready(function() {
-			
+			<?php if(isset($var[8])){ ?>
+				$('select[name="shcf"] option[value="<?php echo $var[8]; ?>"]').attr("selected", "selected");
+				<?php if(isset($var[8])=='yes'){ ?>
+					$('#emailad').attr('required','required');
+			<?php }}if(isset($var[9])){ ?>
+				$('select[name="shsf"] option[value="<?php echo $var[9]; ?>"]').attr("selected", "selected");
+			<?php }if(isset($var[11])){ ?>
+				$('select[name="shunl"] option[value="<?php echo $var[11]; ?>"]').attr("selected", "selected");
+			<?php }if(isset($var[23])){ ?>
+				$('select[name="enredirect"] option[value="<?php echo $var[23]; ?>"]').attr("selected", "selected");
+				<?php if(isset($var[23])=='yes'){ ?>
+					$('#urls').attr('required','required');
+			<?php }}if(isset($var[18])){ ?>
+				$('select[name="enfitetx"] option[value="<?php echo $var[18]; ?>"]').attr("selected", "selected");
+			<?php }if(isset($var[16])){ ?>
+				$('select[name="dispclock"] option[value="<?php echo $var[16]; ?>"]').attr("selected", "selected");
+			<?php } ?>
 			CKEDITOR.replace('phrase');
 			CKEDITOR.replace('progph');
 			CKEDITOR.replace('footerph');
-			
+
 			$('#datai').datepicker({ dateFormat: 'yy-mm-dd' });
 			<?php if(isset($var[0]) && $var[0]!='' ){ ?>$("#datai").datepicker("setDate", "<?php echo $var[0] ?>");<?php } ?>
 			var dateArray = new String("<?php echo date("Y-m-d");?>").split('-'),
@@ -453,14 +509,28 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 			var dateArray = new String("<?php if(isset($var[0]))echo $var[0];else echo date("Y-m-d");?>").split('-'),
 				dateObject = new Date(dateArray[0], dateArray[1]-1, dateArray[2]);
 			$("#dataf" ).datepicker("option", "minDate", dateObject);
+			
+			$('#shcf').change(function(){
+				if($(this).val()=='yes')
+					$('#emailad').attr('required','required')
+				else
+					$('#emailad').removeAttr('required')
+			});
+			
+			$('#enredirect').change(function(){
+				if($(this).val()=='yes')
+					$('#urls').attr('required','required')
+				else
+					$('#urls').removeAttr('required')
+			});
 
 			$('#datacom').click(function(){
 				var metadesc=$('#metadesc').val().replace(/\s+/g,' '),
 					metakey=$('#metakey').val().replace(/\s+/g,' '),
 					pgtit=$('#pgtit').val().replace(/\s+/g,' '),
-					enredirect=$('input[type=radio][name="enredirect"]:checked').val(),
+					enredirect=$('#enredirect').val(),
 					urls=$('#urls').val().replace(/\s+/g,' '),
-					enfitetx=$('input[type=radio][name="enfitetx"]:checked').val(),
+					enfitetx=$('#enfitetx').val(),
 					phrase=CKEDITOR.instances.phrase.getData().replace(/\s+/g,' '),
 					tz=$('#tz').val().replace(/\s+/g,''),
 					datai=$('#datai').val().replace(/\s+/g,''),
@@ -476,11 +546,11 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 					psphrase=$('#psphrase').val().replace(/\s+/g,''),
 					phpexec=$('#execpara').val().replace(/\s+/g,' '),
 					cronpara=$('#cronpara').val().replace(/\s+/g,' '),
-					shcf=$('input[type=radio][name="shcf"]:checked').val(),
-					shsf=$('input[type=radio][name="shsf"]:checked').val(),
-					shunl=$('input[type=radio][name="shunl"]:checked').val(),
-					dispclock=$('input[type=radio][name="dispclock"]:checked').val(),
-					dispprog=$('input[type=radio][name="dispprog"]:checked').val(),
+					shcf=$('#shcf').val(),
+					shsf=$('#shsf').val(),
+					shunl=$('#shunl').val(),
+					dispclock=$('#dispclock').val(),
+					dispprog=$('#dispprog').val(),
 					mailimit=$('#mailimit').val().replace(/\s+/g,''),
 					pertime=$('#pertime').val().replace(/\s+/g,''),
 					progph=CKEDITOR.instances.progph.getData().replace(/\s+/g,' '),

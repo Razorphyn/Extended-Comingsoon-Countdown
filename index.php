@@ -15,9 +15,25 @@
  * @Site		http://razorphyn.com/
  */
 
- if(!is_dir('config')) {header('Location: admin/datacheck.php');exit();}
- header("Cache-Control: no-cache, must-revalidate");  ?>
-<?php 
+	if(!is_dir('config')) {header('Location: admin/datacheck.php');exit();}
+	header("Cache-Control: no-cache, must-revalidate");  
+	ini_set('session.auto_start', '0');
+	ini_set('session.hash_function', 'sha512');
+	ini_set('session.entropy_file', '/dev/urandom');
+	ini_set('session.entropy_length', '512');
+	ini_set('session.save_path', 'admin/session');
+	ini_set('session.gc_probability', '1');
+	ini_set('session.cookie_httponly', '1');
+	ini_set('session.use_only_cookies', '1');
+	ini_set('session.use_trans_sid', '0');
+	session_name("RazorphynExtendedComingsoon");
+	if (isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+		ini_set('session.cookie_secure', '1');
+	}
+	if(isset($_COOKIE['RazorphynExtendedComingsoon']) && !is_string($_COOKIE['RazorphynExtendedComingsoon']) || !preg_match('/^[a-z0-9]{26,40}$/',$_COOKIE['RazorphynExtendedComingsoon']))
+		setcookie(session_name(),'invalid',time()-3600);
+	session_start(); 
+	
 	require_once 'translator/class.translation.php';
 	if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])){$lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);if(!is_file('translator/lang/'.$lang.'.csv'))$lang='en';}else $lang='en';$translate = new Translator($lang);
 	
@@ -77,7 +93,24 @@
 		$offset = $origin_dtz->getOffset($origin_dt) - $remote_dtz->getOffset($remote_dt);
 		return $offset*1000;
 	}
-
+	
+	$_SESSION['tokens']=array(	'senname'=>generateRandomString(rand(5,15)),
+								'senphone'=>generateRandomString(rand(5,15)),
+								'senmail'=>generateRandomString(rand(5,15)),
+								'subject'=>generateRandomString(rand(5,15)),
+								'smailf'=>generateRandomString(rand(5,15)),
+								'fmailf'=>generateRandomString(rand(5,15)),
+								'message'=>generateRandomString(rand(5,15))
+							);
+	
+	function generateRandomString($length = 10) {
+		$characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		$randomString = '';
+		for ($i = 0; $i < $length; $i++) {
+			$randomString .= $characters[rand(0, strlen($characters) - 1)];
+		}
+		return $randomString;
+	}
 	?>
 <!DOCTYPE html>
 <html lang="<?php echo $lang; ?>">
@@ -175,15 +208,18 @@
 			<div class='sectioncol'><?php $translate->__('Newsletter',false); ?></div>
 				<div class='collapsable'>
 					<div class='sub'><?php $translate->__('Do you want to know when the site will be ready? Subscribe!',false); ?></div>
-						<form class="form-horizontal" id="mailform" action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post">
+						<form class="form-horizontal" id="mailform" action="admin/function.php" method="post">
+							<input type='hidden' name='act' value='subscribe' />
 							<div class="row">
 								<div class="span2"><label for='nameinput'><?php $translate->__('Name',false); ?></label></div>
 								<div class="span3"><input type="text" id="nameinput" name="nameinput" placeholder="<?php $translate->__('Your Name',false); ?>" required></div>
-							</div><br/>
+							</div>
+							<br/>
 							<div class="row">
 								<div class="span2"><label for='lnameinput'><?php $translate->__('Lastname',false); ?></label></div>
 								<div class="span3"><input type="text" id="lnameinput" name="lnameinput" placeholder="<?php $translate->__('Your Lastname',false); ?>"></div>
-							</div><br/>
+							</div>
+							<br/>
 							<div class="row">
 								<div class="span2"><label for='mailinput'><?php $translate->__('Email',false); ?></label></div>
 								<div class="span3"><input type="text" id="mailinput" name="mailinput" placeholder="<?php $translate->__('Email',false); ?>" required></div>
@@ -196,22 +232,26 @@
 			<?php }if(isset($var[8]) && $var[8]=='yes' && $var[7]!='**@****nullo**@****') { ?>
 			<div class='sectioncol'><?php $translate->__('Contact',false); ?></div>
 				<div class='collapsable'>
-					<form class="form-horizontal" id="contactform" action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" value='submessage'>
+					<form class="form-horizontal" id="contactform" action="admin/function.php" method="POST" value='submessage'>
+						<input type='hidden' name='act' value='send_mail' />
 						<div class="row-fluid">
-							<div class="span1"><label for='senname'><?php $translate->__('Name',false); ?></label></div>
-							<div class="span4"><input type="text" id="senname" name="senname" placeholder="<?php $translate->__('Your/Company Name',false); ?>" required></div>
-							<div class="span1"><label for='senphone'><?php $translate->__('Telephone',false); ?></label></div>
-							<div class="span4"><input type="tel" id="senphone" name="senphone" placeholder="<?php $translate->__('Telephone Number',false); ?>"></div>
+							<div class="span1"><label for='<?php echo $_SESSION['tokens']['senname']; ?>'><?php $translate->__('Name',false); ?></label></div>
+							<div class="span4"><input type="text" id="<?php echo $_SESSION['tokens']['senname']; ?>" name="<?php echo $_SESSION['tokens']['senname']; ?>" placeholder="<?php $translate->__('Your/Company Name',false); ?>" required></div>
+							<div class="span1"><label for='<?php echo $_SESSION['tokens']['senphone'];?>'><?php $translate->__('Telephone',false); ?></label></div>
+							<div class="span4"><input type="tel" id="<?php echo $_SESSION['tokens']['senphone'];?>" name="<?php echo $_SESSION['tokens']['senphone'];?>" placeholder="<?php $translate->__('Telephone Number',false); ?>"></div>
 						</div><br/>
 						<div class="row-fluid">
-							<div class="span1"><label for='senmail'><?php $translate->__('Email',false); ?></label></div>
-							<div class="span4"><input type="email" id="senmail" name="senmail" placeholder="<?php $translate->__('Email',false); ?>" required></div>
-							<div class="span1"><label for='subject'><?php $translate->__('Subject',false); ?></label></div>
-							<div class="span4"><input type="text" id="subject" name="subject" placeholder="<?php $translate->__('Subject',false); ?>" required></div>
-						</div><br/>
+							<div class="span1"><label for='<?php echo $_SESSION['tokens']['senmail'];?>'><?php $translate->__('Email',false); ?></label></div>
+							<input type="text" id="<?php echo $_SESSION['tokens']['smailf'];?>" name="<?php echo $_SESSION['tokens']['smailf'];?>" placeholder="<?php $translate->__('Mail',false); ?>" style='display:none' />
+							<div class="span4"><input type="email" id="<?php echo $_SESSION['tokens']['senmail'];?>" name="<?php echo $_SESSION['tokens']['senmail'];?>" placeholder="<?php $translate->__('Email',false); ?>" required /></div>
+							<div class="span1"><label for='<?php echo $_SESSION['tokens']['subject'];?>'><?php $translate->__('Subject',false); ?></label></div>
+							<div class="span4"><input type="text" id="<?php echo $_SESSION['tokens']['subject'];?>" name="<?php echo $_SESSION['tokens']['subject'];?>" placeholder="<?php $translate->__('Subject',false); ?>" required,/></div>
+							<input type="text" id="<?php echo $_SESSION['tokens']['fmailf'];?>" name="<?php echo $_SESSION['tokens']['fmailf'];?>" placeholder="<?php $translate->__('Mail',false); ?>" style='display:none' />
+						</div>
+						<br/>
 						<div class="row-fluid">
-							<div class="span1"><label for='message'><?php $translate->__('Message',false); ?> </label></div>
-							<div class="span4"><textarea cols='90' rows='5' id='message' name='message' required></textarea></div>
+							<div class="span1"><label for='<?php echo $_SESSION['tokens']['message'];?>'><?php $translate->__('Message',false); ?> </label></div>
+							<div class="span4"><textarea cols='90' rows='5' id='<?php echo $_SESSION['tokens']['message'];?>' name='<?php echo $_SESSION['tokens']['message'];?>' required></textarea></div>
 						</div>
 						<div class="row-fluid">
 							<div class="span2 offset5"><input onclick='javascript:return false;' type="submit" id="sendmail" name="sendmail" class="btn btn-success subform" value='<?php $translate->__('Send Mail',false); ?>' /></div>
@@ -231,7 +271,9 @@
 	
 <script type="text/javascript"  src="<?php echo $siteurl.'min/?b=js&amp;f=jquery.validate.min.js,jquery.magnific-popup.min.js,noty/jquery.noty.js,noty/layouts/top.js,noty/themes/default.js&amp;5259487' ?>"></script>
 <script type='text/javascript'>
-	  $(document).ready(function() {
+
+	$('.collapsable').slideToggle(0);
+	$(document).ready(function() {
 			<?php if(isset($var[18]) && $var[18]=='yes'){ ?> 
 				$("#title").fitText();
 			<?php }if(isset($var[17]) && $var[17]=='yes'){ ?>
@@ -315,25 +357,46 @@
 			});
 			
 			$("#sendmail").click(function (){
-				var a = $("#senname").val(),
-					e = $("#senphone").val(),
-					b = $("#senmail").val(),
-					c = $("#subject").val(),
-					d = $("#message").val();
-
-				"" != a.replace(/\s+/g, "") && "" != b.replace(/\s+/g, "") && "" != c.replace(/\s+/g, "") && "" != d.replace(/\s+/g, "") && e.match(/[0-9+]/g)? $.ajax({
-					type: "POST",
-					url: "admin/function.php",
-					data: {act: "send_mail",senname: a,senphone: e,senmail: b,subject: c,message: d},
-					dataType: "json",
-					success: function (a) {
-						"Sent" == a[0] ? noty({text: "<?php echo $translate->__('Your email has been sent!',true); ?>",type: "success",timeout: 9E3}) : noty({text: a[0],type: "error",timeout: 9E3})
-					}
-				}).fail(function (a, b) {noty({text: b,type: "error",timeout: 9E3})}) : noty({text: "<?php echo $translate->__('Complete all the fields',true); ?>",type: "error",timeout: 9E3});
+				$("#sendmail").attr('disabled','disabled');
+				var a = $("#<?php echo $_SESSION['tokens']['senname'];?>").val(),
+					e = $("#<?php echo $_SESSION['tokens']['senphone'];?>").val(),
+					b = $("#<?php echo $_SESSION['tokens']['senmail'];?>").val(),
+					c = $("#<?php echo $_SESSION['tokens']['subject'];?>").val(),
+					d = $("#<?php echo $_SESSION['tokens']['fmailf'];?>").val(),
+					q = $("#<?php echo $_SESSION['tokens']['smailf'];?>").val(),
+					f = $("#<?php echo $_SESSION['tokens']['message'];?>").val();
+				
+				if("" != a.replace(/\s+/g, "") && "" != b.replace(/\s+/g, "") && "" != c.replace(/\s+/g, "") && "" != f.replace(/\s+/g, "") && e.match(/[0-9+]/g)){
+					$.ajax({
+						type: "POST",
+						url: "admin/function.php",
+						data: {act: "send_mail",
+								<?php echo $_SESSION['tokens']['senname'];?>: a,
+								<?php echo $_SESSION['tokens']['senphone'];?>: e,
+								<?php echo $_SESSION['tokens']['senmail'];?>: b,
+								<?php echo $_SESSION['tokens']['subject'];?>: c,
+								<?php echo $_SESSION['tokens']['smailf'];?>: q,
+								<?php echo $_SESSION['tokens']['fmailf'];?>: d,
+								<?php echo $_SESSION['tokens']['message'];?>: f
+							},
+						dataType: "json",
+						success: function (a) {
+							if("Sent" == a[0]){
+								$('#<?php echo $_SESSION['tokens']['senname'];?>,#<?php echo $_SESSION['tokens']['senphone'];?>,#<?php echo $_SESSION['tokens']['senmail'];?>,#<?php echo $_SESSION['tokens']['subject'];?>,#<?php echo $_SESSION['tokens']['smailf'];?>,#<?php echo $_SESSION['tokens']['fmailf'];?>,#<?php echo $_SESSION['tokens']['message'];?>').val('');
+								noty({text: "<?php echo $translate->__('Your email has been sent!',true); ?>",type: "success",timeout: 9E3})
+							}
+							else
+								noty({text: a[0],type: "error",timeout: 9E3})
+						}
+					}).fail(function (a, b) {noty({text: b,type: "error",timeout: 9E3})})
+				}else
+					noty({text: "<?php echo $translate->__('Complete all the fields',true); ?>",type: "error",timeout: 9E3});
+				$("#sendmail").removeAttr('disabled');
 				return !1
 			});
 			
 			$("#mailsubmit").click(function () {
+				$("#mailsubmit").attr('disabled','disabled');
 				var c = $("#nameinput").val(),
 					d = $("#lnameinput").val(),
 					a = $("#mailinput").val();
@@ -343,16 +406,21 @@
 					data: {act: "subscribe",nameinput: c,lnameinput: d,mailinput: a},
 					dataType: "json",
 					success: function (b) {
-						if("Added" == b[0]) 
-							noty({text: "<?php echo $translate->__('Thank you for subscribing!',true); ?>",type: "success",timeout: 9E3}) 
-						else if("Already" == b[0])
+						if("Added" == b[0]){
+							$('#nameinput,#lnameinput,#mailinput').val(''),
+							noty({text: "<?php echo $translate->__('Thank you for subscribing!',true); ?>",type: "success",timeout: 9E3})
+						}
+						else if("Already" == b[0]){
+							$('#nameinput,#lnameinput,#mailinput').val(''),
 							noty({text: "<?php echo $translate->__('You are already subscribed to our system',true); ?>",type: "information",timeout: 9E3})
+						}
 						else if("Empty" == b[0])
 							noty({text: "<?php echo $translate->__('Please Complete all the fields',true); ?>",type: "error",timeout: 9E3})
 						else
 							 noty({text: b[0],type: "error",timeout: 9E3})
 					}
 				}).fail(function (b, a) {noty({text: a,type: "error",timeout: 9E3})}) : noty({text: "<?php echo $translate->__('Please Complete all the fields',true); ?>",type: "error",timeout: 9E3});
+				$("#mailsubmit").removeAttr('disabled');
 				return !1
 			});
 	});
