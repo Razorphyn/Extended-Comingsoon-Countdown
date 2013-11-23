@@ -108,16 +108,25 @@
 			echo json_encode(array(0=>'Don\'t even think about it'));
 			exit();
 		}
+		
+		$var=file($fileconfig, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+		if(isset($var[24]) && $var[24]=='yes' && $_SESSION['captcha_code']!=$_POST['verify_captcha']){
+			header('Content-Type: application/json; charset=utf-8');
+			echo json_encode(array(0=>'Invalid Captcha',1=>'invalid_captcha'));
+			exit();
+		}
+
 		$_POST[$_SESSION['tokens']['subject']]=trim(preg_replace('/\s+/',' ',$_POST[$_SESSION['tokens']['subject']]));
 		
-		if(trim(preg_replace('/\s+/','',$_POST[$_SESSION['tokens']['senname']]))!='' && preg_match('/^[A-Za-z0-9 \'-]+$/',$_POST[$_SESSION['tokens']['senname']])) 
+		if(trim(preg_replace('/\s+/','',$_POST[$_SESSION['tokens']['senname']]))!='' && preg_match("/^([a-zA-ZÀ-ÿ-' ]+)$/",$_POST[$_SESSION['tokens']['senname']])) 
 			$_POST[$_SESSION['tokens']['senname']]=trim(preg_replace('/\s+/',' ',$_POST[$_SESSION['tokens']['senname']]));
 		else{
 			header('Content-Type: application/json; charset=utf-8');
 			echo json_encode(array(0=>'Invalid Name: only alphanumeric and single quote allowed'));
 			exit();
 		}
-		
+
 		$_POST[$_SESSION['tokens']['senmail']]= trim(preg_replace('/\s+/','',$_POST[$_SESSION['tokens']['senmail']]));
 		if(empty($_POST[$_SESSION['tokens']['senmail']]) || !filter_var($_POST[$_SESSION['tokens']['senmail']], FILTER_VALIDATE_EMAIL)){
 			header('Content-Type: application/json; charset=utf-8');
@@ -130,8 +139,7 @@
 			require_once '../translator/class.translation.php';
 			if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])){$lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);if(is_file('../translator/lang/'.$lang.'.csv'))$translate = new Translator($lang);else $translate = new Translator('en');}else $translate = new Translator('en');
 
-			$var=file($fileconfig, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-			
+
 			$headers = array();
 			$headers[] = "Subject: ".$_POST[$_SESSION['tokens']['subject']];
 			$headers[] = "From: ".$_POST[$_SESSION['tokens']['senmail']];
@@ -141,20 +149,20 @@
 			$headers[] = "MIME-Version: 1.0";
 			$headers[] = "Content-type: text/plain; charset=UTF-8";
 			$headers=implode("\r\n", $headers);
-			
+
 			$body=$_POST[$_SESSION['tokens']['message']];
-			$message="------".$translate->__("Information",true)."------\n".$translate->__("Name",true).": ".$_POST[$_SESSION['tokens']['senname']]."\n ".$translate->__("Mail",true).": ".$_POST[$_SESSION['tokens']['senmail']]."\n ".$translate->__("Telephone",true).": ".$_POST[$_SESSION['tokens']['senphone']]."\n------------\n".$body;
+			$message="------".$translate->__("Information",true)."------\n ".$translate->__("Name",true).": ".$_POST[$_SESSION['tokens']['senname']]."\n ".$translate->__("Mail",true).": ".$_POST[$_SESSION['tokens']['senmail']]."\n ".$translate->__("Telephone",true).": ".$_POST[$_SESSION['tokens']['senphone']]."\n------------\n".$body;
 			if(mail($var[7], $_POST[$_SESSION['tokens']['subject']], $message ,$headers)){
 				header('Content-Type: application/json; charset=utf-8');
 				echo json_encode(array(0=>'Sent'));
 			}
 			else{
 				header('Content-Type: application/json; charset=utf-8');
-				echo json_encode(array(0=>'Error'));
+				echo json_encode(array(0=>'Error: couldn\'t send email'));
 			}
 		}
 		else{
-			echo json_encode(array(0=>'Error'));
+			echo json_encode(array(0=>'Error: empty subject or message'));
 			exit();
 		}
 	}
@@ -413,16 +421,16 @@
 	}
 	
 	else if(isset($_SESSION['views']) && isset($_POST['act'])  && $_POST['act']=='save_stmp'){
-		$serv=(is_numeric($_POST['serv'])) ? $_POST['serv']:exit();
-		$mustang=(string)$_POST['name'];
-		$viper=(string)$_POST['mail'];
-		$host=(string)$_POST['host'];
-		$port=(is_numeric($_POST['port'])) ? $_POST['port']:exit();
-		$ssl=(is_numeric($_POST['ssl'])) ? $_POST['ssl']:exit();
-		$auth=(is_numeric($_POST['auth'])) ? $_POST['auth']:exit();
+		$_POST['serv']=(is_numeric($_POST['serv'])) ? $_POST['serv']:exit();
+		$_POST['name']=(!empty($_POST['name'])) ?$_POST['name']:'';
+		$_POST['mail']=(!empty($_POST['mail'])) ?$_POST['mail']:'';
+		$_POST['host']=(!empty($_POST['host'])) ? $_POST['host']:'';
+		$_POST['port']=(is_numeric($_POST['port']) && !empty($_POST['port'])) ? $_POST['port']:'\'\'';
+		$_POST['ssl']=(is_numeric($_POST['ssl'])) ? $_POST['ssl']:0;
+		$_POST['auth']=($_POST['auth']==1) ? 1:0;
 		
-		$usr=(string)$_POST['usr'];
-		$pass=(string)$_POST['pass'];
+		$usr=(!empty($_POST['usr'])) ? $_POST['usr']:'';
+		$pass=(!empty($_POST['pass'])) ? $_POST['pass']:'';
 		if(preg_replace('/\s+/','',$_POST['pass'])!=''){
 			$crypttable=array('a'=>'X','b'=>'k','c'=>'Z','d'=>2,'e'=>'d','f'=>6,'g'=>'o','h'=>'R','i'=>3,'j'=>'M','k'=>'s','l'=>'j','m'=>8,'n'=>'i','o'=>'L','p'=>'W','q'=>0,'r'=>9,'s'=>'G','t'=>'C','u'=>'t','v'=>4,'w'=>7,'x'=>'U','y'=>'p','z'=>'F',0=>'q',1=>'a',2=>'H',3=>'e',4=>'N',5=>1,6=>5,7=>'B',8=>'v',9=>'y','A'=>'K','B'=>'Q','C'=>'x','D'=>'u','E'=>'f','F'=>'T','G'=>'c','H'=>'w','I'=>'D','J'=>'b','K'=>'z','L'=>'V','M'=>'Y','N'=>'A','O'=>'n','P'=>'r','Q'=>'O','R'=>'g','S'=>'E','T'=>'I','U'=>'J','V'=>'P','W'=>'m','X'=>'S','Y'=>'h','Z'=>'l');
 			$pass=str_split($pass);
@@ -433,7 +441,8 @@
 			}
 			$pass=implode('',$pass);
 		}
-		$string='<?php $smailservice='.$serv.";\n".'$smailname=\''.$mustang."';\n".'$settingmail=\''.$viper."';\n".'$smailhost=\''.$host."';\n".'$smailport='.$port.";\n".'$smailssl='.$ssl.";\n".'$smailauth='.$auth.";\n".'$smailuser=\''.$mustang."';\n".'$smailpassword=\''.$mustang."';\n ?>";
+		
+		$string='<?php'."\n".'$smailservice='.$_POST['serv'].";\n".'$smailname=\''.$_POST['name']."';\n".'$settingmail=\''.$_POST['mail']."';\n".'$smailhost=\''.$_POST['host']."';\n".'$smailport='.$_POST['port'].";\n".'$smailssl='.$_POST['ssl'].";\n".'$smailauth='.$_POST['auth'].";\n".'$smailuser=\''.$mustang."';\n".'$smailpassword=\''.$mustang."';\n ?>";
 		if(file_put_contents('../config/stmp.php',$string))
 			echo json_encode(array(0=>'Saved'));
 		else
@@ -570,6 +579,7 @@
 			$_POST['tz']=(trim(preg_replace('/\s+/','',$_POST['tz'])==''))? '**@****nullo**@****':preg_replace('/\s+/','',$_POST['tz']);
 			$_POST['enredirect']=(trim(preg_replace('/\s+/','',$_POST['enredirect'])=='yes'))? 'yes':'no';
 			$_POST['enfitetx']=(trim(preg_replace('/\s+/','',$_POST['enfitetx'])=='yes'))? 'yes':'no';
+			$_POST['encaptcha']=(trim(preg_replace('/\s+/','',$_POST['encaptcha'])=='yes'))? 'yes':'no';
 
 			$_POST['mailimit']=trim(str_replace(' ','',$_POST['mailimit']));
 			$_POST['pertime']=trim(str_replace(' ','',$_POST['pertime']));
@@ -600,7 +610,7 @@
 
 			$fs=fopen($fileconfig,"w+");
 				fwrite($fs,$datai."\n".$orai."\n".$dataf."\n".$oraf."\n".$_POST['urls']."\n".$_POST['pgtit']."\n".$_POST['perc']."\n".$_POST['emailad']."\n".$_POST['shcf']."\n".$_POST['shsf']."\n".$_POST['tz']."\n".$_POST['shunl']."\n".$_SERVER['SERVER_NAME']."\n");
-				fwrite($fs,dirname(dirname($_SERVER['SCRIPT_NAME']))."\n".$_POST['mailimit']."\n".$_POST['pertime']."\n".$_POST['dispclock']."\n".$_POST['dispprog']."\n".$_POST['enfitetx']."\n".$_POST['psphrase']."\n".$add."\n".$_POST['eparam']."\n".$_POST['cronpara']."\n".$_POST['enredirect']);
+				fwrite($fs,dirname(dirname($_SERVER['SCRIPT_NAME']))."\n".$_POST['mailimit']."\n".$_POST['pertime']."\n".$_POST['dispclock']."\n".$_POST['dispprog']."\n".$_POST['enfitetx']."\n".$_POST['psphrase']."\n".$add."\n".$_POST['eparam']."\n".$_POST['cronpara']."\n".$_POST['enredirect']."\n".$_POST['encaptcha']);
 			fclose($fs);
 
 			$output = shell_exec('crontab -l');

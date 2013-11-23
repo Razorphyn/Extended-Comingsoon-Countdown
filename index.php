@@ -245,14 +245,26 @@
 							<input type="text" id="<?php echo $_SESSION['tokens']['smailf'];?>" name="<?php echo $_SESSION['tokens']['smailf'];?>" placeholder="<?php $translate->__('Mail',false); ?>" style='display:none' />
 							<div class="span4"><input type="email" id="<?php echo $_SESSION['tokens']['senmail'];?>" name="<?php echo $_SESSION['tokens']['senmail'];?>" placeholder="<?php $translate->__('Email',false); ?>" required /></div>
 							<div class="span1"><label for='<?php echo $_SESSION['tokens']['subject'];?>'><?php $translate->__('Subject',false); ?></label></div>
-							<div class="span4"><input type="text" id="<?php echo $_SESSION['tokens']['subject'];?>" name="<?php echo $_SESSION['tokens']['subject'];?>" placeholder="<?php $translate->__('Subject',false); ?>" required,/></div>
+							<div class="span4"><input type="text" id="<?php echo $_SESSION['tokens']['subject'];?>" name="<?php echo $_SESSION['tokens']['subject'];?>" placeholder="<?php $translate->__('Subject',false); ?>" required /></div>
 							<input type="text" id="<?php echo $_SESSION['tokens']['fmailf'];?>" name="<?php echo $_SESSION['tokens']['fmailf'];?>" placeholder="<?php $translate->__('Mail',false); ?>" style='display:none' />
 						</div>
 						<br/>
 						<div class="row-fluid">
 							<div class="span1"><label for='<?php echo $_SESSION['tokens']['message'];?>'><?php $translate->__('Message',false); ?> </label></div>
-							<div class="span4"><textarea cols='90' rows='5' id='<?php echo $_SESSION['tokens']['message'];?>' name='<?php echo $_SESSION['tokens']['message'];?>' required></textarea></div>
+							<div class="span4"><textarea cols='90' rows='5' id='<?php echo $_SESSION['tokens']['message'];?>' name='<?php echo $_SESSION['tokens']['message'];?>' placeholder='<?php $translate->__('Message',false); ?>' required></textarea></div>
 						</div>
+						<br/>
+						
+						<?php if(isset($var[24]) && $var[24]=='yes'){ ?>
+							<div class="row-fluid">
+								<div class="span2"><img src="admin/captcha_generator.php?rand=<?php echo rand(4,8);?>" id='captchaimg'></div>
+							</div>
+							<div class="row-fluid">
+								<div class="span1"><label for='verify_captcha'><?php $translate->__('Code:',false); ?></label></div>
+								<div class="span4"><input id="verify_captcha" name="verify_captcha" type="text" placeholder='<?php $translate->__('Insert the 4 Digit Code',false); ?>' autocomplete="off" required /></div>
+								<div class="span1"><a href='javascript:refreshCaptcha();'>Refresh Code</a></div>
+							</div>
+						<?php } ?>
 						<div class="row-fluid">
 							<div class="span2 offset5"><input onclick='javascript:return false;' type="submit" id="sendmail" name="sendmail" class="btn btn-success subform" value='<?php $translate->__('Send Mail',false); ?>' /></div>
 						</div>
@@ -272,7 +284,7 @@
 <script type="text/javascript"  src="<?php echo $siteurl.'min/?b=js&amp;f=jquery.validate.min.js,jquery.magnific-popup.min.js,noty/jquery.noty.js,noty/layouts/top.js,noty/themes/default.js&amp;5259487' ?>"></script>
 <script type='text/javascript'>
 
-	$('.collapsable').slideToggle(0);
+	$('.collapsable').slideToggle(100);
 	$(document).ready(function() {
 			<?php if(isset($var[18]) && $var[18]=='yes'){ ?> 
 				$("#title").fitText();
@@ -299,7 +311,7 @@
 				$("#progressbar").children('.ui-progressbar').css('max-width',presize);});
 
 			<?php if( isset($var[6]) && $var[6]=='**@****nullo**@****'){ ?>
-				
+
 				setTimeout(function(){
 					perc=(new Date().getTime()-offset-initial_milli)*100/final_milli,
 					perc=parseFloat(perc.toFixed(2));
@@ -365,8 +377,9 @@
 					d = $("#<?php echo $_SESSION['tokens']['fmailf'];?>").val(),
 					q = $("#<?php echo $_SESSION['tokens']['smailf'];?>").val(),
 					f = $("#<?php echo $_SESSION['tokens']['message'];?>").val();
+				<?php if(isset($var[24]) && $var[24]=='yes'){ ?> var	z = $("#verify_captcha").val(); <?php } ?>
 				
-				if("" != a.replace(/\s+/g, "") && "" != b.replace(/\s+/g, "") && "" != c.replace(/\s+/g, "") && "" != f.replace(/\s+/g, "") && e.match(/[0-9+]/g)){
+				if("" != a.replace(/\s+/g, "") && "" != b.replace(/\s+/g, "") && "" != c.replace(/\s+/g, "") && "" != f.replace(/\s+/g, "")){
 					$.ajax({
 						type: "POST",
 						url: "admin/function.php",
@@ -377,13 +390,25 @@
 								<?php echo $_SESSION['tokens']['subject'];?>: c,
 								<?php echo $_SESSION['tokens']['smailf'];?>: q,
 								<?php echo $_SESSION['tokens']['fmailf'];?>: d,
-								<?php echo $_SESSION['tokens']['message'];?>: f
+								<?php if(isset($var[24]) && $var[24]=='yes'){ ?>
+									<?php echo $_SESSION['tokens']['message'];?>: f,
+									verify_captcha:z
+								<?php }else{ ?>
+									<?php echo $_SESSION['tokens']['message'];?>: f
+								<?php } ?>
 							},
 						dataType: "json",
 						success: function (a) {
 							if("Sent" == a[0]){
-								$('#<?php echo $_SESSION['tokens']['senname'];?>,#<?php echo $_SESSION['tokens']['senphone'];?>,#<?php echo $_SESSION['tokens']['senmail'];?>,#<?php echo $_SESSION['tokens']['subject'];?>,#<?php echo $_SESSION['tokens']['smailf'];?>,#<?php echo $_SESSION['tokens']['fmailf'];?>,#<?php echo $_SESSION['tokens']['message'];?>').val('');
+								$('#<?php echo $_SESSION['tokens']['senname'];?>,#<?php echo $_SESSION['tokens']['senphone'];?>,#<?php echo $_SESSION['tokens']['senmail'];?>,#<?php echo $_SESSION['tokens']['subject'];?>,#<?php echo $_SESSION['tokens']['smailf'];?>,#<?php echo $_SESSION['tokens']['fmailf'];?>,#<?php echo $_SESSION['tokens']['message'];?>,#verify_captcha').val('');
+								refreshCaptcha(),
+								$("#sendmail").parent().parent().parent().parent().slideToggle(800),
 								noty({text: "<?php echo $translate->__('Your email has been sent!',true); ?>",type: "success",timeout: 9E3})
+							}
+							else if('invalid_captcha'== a[1]){
+								$('#verify_captcha').val(''),
+								refreshCaptcha(),
+								noty({text: a[0],type: "error",timeout: 9E3})
 							}
 							else
 								noty({text: a[0],type: "error",timeout: 9E3})
@@ -424,6 +449,10 @@
 				return !1
 			});
 	});
+	function refreshCaptcha(){
+		var img = document.images['captchaimg'];
+		img.src = img.src.substring(0,img.src.lastIndexOf("?"))+"?rand="+Math.round(Math.random() * 5) + 4;
+	}
 	</script>
 
 <?php

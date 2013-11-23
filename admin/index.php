@@ -154,6 +154,7 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 	21	instant parameter
 	22	exec parameter
 	23	en redirect
+	24	enable captcha
 	*/
 	
 	if(isset($_POST['uploadlogo'])){
@@ -329,9 +330,25 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 								</div>
 							</div>
 							<div class='row-fluid'>
+								<div class='span3'><label><?php $translate->__("Show Frontend Progressbar?",false); ?></label></div>
+								<div class='span3'>
+									<select name='dispprog' id='dispprog'>
+										<option value='yes'>Yes</option>
+										<option value='no'>No</option>
+									</select>
+								</div>
+							</div>
+							<div class='row-fluid'>
 								<div class='span3'><label><?php $translate->__("Show Frontend Contact Form?",false); ?></label></div>
 								<div class='span3'>
 									<select name='shcf' id='shcf'>
+										<option value='yes'>Yes</option>
+										<option value='no'>No</option>
+									</select>
+								</div>
+								<div class='span3'><label><?php $translate->__("Enable Captcha?",false); ?></label></div>
+								<div class='span3'>
+									<select name='encaptcha' id='encaptcha'>
 										<option value='yes'>Yes</option>
 										<option value='no'>No</option>
 									</select>
@@ -491,6 +508,11 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 				$('select[name="enfitetx"] option[value="<?php echo $var[18]; ?>"]').attr("selected", "selected");
 			<?php }if(isset($var[16])){ ?>
 				$('select[name="dispclock"] option[value="<?php echo $var[16]; ?>"]').attr("selected", "selected");
+			<?php }if(isset($var[17])){ ?>
+				$('select[name="dispprog"] option[value="<?php echo $var[17]; ?>"]').attr("selected", "selected");
+			<?php }if(isset($var[24])){ ?>
+				$('select[name="encaptcha"] option[value="<?php echo $var[24]; ?>"]').attr("selected", "selected");
+			
 			<?php } ?>
 			CKEDITOR.replace('phrase');
 			CKEDITOR.replace('progph');
@@ -554,13 +576,15 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 					mailimit=$('#mailimit').val().replace(/\s+/g,''),
 					pertime=$('#pertime').val().replace(/\s+/g,''),
 					progph=CKEDITOR.instances.progph.getData().replace(/\s+/g,' '),
-					footerph=CKEDITOR.instances.footerph.getData().replace(/\s+/g,' ');
+					footerph=CKEDITOR.instances.footerph.getData().replace(/\s+/g,' '),
+					encaptcha=$('#encaptcha').val();
+
 				if($("#psphrase").val().split(/\s+/).length==1){
 					if(pgtit.replace(/\s+/g,'')!='' && urls.replace(/\s+/g,'')!='' && tz.replace(/\s+/g,'')!='' && datai.replace(/\s+/g,'')!='' && dataf.replace(/\s+/g,'')!='' && psphrase.replace(/\s+/g,'')!=''){
 						$.ajax({
 							type: 'POST',
 							url: 'function.php',
-							data: {act:'save_options',metadesc:metadesc,metakey:metakey,pgtit:pgtit,enredirect:enredirect,urls:urls,enfitetx:enfitetx,phrase:phrase,tz:tz,datai:datai,horai:horai,morai:morai,sorai:sorai,dataf:dataf,horaf:horaf,moraf:moraf,soraf:soraf,perc:perc,emailad:emailad,psphrase:psphrase,shcf:shcf,shsf:shsf,shunl:shunl,dispclock:dispclock,dispprog:dispprog,mailimit:mailimit,pertime:pertime,progph:progph,footerph:footerph,eparam:phpexec,cronpara:cronpara},
+							data: {act:'save_options',metadesc:metadesc,metakey:metakey,pgtit:pgtit,enredirect:enredirect,urls:urls,enfitetx:enfitetx,phrase:phrase,tz:tz,datai:datai,horai:horai,morai:morai,sorai:sorai,dataf:dataf,horaf:horaf,moraf:moraf,soraf:soraf,perc:perc,emailad:emailad,psphrase:psphrase,shcf:shcf,shsf:shsf,shunl:shunl,dispclock:dispclock,dispprog:dispprog,mailimit:mailimit,pertime:pertime,progph:progph,footerph:footerph,eparam:phpexec,cronpara:cronpara,encaptcha:encaptcha},
 							dataType : 'json',
 							success : function (data) {
 								if(data[0]=='Saved'){
