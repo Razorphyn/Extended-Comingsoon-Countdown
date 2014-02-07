@@ -81,9 +81,11 @@
 
 	$siteurl=explode('?',curPageURL());
 	$siteurl=$siteurl[0];
+	
+	$fsec=dateDifference($var[0],$var[2])*24*60*60+abs($oraf-$orai)*60*60+abs($minuf-$minui)*60+abs($secf-$seci);
 
-	$interval=round($fsec*0.1,0);
-
+	$interval=round($fsec/10,0);
+	
 	function get_timezone_offset($remote_tz) {
 		$origin_tz = 'Europe/London';
 		$origin_dtz = new DateTimeZone($origin_tz);
@@ -182,8 +184,7 @@
 			<?php } ?>
 			<div class='divider'></div>
 		</div>
-		
-		
+
 		<div class="footer">
 			<?php if(count($news)>2){ ?>
 				<div class='sectioncol'><?php $translate->__('Last News',false); ?></div>
@@ -290,19 +291,22 @@
 				$("#title").fitText();
 			<?php }if(isset($var[17]) && $var[17]=='yes'){ ?>
 				var up= (parseInt(screen.height)*3.7037/100).toFixed(0)+'',
-					offset=<?php echo $offset; ?>-new Date().getTimezoneOffset()*60*1000,
+					offset=<?php echo $offset; ?>-(new Date().getTimezoneOffset()*60*1000),
 					initial_milli=new Date(<?php echo $annoi; ?>,<?php echo $mesei-1; ?>,<?php echo $giornoi; ?>,<?php echo $orai; ?>,<?php echo $minui; ?>,<?php echo $seci; ?>).getTime(),
 					final_milli=new Date(<?php echo $anno; ?>,<?php echo $mese-1; ?>,<?php echo $giorno; ?>,<?php echo $oraf; ?>,<?php echo $minuf; ?>,<?php echo $secf; ?>).getTime()-initial_milli,
-					perc=(new Date().getTime()-offset-initial_milli)*100/final_milli,
-					snap=(new Date()).getTime()-offset,
-					interval=snap-(<?php echo $interval; ?>)*(Math.round(snap/<?php echo $interval; ?>)),
+					perc=((new Date().getTime()-initial_milli-offset)*100/final_milli)+0.01,
+					snap=(new Date()).getTime(),
+					interval=Math.abs((snap-(<?php echo $interval; ?>)*(Math.round(snap/<?php echo $interval; ?>)))),
 					upeprc;
-
+				
 				if(perc>100)
 					perc=100;
 				else
 					perc=parseFloat(perc.toFixed(2));
-
+				
+				<?php if( isset($var[6]) && $var[6]!='**@****nullo**@****'){ ?>
+					perc=<?php echo $var[6]; ?>;
+				<?php } ?>
 				$("#progressbar").progressbar({ value: perc,max:100 });
 				$("#progressbar").attr('title','<?php echo $translate->__('Complete',true); ?>: '+perc+'%');
 
@@ -313,7 +317,7 @@
 			<?php if( isset($var[6]) && $var[6]=='**@****nullo**@****'){ ?>
 
 				setTimeout(function(){
-					perc=(new Date().getTime()-offset-initial_milli)*100/final_milli,
+					perc=(new Date().getTime()-initial_milli-offset)*100/final_milli,
 					perc=parseFloat(perc.toFixed(2));
 					if(perc >=100){
 						$("#progressbar").attr('title','<?php echo $translate->__('Complete',true); ?>: 100%');
@@ -451,7 +455,7 @@
 	});
 	function refreshCaptcha(){
 		var img = document.images['captchaimg'];
-		img.src = img.src.substring(0,img.src.lastIndexOf("?"))+"?rand="+Math.round(Math.random() * 5) + 4;
+		img.src = img.src.substring(0,img.src.lastIndexOf("?"))+"?rand="+Math.round(Math.random() * (5)) + 4;
 	}
 	</script>
 
