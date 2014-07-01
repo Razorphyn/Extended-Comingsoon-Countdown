@@ -114,14 +114,10 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 	
 	if(is_file('../config/stmp.php')) include_once '../config/stmp.php';
 	if(isset($smailpassword)){
-		$crypttable=array('a'=>'X','b'=>'k','c'=>'Z','d'=>2,'e'=>'d','f'=>6,'g'=>'o','h'=>'R','i'=>3,'j'=>'M','k'=>'s','l'=>'j','m'=>8,'n'=>'i','o'=>'L','p'=>'W','q'=>0,'r'=>9,'s'=>'G','t'=>'C','u'=>'t','v'=>4,'w'=>7,'x'=>'U','y'=>'p','z'=>'F',0=>'q',1=>'a',2=>'H',3=>'e',4=>'N',5=>1,6=>5,7=>'B',8=>'v',9=>'y','A'=>'K','B'=>'Q','C'=>'x','D'=>'u','E'=>'f','F'=>'T','G'=>'c','H'=>'w','I'=>'D','J'=>'b','K'=>'z','L'=>'V','M'=>'Y','N'=>'A','O'=>'n','P'=>'r','Q'=>'O','R'=>'g','S'=>'E','T'=>'I','U'=>'J','V'=>'P','W'=>'m','X'=>'S','Y'=>'h','Z'=>'l');
-		$pass=str_split($pass);
-		$c=count($pass);
-		for($i=0;$i<$c;$i++){
-			if(array_key_exists($pass[$i],$crypttable))
-				$pass[$i]=$crypttable[$crypttable[$pass[$i]]];
-		}
-		$pass=implode('',$pass);
+		include_once ('endecrypt.php');
+		$smailpassword=base64_decode($smailpassword);
+		$e = new Encryption(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
+		$pass = $e->decrypt($smailpassword, $skey);
 	}
 	if(isset($_POST['fcheck'])){
 		header('Location: datacheck.php');
@@ -139,37 +135,39 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 		
 		
 		<!--[if lt IE 9]><script src="../js/html5shiv-printshiv.js"></script><![endif]-->
-		<link rel="stylesheet" href="../css/bootstrap.css" />
-		<link rel="stylesheet" href="../css/bootstrap-responsive.css" />
+		<link rel="stylesheet" href="../css/bootstrap.min.css" />
 		<link rel="stylesheet" href="../css/jquery-ui.css" type="text/css"/>
 		<link rel="stylesheet" href="adminstyle.css" type="text/css"/>
 		
 		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
 		
-		<script type="text/javascript"  src="../js/jquery-1.10.2.js"></script>
+		<script type="text/javascript"  src="../js/jquery.js"></script>
 		<script type="text/javascript"  src="../js/bootstrap.min.js"></script>
 		<script  type="text/javascript" src="../ckeditor/ckeditor.js"></script>
 	</head>
 	<body>
-		<div class="container">
 		<?php if(isset($_SESSION['views']) && $_SESSION['views']==1946 ){ ?>
-		<div class="masthead">
-			<div class="navbar navbar-fixed-top">
-				<div class="navbar-inner">
-					<div class="container">
-						<a class="btn btn-navbar hidden-desktop" data-toggle="collapse" data-target=".nav-collapse">
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-						</a>
-						<a class="brand" href='index.php'><?php $translate->__("Administration",false); ?></a>
-						<div class="nav-collapse navbar-responsive-collapse collapse">
-							<ul class="nav">
+		<header>
+			<div class="container">
+				<nav class="navbar navbar-default" role="navigation">
+					<div class="container-fluid">
+						<div class="navbar-header">
+							<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+								<span class="sr-only">Toggle navigation</span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+							</button>
+							<a class="navbar-brand" href='index.php'><?php $translate->__("Administration",false); ?></a>
+						</div>
+									
+						<div class="nav-collapse" id='navbar-collapse'>
+							<ul class="nav navbar-nav">
 								<li class="dropdown active" role='button'>
-									<a id="drop1" class="dropdown-toggle" role='button' data-toggle="dropdown" href="#"><?php $translate->__("Setup",false); ?><b class="caret"></b></a>
-									<ul class="dropdown-menu" aria-labelledby="drop1" role="menu">
+									<a id="drop1" class="dropdown-toggle" role='button' data-toggle="dropdown" href="#"><?php $translate->__("Setup",false); ?> <b class="caret"></b></a>
+									<ul class="dropdown-menu" role="menu">
 										<li role="presentation"><a href="index.php" tabindex="-1" role="menuitem"><?php $translate->__("Site",false); ?></a></li>
-										<li role="presentation" class='active'><a href="mail_setting.php" tabindex="-1" role="menuitem"><?php $translate->__("Mail",false); ?></a></li>
+										<li role="presentation"  class='active'><a href="mail_setting.php" tabindex="-1" role="menuitem"><?php $translate->__("Mail",false); ?></a></li>
 									</ul>
 								</li>
 								<li class="dropdown" role='button'>
@@ -185,10 +183,10 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 							</ul>
 						</div>
 					</div>
-				</div>
+				</nav>
 			</div>
-		</div>
-		<div class='main'>
+		</header>
+		<div class='main container'>
 		
 			<div class='formcor' style='text-align:center' ><button onclick='javascript:location.href="../index.php"' value='<?php $translate->__("See Frontend",false); ?>' class='btn btn-info'><?php $translate->__("See Frontend",false); ?></button></div>
 			<form name="ckform" id="ckform"  method="post"  class='formcor form-inline'>
@@ -198,36 +196,48 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 					
 			<form name="completesitemail" id="completesitemail"  method="post"  class='formcor'>
 				<h2 class='titlesec'><?php $translate->__("SMTP Setting",false); ?></h2>
-				<div class='row-fluid stmpinfo' >
-					<div class='row-fluid'>
-						<div class='span2'><label>STMP Service</label></div>
-						<div class='span4'><select id='stmpserv' ><option value='0'>This Server</option><option value='1'>External Service</option></select></div>
+				<div class='stmpinfo' >
+					<div class='form-group'>
+						<div class='row'>
+							<div class='col-xs-12 col-sm-6 col-md-2'><label>STMP Service</label></div>
+							<div class='col-xs-12 col-sm-6 col-md-4'><select  class='form-control' id='stmpserv' ><option value='0'>This Server</option><option value='1'>External Service</option></select></div>
+						</div>
 					</div>
-					<div class='row-fluid'>
-							<div class='span2'><label for='stmpname'>Name</label></div>
-							<div class='span4'><input id='stmpname' type='text' value='<?php if(isset($smailname)) echo $smailname;?>' required/></div>
-							<div class='span2'><label for='stmpmail'>Mail Address</label></div>
-							<div class='span4'><input id='stmpmail' type='email' value='<?php if(isset($settingmail)) echo $settingmail; ?>' required /></div>
+					<div class='form-group'>
+						<div class='row'>
+								<div class='col-xs-12 col-sm-6 col-md-2'><label for='stmpname'>Name</label></div>
+								<div class='col-xs-12 col-sm-6 col-md-4'><input id='stmpname' type='text' class='form-control'  value='<?php if(isset($smailname)) echo $smailname;?>' required/></div>
+								<div class='col-xs-12 col-sm-6 col-md-2'><label for='stmpmail'>Mail Address</label></div>
+								<div class='col-xs-12 col-sm-6 col-md-4'><input class='form-control' id='stmpmail' type='email' value='<?php if(isset($settingmail)) echo $settingmail; ?>' required /></div>
+						</div>
 					</div>
-					<div class='row-fluid'>
-							<div class='span2'><label for='stmphost'>Hostname</label></div>
-							<div class='span4'><input id='stmphost' type='text' value='<?php if(isset($smailhost)) echo $smailhost; ?>'required  /></div>
-							<div class='span2'><label for='stmpport'>Port</label></div>
-							<div class='span4'><input id='stmpport' type='text' value='<?php if(isset($smailport)) echo $smailport; ?>' required /></div>
+					<div class='form-group'>
+						<div class='row'>
+								<div class='col-xs-12 col-sm-6 col-md-2'><label for='stmphost'>Hostname</label></div>
+								<div class='col-xs-12 col-sm-6 col-md-4'><input id='stmphost' type='text' class='form-control'  value='<?php if(isset($smailhost)) echo $smailhost; ?>' required  /></div>
+								<div class='col-xs-12 col-sm-6 col-md-2'><label for='stmpport'>Port</label></div>
+								<div class='col-xs-12 col-sm-6 col-md-4'><input id='stmpport' type='text' class='form-control'  value='<?php if(isset($smailport)) echo $smailport; ?>' required /></div>
+						</div>
 					</div>
-					<div class='row-fluid'>
-							<div class='span2'><label for='stmpsec'>SSL/TLS</label></div>
-							<div class='span4'><select id='stmpsec' ><option value='0'>No</option><option value='1'>SSL</option><option value='2'>TLS</option></select></div>
+					<div class='form-group'>
+						<div class='row'>
+								<div class='col-xs-12 col-sm-6 col-md-2'><label for='stmpsec'>SSL/TLS</label></div>
+								<div class='col-xs-12 col-sm-6 col-md-4'><select class='form-control' id='stmpsec' ><option value='0'>No</option><option value='1'>SSL</option><option value='2'>TLS</option></select></div>
+						</div>
 					</div>
-					<div class='row-fluid'>
-							<div class='span2'><label for='stmpaut'>Authentication</label></div>
-							<div class='span4'><select id='stmpaut' ><option value='0'>No</option><option value='1'>Yes</option></select></div>
+					<div class='form-group'>
+						<div class='row'>
+								<div class='col-xs-12 col-sm-6 col-md-2'><label for='stmpaut'>Authentication</label></div>
+								<div class='col-xs-12 col-sm-6 col-md-4'><select class='form-control' id='stmpaut' ><option value='0'>No</option><option value='1'>Yes</option></select></div>
+						</div>
 					</div>
-					<div class='row-fluid'>
-							<div class='span2'><label for='stmpusr'>Username</label></div>
-							<div class='span4'><input id='stmpusr' type='text' value='<?php if(isset($smailuser)) echo $smailuser; ?>' /></div>
-							<div class='span2'><label for='stmppas'>Password</label></div>
-							<div class='span4'><input id='stmppas' type='password' value='<?php if(isset($smailpassword)) echo $smailpassword; ?>' /></div>
+					<div class='form-group'>
+						<div class='row'>
+								<div class='col-xs-12 col-sm-6 col-md-2'><label for='stmpusr'>Username</label></div>
+								<div class='col-xs-12 col-sm-6 col-md-4'><input id='stmpusr' type='text' class='form-control'  value='<?php if(isset($smailuser)) echo $smailuser; ?>' /></div>
+								<div class='col-xs-12 col-sm-6 col-md-2'><label for='stmppas'>Password</label></div>
+								<div class='col-xs-12 col-sm-6 col-md-4'><input id='stmppas' class='form-control' type='password' value='<?php if(isset($smailpassword)) echo $smailpassword; ?>' /></div>
+						</div>
 					</div>
 					<br/>
 					<input type='submit' id='savestmp' onclick='javascript:return false;' value='Save' class='btn btn-success'/>
@@ -236,25 +246,39 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 			
 			<form name="defmailinfo" id="defmailinfo"  method="post"  class='formcor'>
 				<h2 class='titlesec'><?php $translate->__("Common Email Section",false); ?></h2>
-				<label><?php $translate->__("Footer:",false); ?></label><textarea id='footerfn' name='footerfn' class='footerfn' row-fluids='10' cols='100'><?php if(isset($footermail) && $footermail!='**@****nullo**@****')echo $footermail; ?></textarea>
-				<br/><br/>
+
+				<div class='form-group'>
+					<div class='row'>
+						<div class='col-xs-12'><label><?php $translate->__("Footer:",false); ?></label></div>
+						<div class='col-xs-12'><textarea id='footerfn' name='footerfn' class='footerfn' rows='10' cols='100'><?php if(isset($footermail) && $footermail!='**@****nullo**@****')echo $footermail; ?></textarea></div>
+					</div>
+				</div>
 				<input onclick='javascript:return false;' type="submit" name="senddefmail" id="senddefmail" value="<?php $translate->__("Update",false); ?>" class="btn btn-success"/>
 			</form>
 					
 			<form name="completesitemail" id="completesitemail"  method="post"  class='formcor'>
 				<h2 class='titlesec'><?php $translate->__("Completed Site Mail",false); ?></h2>
-				<div class='row-fluid'>
-					<div class='span3'><label><?php $translate->__("Do you want to alert your users once the site is finished?",false); ?></label></div>
-					<div class='span1'><input type="radio" name="warnus" value="yes" <?php if(isset($fnmail[2]) && $fnmail[2]=='yes') echo "checked"; else if(!isset($fnmail[2])) echo "checked";?>/><?php $translate->__("Yes",false); ?> </div>
-					<div class='span1'><input type="radio" name="warnus" value="no" <?php if(isset($fnmail[2]) && $fnmail[2]=='no') echo "checked"; ?>/><?php $translate->__("No",false); ?></div>
+				<div class='form-group'>
+					<div class='row'>
+						<div class='col-xs-12 col-sm-6 col-md-3'><label><?php $translate->__("Do you want to alert your users once the site is finished?",false); ?></label></div>
+						<div class='col-xs-6 col-sm-3'><input type="radio" name="warnus" value="yes" <?php if(isset($fnmail[2]) && $fnmail[2]=='yes') echo "checked"; else if(!isset($fnmail[2])) echo "checked";?>/><?php $translate->__("Yes",false); ?> </div>
+						<div class='col-xs-6 col-sm-3'><input type="radio" name="warnus" value="no" <?php if(isset($fnmail[2]) && $fnmail[2]=='no') echo "checked"; ?>/><?php $translate->__("No",false); ?></div>
+					</div>
 				</div>
-				<br/>
-				<div class='row-fluid'>
-					<div class='span3'><label><?php $translate->__("Sender:",false); ?></label><input	type="text" id="senderfn" 	name="senderfn" <?php if(isset($fnmail[0]) && $fnmail[0]!='**@****nullo**@****') echo 'value="'.$fnmail[0].'"'; ?>/></div>
-					<div class='span3'><label><?php $translate->__("Object:",false); ?></label><input	type="text" id="objectfn" 	name="objectfn" <?php if(isset($fnmail[1]) && $fnmail[1]!='**@****nullo**@****') echo 'value="'.$fnmail[1].'"'; ?>/></div>
+				<div class='form-group'>
+					<div class='row'>
+						<div class='col-xs-12 col-sm-6 col-md-2'><label><?php $translate->__("Sender:",false); ?></label></div>
+						<div class='col-xs-12 col-sm-6 col-md-3'><input	type="text" class='form-control' id="senderfn" 	name="senderfn" <?php if(isset($fnmail[0]) && $fnmail[0]!='**@****nullo**@****') echo 'value="'.$fnmail[0].'"'; ?>/></div>
+						<div class='col-xs-12 col-sm-6 col-md-2'><label><?php $translate->__("Object:",false); ?></label></div>
+						<div class='col-xs-12 col-sm-6 col-md-3'><input	type="text" class='form-control' id="objectfn" 	name="objectfn" <?php if(isset($fnmail[1]) && $fnmail[1]!='**@****nullo**@****') echo 'value="'.$fnmail[1].'"'; ?>/></div>
+					</div>
 				</div>
-				<label><?php $translate->__("Message:",false); ?></label><textarea id='messagefn' name='messagefn' row-fluids='10' cols='100'><?php if(isset($messagefn) && $messagefn!='**@****nullo**@****') echo $messagefn; ?></textarea>
-				<br/><br/>
+				<div class='form-group'>
+					<div class='row'>
+						<div class='col-xs-12'><label><?php $translate->__("Message:",false); ?></label></div>
+						<div class='col-xs-12'><textarea id='messagefn' name='messagefn' rows='10' cols='100'><?php if(isset($messagefn) && $messagefn!='**@****nullo**@****') echo $messagefn; ?></textarea></div>
+					</div>
+				</div>
 				<input onclick='javascript:return !1;' type="submit" name="fnmailbut" id="fnmailbut" value="<?php $translate->__("Update Final Message",false); ?>" class="btn btn-success"/>
 			</form>
 					
@@ -263,16 +287,16 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 			</form>
 		</div>
 		<?php } else { ?>
-		<div class='row-fluid-fluid main'>
+		<div class='container main'>
 			<form name="formdata" id="formdata" method="post"  class='formcor form-inline'>
 				<h2 class='titlesec'>Login</h2>
 					<!--[if IE]><input type="text" style="display: none;" disabled="disabled" size="1" /><![endif]-->
 					<?php if(isset($acc) && $acc==false){ ?>
-					<div class='row-fluid'><div class='span12'><p><?php $translate->__("Wrong Password",false); ?><p></div></div>
+					<div class='row'><div class='col-xs-12'><p><?php $translate->__("Wrong Password",false); ?><p></div></div>
 					<?php } ?>
-				<div class='row-fluid'>
-					<div class='span2'><label>Password</label></div>
-					<div class='span4'><input type="password" id="pwd" name="pwd" placeholder="Password"></div>
+				<div class='row'>
+					<div class='col-xs-12 col-sm-6 col-md-2'><label>Password</label></div>
+					<div class='col-xs-12 col-sm-6 col-md-4'><input type="password" id="pwd" name="pwd" placeholder="Password"></div>
 				</div>
 				<br/><br/>
 				<input type="submit" name="loginb" id="loginb" value="Login" class="btn btn-success"/>
@@ -280,7 +304,6 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 		</div>
 		<?php } 
 		?>
-	</div>
 	<?php if(isset($_SESSION['views']) && $_SESSION['views']==1946 ){ ?>
 		<script type="text/javascript"  src="../js/jquery-ui-1.10.3.custom.min.js"></script>
 		<script type="text/javascript"  src="../js/jquery.validate.min.js"></script>

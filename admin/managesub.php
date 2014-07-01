@@ -163,36 +163,39 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 	
 	
 	<!--[if lt IE 9]><script src="../js/html5shiv-printshiv.js"></script><![endif]-->
-	<link rel="stylesheet" href="../css/bootstrap.css" />
-    <link rel="stylesheet" href="../css/bootstrap-responsive.css" />
+	<link rel="stylesheet" href="../css/bootstrap.min.css" />
+   
 	<link rel="stylesheet" href="adminstyle.css" type="text/css"/>
 	
 	<link rel="stylesheet" href="../lib/DataTables/css/jquery.dataTables.css">
 	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
 	
-	<script type="text/javascript"  src="../js/jquery-1.10.2.js"></script>
+	<script type="text/javascript"  src="../js/jquery.js"></script>
 	<script type="text/javascript"  src="../js/bootstrap.min.js"></script>
 	
 	</head>
 	<body>
-	<div class='container'>
 		<?php if(isset($_SESSION['views']) && $_SESSION['views']==1946 ){ ?>
-		<div class="masthead">
-			<div class="navbar navbar-fixed-top">
-				<div class="navbar-inner">
-					<div class="container">
-						<a class="btn btn-navbar hidden-desktop" data-toggle="collapse" data-target=".nav-collapse">
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-						</a>
-						<a class="brand" href='index.php'><?php $translate->__("Administration",false); ?></a>
-						<div class="nav-collapse navbar-responsive-collapse collapse">
-							<ul class="nav">
+		<header>
+			<div class="container">
+				<nav class="navbar navbar-default" role="navigation">
+					<div class="container-fluid">
+						<div class="navbar-header">
+							<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+								<span class="sr-only">Toggle navigation</span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+							</button>
+							<a class="navbar-brand" href='index.php'><?php $translate->__("Administration",false); ?></a>
+						</div>
+									
+						<div class="nav-collapse" id='navbar-collapse'>
+							<ul class="nav navbar-nav">
 								<li class="dropdown" role='button'>
-									<a id="drop1" class="dropdown-toggle" role='button' data-toggle="dropdown" href="#"><?php $translate->__("Setup",false); ?><b class="caret"></b></a>
-									<ul class="dropdown-menu" aria-labelledby="drop1" role="menu">
-										<li role="presentation"><a href="index.php" tabindex="-1" role="menuitem"><?php $translate->__("Site",false); ?></a></li>
+									<a id="drop1" class="dropdown-toggle" role='button' data-toggle="dropdown" href="#"><?php $translate->__("Setup",false); ?> <b class="caret"></b></a>
+									<ul class="dropdown-menu" role="menu">
+										<li role="presentation" ><a href="index.php" tabindex="-1" role="menuitem"><?php $translate->__("Site",false); ?></a></li>
 										<li role="presentation"><a href="mail_setting.php" tabindex="-1" role="menuitem"><?php $translate->__("Mail",false); ?></a></li>
 									</ul>
 								</li>
@@ -203,16 +206,16 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 										<li role="presentation"><a href="managesched.php" tabindex="-1" role="menuitem"><?php $translate->__("Manage Scheduled Mail",false); ?></a></li>
 									</ul>
 								</li>
-								<li class='active'><a href='managesub.php'><?php $translate->__("Manage Subscriptions",false); ?></a></li>
+								<li><a href='managesub.php' class='active'><?php $translate->__("Manage Subscriptions",false); ?></a></li>
 								<li><a href='postnews.php'><?php $translate->__("Post News",false); ?></a></li>
 								<li><a href='managenews.php'><?php $translate->__("Manage News",false); ?></a></li>
 							</ul>
 						</div>
 					</div>
-				</div>
+				</nav>
 			</div>
-		</div>
-		<div class='row-fluid main'>
+		</header>
+		<div class='main container'>
 			<form name="ckform" id="ckform" action="function.php" method="post"  target="hidden_upload" class='formcor form-inline'>
 				<h2 class='titlesec'><?php $translate->__("Export Emails to CSV",false); ?></h2>
 				<input type="submit" name="expcsvmail" id="expcsvmail" value="<?php $translate->__("Export Emails to CSV",false); ?>" class="btn btn-primary"/>
@@ -224,9 +227,9 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 						<h2 class='titlesec'><?php $translate->__("Edit Contact Information",false); ?></h2>
 						<input  type="hidden" id='mail' name='mail' value='<?php echo $mail; ?>'/>
 						<div class='row'>
-							<div class='span3'><?php $translate->__("Mail:",false); ?><br/><input type="text" id="tmail" name="tmail" value='<?php echo $mailist[2]; ?>'/></div>
-							<div class='span3'><?php $translate->__("Name:",false); ?><br/><input type="text" id="tname" name="tname" value='<?php echo $mailist[0]; ?>'/></div>
-							<div class='span3'><?php $translate->__("LastName:",false); ?><br/><input type="text" id="tlname" name="tlname" value='<?php echo $mailist[1]; ?>'/></div>
+							<div class='col-xs-12 col-sm-6 col-md-3'><?php $translate->__("Mail:",false); ?><br/><input type="text" id="tmail" name="tmail" value='<?php echo $mailist[2]; ?>'/></div>
+							<div class='col-xs-12 col-sm-6 col-md-3'><?php $translate->__("Name:",false); ?><br/><input type="text" id="tname" name="tname" value='<?php echo $mailist[0]; ?>'/></div>
+							<div class='col-xs-12 col-sm-6 col-md-3'><?php $translate->__("LastName:",false); ?><br/><input type="text" id="tlname" name="tlname" value='<?php echo $mailist[1]; ?>'/></div>
 						</div>
 						<br/><br/>
 						<input type="submit" name="smail" id="smail" value="<?php $translate->__("Save Changes",false); ?>" class="btn btn-success"/>
@@ -255,16 +258,16 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 			<iframe id="hidden_upload" name="hidden_upload" style="display:none"></iframe>
 		</div>
 		<?php } else { ?>
-		<div class='row-fluid main'>
+		<div class='container main'>
 			<form name="formdata" id="formdata" method="post"  class='formcor form-inline'>
 				<h2 class='titlesec'>Login</h2>
 					<!--[if IE]><input type="text" style="display: none;" disabled="disabled" size="1" /><![endif]-->
 					<?php if(isset($acc) && $acc==false){ ?>
-					<div class='row-fluid'><div class='span12'><p><?php $translate->__("Wrong Password",false); ?><p></div></div>
+					<div class='row'><div class='col-xs-12 col-sm-3 col-md-12'><p><?php $translate->__("Wrong Password",false); ?><p></div></div>
 					<?php } ?>
-				<div class='row-fluid'>
-					<div class='span2'><label>Password</label></div>
-					<div class='span4'><input type="password" id="pwd" name="pwd" placeholder="Password"></div>
+				<div class='row'>
+					<div class='col-xs-12 col-sm-6 col-md-2'><label>Password</label></div>
+					<div class='col-xs-12 col-sm-6 col-md-4'><input type="password" id="pwd" name="pwd" placeholder="Password"></div>
 				</div>
 				<br/><br/>
 				<input type="submit" name="loginb" id="loginb" value="Login" class="btn btn-success"/>
@@ -272,14 +275,13 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 		</div>
 		<?php } 
 		?>
-	</div>
 	<?php if(isset($_SESSION['views']) && $_SESSION['views']==1946 ){ ?>
 		<script type="text/javascript"  src="../lib/DataTables/js/jquery.dataTables.js"></script>
 		<script type="text/javascript"  src="../ckeditor/ckeditor.js"></script>
 		<script type="text/javascript">
 			$(document).ready(function() {
 				$('#mails').dataTable({
-					"sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<<'span6'i><'span6'p>>",
+					"sDom": "<'row'<'span6'l><'span6'f>r>t<<'span6'i><'span6'p>>",
 					"aoColumns": [
 							{ "sTitle": "<?php echo $translate->__("Id",true); ?>",'sClass':'hidden-phone' },
 							{ "sTitle": "<?php echo $translate->__("Name",true); ?>" },
@@ -306,7 +308,7 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 						$('html,body').animate({scrollTop:$('#'+info['id']).offset().top},1500);
 					}
 					else{
-						var editform="<hr><form action='' method='post' class='submit_changes_depa' id='"+info['id']+"'><span>Edit "+info['name']+"</span><button  class='btn btn-link btn_close_form'>Close</button><input type='hidden' name='depa_edit_id' value='"+info['id']+"'/><input type='hidden' name='depa_edit_pos' value='"+pos+"'/><div class='row-fluid'><div class='span2'><label>Name</label></div><div class='span4'><input type='text' name='edit_depa_name' placeholder='Department Name' value='"+info['name']+"'required /></div></div><div class='row-fluid'><div class='span2'><label>Is Active?</label></div><div class='span4'><select name='edit_depa_active' id='activedep'><option value='1'>Yes</option><option value='0'>No</option></select></div><div class='span2'><label>Is Public?</label></div><div class='span4'><select name='edit_depa_public'><option value='1'>Yes</option><option value='0'>No</option></select></div></div><input type='submit' class='btn btn-success submit_changes' value='Submit Changes' onclick='javascript:return false;' /></form>";
+						var editform="<hr><form action='' method='post' class='submit_changes_depa' id='"+info['id']+"'><span>Edit "+info['name']+"</span><button  class='btn btn-link btn_close_form'>Close</button><input type='hidden' name='depa_edit_id' value='"+info['id']+"'/><input type='hidden' name='depa_edit_pos' value='"+pos+"'/><div class='row'><div class='col-xs-12 col-sm-6 col-md-2'><label>Name</label></div><div class='col-xs-12 col-sm-6 col-md-4'><input type='text' class='form-control'  class='form-control'  name='edit_depa_name' placeholder='Department Name' value='"+info['name']+"'required /></div></div><div class='row'><div class='col-xs-12 col-sm-6 col-md-2'><label>Is Active?</label></div><div class='col-xs-12 col-sm-6 col-md-4'><select name='edit_depa_active' id='activedep'><option value='1'>Yes</option><option value='0'>No</option></select></div><div class='col-xs-12 col-sm-6 col-md-2'><label>Is Public?</label></div><div class='col-xs-12 col-sm-6 col-md-4'><select name='edit_depa_public'><option value='1'>Yes</option><option value='0'>No</option></select></div></div><input type='submit' class='btn btn-success submit_changes' value='Submit Changes' onclick='javascript:return false;' /></form>";
 						$('#deplist').after(editform);
 						var active=(info['active']=='Yes')? 1:0;
 						var dpublic=(info['public']=='Yes')? 1:0;

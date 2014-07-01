@@ -141,33 +141,36 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 	
 	
 	<!--[if lt IE 9]><script src="../js/html5shiv-printshiv.js"></script><![endif]-->
-	<link rel="stylesheet" href="../css/bootstrap.css" />
-    <link rel="stylesheet" href="../css/bootstrap-responsive.css" />
+	<link rel="stylesheet" href="../css/bootstrap.min.css" />
+   
     <link rel="stylesheet" href="../css/jquery-ui.css" type="text/css"/>
 	<link rel="stylesheet" href="adminstyle.css" type="text/css"/>
 	
-	<script type="text/javascript"  src="../js/jquery-1.10.2.js"></script>
+	<script type="text/javascript"  src="../js/jquery.js"></script>
 	<script type="text/javascript"  src="../js/bootstrap.min.js"></script>
 	
 	</head>
 	<body>
-	<div class='container'>
 		<?php if(isset($_SESSION['views']) && $_SESSION['views']==1946 ){ ?>
-		<div class="masthead">
-			<div class="navbar navbar-fixed-top">
-				<div class="navbar-inner">
-					<div class="container">
-						<a class="btn btn-navbar hidden-desktop" data-toggle="collapse" data-target=".nav-collapse">
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-						</a>
-						<a class="brand" href='index.php'><?php $translate->__("Administration",false); ?></a>
-						<div class="nav-collapse navbar-responsive-collapse collapse">
-							<ul class="nav">
+		<header>
+			<div class="container">
+				<nav class="navbar navbar-default" role="navigation">
+					<div class="container-fluid">
+						<div class="navbar-header">
+							<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+								<span class="sr-only">Toggle navigation</span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+							</button>
+							<a class="navbar-brand" href='index.php'><?php $translate->__("Administration",false); ?></a>
+						</div>
+									
+						<div class="nav-collapse" id='navbar-collapse'>
+							<ul class="nav navbar-nav">
 								<li class="dropdown" role='button'>
-									<a id="drop1" class="dropdown-toggle" role='button' data-toggle="dropdown" href="#"><?php $translate->__("Setup",false); ?><b class="caret"></b></a>
-									<ul class="dropdown-menu" aria-labelledby="drop1" role="menu">
+									<a id="drop1" class="dropdown-toggle" role='button' data-toggle="dropdown" href="#"><?php $translate->__("Setup",false); ?> <b class="caret"></b></a>
+									<ul class="dropdown-menu" role="menu">
 										<li role="presentation"><a href="index.php" tabindex="-1" role="menuitem"><?php $translate->__("Site",false); ?></a></li>
 										<li role="presentation"><a href="mail_setting.php" tabindex="-1" role="menuitem"><?php $translate->__("Mail",false); ?></a></li>
 									</ul>
@@ -180,15 +183,15 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 									</ul>
 								</li>
 								<li><a href='managesub.php'><?php $translate->__("Manage Subscriptions",false); ?></a></li>
-								<li class='active'><a href='postnews.php'><?php $translate->__("Post News",false); ?></a></li>
+								<li><a href='postnews.php' class='active'><?php $translate->__("Post News",false); ?></a></li>
 								<li><a href='managenews.php'><?php $translate->__("Manage News",false); ?></a></li>
 							</ul>
 						</div>
 					</div>
-				</div>
+				</nav>
 			</div>
-		</div>
-		<div class='row-fluid main'>
+		</header>
+		<div class='main container'>
 			<form name="ckform" id="ckform"  method="post"  class='formcor form-inline'>
 			<h2 class='titlesec'><?php $translate->__("Database Files Checking",false); ?></h2>
 				<input type="submit" name="fcheck" id="fcheck" value="<?php $translate->__("Check Database Files",false); ?>" class="btn"/>
@@ -196,20 +199,31 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 			
 			<form name="formnews" id="formnews" class='formcor'>
 			<h2 class='titlesec'><?php $translate->__("Post a News",false); ?></h2>
-				<label><?php $translate->__("News Title:",false); ?></label><input type="text" id="tnews" name="tnews"/>
-				<label><?php $translate->__("News:",false); ?></label><textarea type="text" id="nnews" name="nnews"></textarea>
-				<br/><br/>
-				<input onclick='javascript:return false;' type="submit" name="bnews" id="bnews" value="Post News" class="btn btn-success"/>
+				<div class='form-group'>
+					<div class='row'>
+						<div class='col-xs-12'><label><?php $translate->__("News Title:",false); ?></label></div>
+						<div class='col-xs-12'><input class='form-control' type="text" id="tnews" name="tnews"/></div>
+					</div>
+				</div>
+				<div class='form-group'>
+					<div class='row'>
+						<div class='col-xs-12'><label><?php $translate->__("News:",false); ?></label></div>
+						<div class='col-xs-12'><textarea class='form-control' type="text" id="nnews" name="nnews"></textarea></div>
+					</div>
+				</div>
+				<div class='row form-group'>
+					<input onclick='javascript:return false;' type="submit" name="bnews" id="bnews" value="Post News" class="btn btn-success"/>
+				</div>
 			</form>
 		</div>
 		<?php } else { ?>
-		<div class='row-fluid main'>
+		<div class='containermain'>
 			<form name="formdata" id="formdata" method="post"  class='formcor form-inline'>
 				<h2 class='titlesec'>Login</h2>
 					<!--[if IE]><input type="text" style="display: none;" disabled="disabled" size="1" /><![endif]-->
 				<div class='row'>
-					<div class='span1'><label>Password</label></div>
-					<div class='span3'><input type="password" id="pwd" name="pwd" placeholder="Password"></div>
+					<div class='col-xs-12 col-sm-3 col-md-1'><label>Password</label></div>
+					<div class='col-xs-12 col-sm-6 col-md-3'><input type="password" id="pwd" name="pwd" placeholder="Password"></div>
 				</div>
 				<br/><br/>
 				<input type="submit" name="loginb" id="loginb" value="Login" class="btn btn-success"/>
@@ -217,7 +231,6 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 		</div>
 		<?php } 
 		?>
-	</div>
 	
 	<?php if(isset($_SESSION['views']) && $_SESSION['views']==1946 ){ ?>
 		<script type="text/javascript"  src="../ckeditor/ckeditor.js"></script>

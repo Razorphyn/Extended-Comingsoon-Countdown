@@ -1,10 +1,9 @@
 /* ---------- News Page ---------- */
 html{background:#f2f2f2!important}
-body {background:#f2f2f2!important;padding:20px!important}
-.ext{width:100%;background:#f2f2f2!important}
-.ext2{position:relative;display:block;background:#f2f2f2!important;margin: 0 auto;}
-.newscont{padding:20px;background:#fff;position:relative;display:block;margin: 0 auto;padding:20px;-webkit-border-radius: 10px;border-radius: 10px;-webkit-box-shadow:  0px 0px 5px 5px #bbb;box-shadow:  0px 0px 5px 5px #bbb;behavior:url(css/PIE.htc)}
-.newscont .titlenews{text-align:center;font-size:1.8em;border-bottom:1px solid #000;color:red;font-weight:900;margin-bottom:5px;padding:10px;word-wrap: break-word;margin:0}
+body {background:#f2f2f2!important;padding:10px 0}
+.ext2{position:relative;display:block;background:#f2f2f2!important;margin: 0 auto;padding: 0 10px}
+.newscont{padding:20px;background:#fff;position:relative;display:block;margin: 0 auto;-webkit-border-radius: 10px;border-radius: 10px;-webkit-box-shadow:  0px 0px 5px 5px #bbb;box-shadow:  0px 0px 5px 5px #bbb;}
+.newscont .titlenews{text-align:center;font-size:1.8em;border-bottom:1px solid #000;color:#CC4444;font-weight:900;margin-bottom:5px;padding:10px;word-wrap: break-word;margin:0}
 .newscont .datenews{text-align:center;font-size:0.8em;margin-bottom:10px}
 .newscont .corpnews{font-size:1.1em;margin-bottom:30px;word-wrap: break-word;line-height:1.1em}
 .moren{position:relative;display:block;margin:0 auto}

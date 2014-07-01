@@ -159,16 +159,26 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 	
 	if(isset($_POST['uploadlogo'])){
 		$target_path = "../css/images/".basename( $_FILES['uploadedfile']['name']);
-		if($_FILES['uploadedfile']['type']=='image/png' || $_FILES['uploadedfile']['type']=='image/jpeg' || $_FILES['uploadedfile']['type']=='image/pjpeg' || $_FILES['uploadedfile']['type']=='image/gif'){
-			if(move_uploaded_file($_FILES['uploadedfile']['tmp_name'], $target_path)) {
+		if(!empty($_FILES['uploadedfile']['tmp_name'])){
+			$a=getimagesize($_FILES['uploadedfile']['tmp_name']);
 			
-				$fs=fopen($filelogo,"w+");
-				fwrite($fs,basename( $_FILES['uploadedfile']['name']));
-				fclose($fs);
-			} else
-				echo "There was an error uploading the file, please try again!";
+			if( in_array($a[2] , array(IMAGETYPE_GIF , IMAGETYPE_JPEG ,IMAGETYPE_PNG , IMAGETYPE_BMP)) && ($_FILES['uploadedfile']['type']=='image/png' || $_FILES['uploadedfile']['type']=='image/jpeg' || $_FILES['uploadedfile']['type']=='image/pjpeg' || $_FILES['uploadedfile']['type']=='image/gif')){
+				if(move_uploaded_file($_FILES['uploadedfile']['tmp_name'], $target_path)) {
+				
+					$fs=fopen($filelogo,"w+");
+					fwrite($fs,basename( $_FILES['uploadedfile']['name']));
+					fclose($fs);
+				} else
+					echo "There was an error uploading the file, please try again!";
+				header('Location: index.php');
+			}
+			else{
+				$uperror= 'Invalid Image';
+			}
 		}
-		header('Location: index.php');
+		else{
+			$uperror= 'Empty or Invalid Image';
+		}
 	}
 	
 	if(isset($_POST['fcheck'])){
@@ -187,35 +197,38 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 		
 		
 		<!--[if lt IE 9]><script src="../js/html5shiv-printshiv.js"></script><![endif]-->
-		<link rel="stylesheet" href="../css/bootstrap.css" />
-		<link rel="stylesheet" href="../css/bootstrap-responsive.css" />
+		<link rel="stylesheet" href="../css/bootstrap.min.css" />
 		<link rel="stylesheet" href="../css/jquery-ui.css" type="text/css"/>
 		<link rel="stylesheet" href="adminstyle.css" type="text/css"/>
 		
 		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
 		
-		<script type="text/javascript"  src="../js/jquery-1.10.2.js"></script>
+		<script type="text/javascript"  src="../js/jquery.js"></script>
 		<script type="text/javascript"  src="../js/bootstrap.min.js"></script>
 		<script  type="text/javascript" src="../ckeditor/ckeditor.js"></script>
 	</head>
 	<body>
-		<div class="container">
+		
 		<?php if(isset($_SESSION['views']) && $_SESSION['views']==1946 ){ ?>
-		<div class="masthead">
-			<div class="navbar navbar-fixed-top">
-				<div class="navbar-inner">
-					<div class="container">
-						<a class="btn btn-navbar hidden-desktop" data-toggle="collapse" data-target=".nav-collapse">
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-						</a>
-						<a class="brand" href='index.php'><?php $translate->__("Administration",false); ?></a>
-						<div class="nav-collapse navbar-responsive-collapse collapse">
-							<ul class="nav">
+		<header>
+			<div class="container">
+				<nav class="navbar navbar-default" role="navigation">
+					<div class="container-fluid">
+						<div class="navbar-header">
+							<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+								<span class="sr-only">Toggle navigation</span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+							</button>
+							<a class="navbar-brand" href='index.php'><?php $translate->__("Administration",false); ?></a>
+						</div>
+									
+						<div class="nav-collapse" id='navbar-collapse'>
+							<ul class="nav navbar-nav">
 								<li class="dropdown active" role='button'>
-									<a id="drop1" class="dropdown-toggle" role='button' data-toggle="dropdown" href="#"><?php $translate->__("Setup",false); ?><b class="caret"></b></a>
-									<ul class="dropdown-menu" aria-labelledby="drop1" role="menu">
+									<a id="drop1" class="dropdown-toggle" role='button' data-toggle="dropdown" href="#"><?php $translate->__("Setup",false); ?> <b class="caret"></b></a>
+									<ul class="dropdown-menu" role="menu">
 										<li role="presentation" class='active'><a href="index.php" tabindex="-1" role="menuitem"><?php $translate->__("Site",false); ?></a></li>
 										<li role="presentation"><a href="mail_setting.php" tabindex="-1" role="menuitem"><?php $translate->__("Mail",false); ?></a></li>
 									</ul>
@@ -233,10 +246,10 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 							</ul>
 						</div>
 					</div>
-				</div>
+				</nav>
 			</div>
-		</div>
-		<div class='main'>
+		</header>
+		<div class='main container'>
 					<div class='formcor' style='text-align:center' ><button onclick='javascript:location.href="../index.php"' value='<?php $translate->__("See Frontend",false); ?>' class='btn btn-info'><?php $translate->__("See Frontend",false); ?></button></div>
 					<form name="ckform" id="ckform"  method="post"  class='formcor form-inline'>
 					<h2 class='titlesec'><?php $translate->__("Database Files Checking",false); ?></h2>
@@ -245,244 +258,338 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 					
 					<form  name="logoform" id="logoform" enctype="multipart/form-data"  method="POST" class='formcor'>
 						<h2 class='titlesec'>Logo</h2>
+						<?php if(isset($uperror))echo '<p>'.$uperror.'</p>' ?>
 						<input type="hidden" name="MAX_FILE_SIZE" value="50000" />
-						<label><?php $translate->__("Current logo:",false); ?></label><img src='../css/images/<?php if(isset($logo) && rtrim($logo)!='') echo $logo;else echo "logo.png"; ?>' alt='Logo'/><br/><br/>
-						<label><?php $translate->__("Upload a New Logo(png, jpeg, jpg, gif; max=5 MB):",false); ?></label><input id="uploadedfile" name="uploadedfile" type="file" />
-						<br/><br/>
+						<div class='form-group'>
+							<div class='row'>
+								<div class='col-xs-12 col-sm-4 col-md-2'><label><?php $translate->__("Current logo:",false); ?></label></div>
+								<div class='col-xs-12 col-sm-8 col-md-10'><img src='../css/images/<?php if(isset($logo) && rtrim($logo)!='') echo $logo;else echo "logo.png"; ?>' alt='Logo'/></div>
+							</div>
+						</div>
+						
+						<div class='form-group'>
+							<div class='row'>
+								<div class='col-xs-12'><label><?php $translate->__("Upload a New Logo(png, jpeg, jpg, gif; max=5 MB):",false); ?></label></div>
+								<div class='col-xs-12'><input id="uploadedfile" name="uploadedfile" type="file" /></div>
+							</div>
+						</div>
 						<input type="submit" name="uploadlogo" id="uploadlogo" value="<?php $translate->__("Upload New Logo",false); ?>" class="btn btn-success"/>
 					</form>
 						
 					<form name="formdata" id="formdata"  method="post"  class='formcor'>
 						<h2 class='titlesec'><?php $translate->__("Meta Information",false); ?></h2>
-						<div class='row-fluid'>
-							<div class='span2'><?php $translate->__("Meta Description:",false); ?></div><div class='span10'><textarea class='metacont' type="text" id="metadesc" name="metadesc" ><?php if(isset($frontph[2]) && $frontph[2]!='**@****nullo**@****') echo $frontph[2]; ?> </textarea></div>
-						</div><br/>
-						<div class='row-fluid'>
-						<div class='span2'><?php $translate->__("Meta Keywords:",false); ?></div><div class='span10'><input class='metacont' type="text" id="metakey" name="metakey" <?php if(isset($frontph[3]) && $frontph[3]!='**@****nullo**@****') echo 'value="'.$frontph[3].'"'; ?> /></div>
+						<div class='row'>
+							<div class='col-xs-12 col-sm-4 col-md-2'><?php $translate->__("Meta Description:",false); ?></div>
+							<div class='col-xs-12 col-sm-8 col-md-10'><textarea class='form-control metacont' type="text" id="metadesc" name="metadesc" ><?php if(isset($frontph[2]) && $frontph[2]!='**@****nullo**@****') echo $frontph[2]; ?> </textarea></div>
 						</div>
-						<br/><br/>
-						<h2 class='titlesec'><?php $translate->__("Frontend",false); ?></h2>
+						<div class='row'>
+						<div class='col-xs-12 col-sm-4 col-md-2'><?php $translate->__("Meta Keywords:",false); ?></div>
+						<div class='col-xs-12 col-sm-8 col-md-10'><input class='form-control metacont' type="text" id="metakey" name="metakey" <?php if(isset($frontph[3]) && $frontph[3]!='**@****nullo**@****') echo 'value="'.$frontph[3].'"'; ?> /></div>
+						</div>
 						
-							<div class='row-fluid'>
-								<div class='span2'>
-									<label><?php $translate->__("Site Title:",false); ?>*</label>
+						<h2 class='titlesec'><?php $translate->__("Frontend",false); ?></h2>
+							
+							<div class="form-group">
+								<div class='row'>
+									<div class='col-xs-12 col-sm-4 col-md-2'>
+										<label><?php $translate->__("Site Title:",false); ?>*</label>
+									</div>
+									<div class='col-xs-12 col-sm-6 col-md-3'>
+										<input class='form-control' type="text" id="pgtit" name="pgtit" <?php if(isset($var[5]) && $var[5]!='**@****nullo**@****') echo 'value="'.$var[5].'"'; ?> required />
+									</div>
 								</div>
-								<div class='span3'>
-									<input type="text" id="pgtit" name="pgtit" <?php if(isset($var[5]) && $var[5]!='**@****nullo**@****') echo 'value="'.$var[5].'"'; ?> required />
+							</div>
+							<div class="form-group">
+								<div class='row form-group'>
+									<div class='col-xs-12 col-sm-4 col-md-2'>
+										<label><?php $translate->__("Enable Redirect?",false); ?></label>
+									</div>
+									<div class='col-xs-12 col-sm-2'>
+										<select class='form-control' name='enredirect' id='enredirect'>
+											<option value='yes'>Yes</option>
+											<option value='no'>No</option>
+										</select>
+									</div>
+									<div class='col-xs-12 col-sm-4 col-md-2'>
+										<label><?php $translate->__("Finished Site Url:",false); ?>*</label>
+									</div>
+									<div class='col-xs-12 col-sm-6 col-md-3'>
+										<input class='form-control' type="text" id="urls" name="urls" <?php if(isset($var[4]) && $var[4]!='**@****nullo**@****') echo 'value="'.$var[4].'"'; ?> />
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<div class='row'>
+									<div class='col-xs-12 col-sm-4 col-md-2'><label><?php $translate->__("Use",false); ?> <a href='http://fittextjs.com/' target='_blank'>FitText</a>?</label></div>
+									<div class='col-xs-12 col-sm-2'>
+										<select class='form-control' name='enfitetx' id='enfitetx'>
+											<option value='yes'>Yes</option>
+											<option value='no'>No</option>
+										</select>
+									</div>
 								</div>
 							</div>
 							
-							<div class='row-fluid'>
-								<div class='span2'>
-									<label><?php $translate->__("Enable Redirect?",false); ?></label>
-								</div>
-								<div class='span3'>
-									<select name='enredirect' id='enredirect'>
-										<option value='yes'>Yes</option>
-										<option value='no'>No</option>
-									</select>
-								</div>
-								<div class='span2'>
-									<label><?php $translate->__("Finished Site Url:",false); ?>*</label>
-								</div>
-								<div class='span3'>
-									<input type="text" id="urls" name="urls" <?php if(isset($var[4]) && $var[4]!='**@****nullo**@****') echo 'value="'.$var[4].'"'; ?> />
+							<div class="form-group">
+								<div class='row'>
+									<div class='col-xs-12'><label><?php $translate->__("Site phrase:",false); ?></label></div>
+									<div class='col-xs-12'><textarea class="form-control" type="text" id="phrase" name="phrase"><?php if(isset($phrase) && $phrase!='**@****nullo**@****') echo stripslashes($phrase); ?></textarea></div>
 								</div>
 							</div>
-							<div class='row-fluid'>
-								<div class='span2'><label><?php $translate->__("Use",false); ?> <a href='http://fittextjs.com/' target='_blank'>FitText</a>?</label></div>
-								<div class='span3'>
-									<select name='enfitetx' id='enfitetx'>
-										<option value='yes'>Yes</option>
-										<option value='no'>No</option>
-									</select>
+							<div class="form-group">
+								<div class='row'>
+									<div class='col-xs-12 col-sm-3'><label><?php $translate->__("Time Zone:",false); ?>*</label></div>
+									<div class='col-xs-12 col-sm-6 col-md-3'><input class='form-control' type="text" id="tz" name="tz" <?php if(isset($var[10]) && $var[10]!='**@****nullo**@****') echo 'value="'.$var[10].'"'; ?> required /></div>
+								</div>
+							</div>
+							<div class="form-group">
+								<div class='row'>
+									<div class='col-xs-12 col-sm-6 col-md-3'>
+										<label for='datai'><?php $translate->__("Starting data:",false); ?>*</label>
+										<input class='form-control' type="text" id="datai" name="datai" <?php if(isset($var[0]) && $var[0]!='**@****nullo**@****') echo 'value="'.$var[0].'"'; ?> required />
+									</div>
+					
+									<div class='col-xs-12 col-sm-6 col-md-3'>
+										<label for='horai'><?php $translate->__("Starting hour(hh):",false); ?></label>
+										<input class='form-control' type="text" name='horai' id='horai' value='<?php if(count($var)>1)echo $var[1][0];else echo '00'; ?>'/>
+									</div>
+									<div class='col-xs-12 col-sm-6 col-md-3'>
+										<label for='morai'><?php $translate->__("Starting minute (mm):",false); ?></label>
+										<input class='form-control' type="text" name='morai' id='morai' value='<?php if(count($var)>1)echo $var[1][1];else echo '00'; ?>'/>
+									</div>
+									<div class='col-xs-12 col-sm-6 col-md-3'>
+										<label for='sorai'><?php $translate->__("Starting second(ss):",false); ?></label>
+										<input class='form-control' type="text" name='sorai' id='sorai' value='<?php if(count($var)>1)echo $var[1][2];else echo '00'; ?>'/>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<div class='row'>
+									<div class='col-xs-12 col-sm-6 col-md-3'>
+										<label for='dataf'><?php $translate->__("Relase date:",false); ?>*</label>
+										<input class='form-control' type="text" id="dataf" name="dataf" <?php if(isset($var[2]) && $var[2]!='**@****nullo**@****') echo 'value="'.$var[2].'"'; ?> required />
+									</div>
+									
+									<div class='col-xs-12 col-sm-6 col-md-3'>
+										<label for='horaf'><?php $translate->__("Relase hour (hh):",false); ?></label>
+										<input class='form-control' type="text" name='horaf' id='horaf' value='<?php if(count($var)>1)echo $var[3][0];else echo '00'; ?>'/>
+									</div>
+									<div class='col-xs-12 col-sm-6 col-md-3'>
+										<label for='moraf'><?php $translate->__("Relase minute (mm):",false); ?></label>
+										<input class='form-control' type="text" name='moraf' id='moraf' value='<?php if(count($var)>1)echo $var[3][1];else echo '00'; ?>'/>
+									</div>
+									<div class='col-xs-12 col-sm-6 col-md-3'>
+										<label for='soraf'><?php $translate->__("Relase second (ss):",false); ?></label>
+										<input class='form-control' type="text" name='soraf' id='soraf' value='<?php if(count($var)>1)echo $var[3][2];else echo '00'; ?>'/>
+									</div>
 								</div>
 							</div>
 							<br/><br/>
-							<label><?php $translate->__("Site phrase:",false); ?></label><textarea type="text" id="phrase" name="phrase"><?php if(isset($phrase) && $phrase!='**@****nullo**@****') echo stripslashes($phrase); ?></textarea>
-							<br/><br/>
-							<label><?php $translate->__("Time Zone:",false); ?>*</label><input type="text" id="tz" name="tz" <?php if(isset($var[10]) && $var[10]!='**@****nullo**@****') echo 'value="'.$var[10].'"'; ?> required />
-							<div class='row-fluid'>
-								<div class='span3'><label for='datai'><?php $translate->__("Starting data:",false); ?>*</label><input type="text" id="datai" name="datai" <?php if(isset($var[0]) && $var[0]!='**@****nullo**@****') echo 'value="'.$var[0].'"'; ?> required /></div>
-				
-								<div class='span3'><label for='horai'><?php $translate->__("Starting hour(hh):",false); ?></label><input type="text" name='horai' id='horai' value='<?php if(count($var)>1)echo $var[1][0];else echo '00'; ?>'/></div>
-								<div class='span3'><label for='morai'><?php $translate->__("Starting minute (mm):",false); ?></label><input type="text" name='morai' id='morai' value='<?php if(count($var)>1)echo $var[1][1];else echo '00'; ?>'/></div>
-								<div class='span3'><label for='sorai'><?php $translate->__("Starting second(ss):",false); ?></label><input type="text" name='sorai' id='sorai' value='<?php if(count($var)>1)echo $var[1][2];else echo '00'; ?>'/></div>
-							</div>
-							<div class='row-fluid'>
-								<div class='span3'><label for='dataf'><?php $translate->__("Relase date:",false); ?>*</label><input type="text" id="dataf" name="dataf" <?php if(isset($var[2]) && $var[2]!='**@****nullo**@****') echo 'value="'.$var[2].'"'; ?> required /></div>
-								<div class='span3'><label for='horaf'><?php $translate->__("Relase hour (hh):",false); ?></label><input type="text" name='horaf' id='horaf' value='<?php if(count($var)>1)echo $var[3][0];else echo '00'; ?>'/></div>
-								<div class='span3'><label for='moraf'><?php $translate->__("Relase minute (mm):",false); ?></label><input type="text" name='moraf' id='moraf' value='<?php if(count($var)>1)echo $var[3][1];else echo '00'; ?>'/></div>
-								<div class='span3'><label for='soraf'><?php $translate->__("Relase second (ss):",false); ?></label><input type="text" name='soraf' id='soraf' value='<?php if(count($var)>1)echo $var[3][2];else echo '00'; ?>'/></div>
-							</div>
-							<div class='row-fluid'>
-								<div class='span3'><?php $translate->__("Complete Percent:",false); ?><input type="text" id="perc" name="perc" <?php if(isset($var[6]) && $var[6]!='**@****nullo**@****') echo 'value="'.$var[6].'"'; ?>/></div>
-								<div class='span3'><?php $translate->__("Admin email:",false); ?><input type="text" id="emailad" name="emailad" <?php if(isset($var[7]) && $var[7]!='**@****nullo**@****') echo 'value="'.$var[7].'"'; ?> /></div>
-							</div>
-							<br/><br/>
-							<div class='row-fluid'>
-								<div class='span3'><label><?php $translate->__("Show Frontend Clock?",false); ?></label></div>
-								<div class='span3'>
-									<select name='dispclock' id='dispclock'>
-										<option value='yes'>Yes</option>
-										<option value='no'>No</option>
-									</select>
+							<div class="form-group">
+								<div class='row'>
+									<div class='col-xs-12 col-sm-6 col-md-3'><?php $translate->__("Complete Percent:",false); ?><input class='form-control' type="text" id="perc" name="perc" <?php if(isset($var[6]) && $var[6]!='**@****nullo**@****') echo 'value="'.$var[6].'"'; ?>/></div>
+									<div class='col-xs-12 col-sm-6 col-md-3'><?php $translate->__("Admin email:",false); ?><input class='form-control' type="text" id="emailad" name="emailad" <?php if(isset($var[7]) && $var[7]!='**@****nullo**@****') echo 'value="'.$var[7].'"'; ?> /></div>
 								</div>
 							</div>
-							<div class='row-fluid'>
-								<div class='span3'><label><?php $translate->__("Show Frontend Progressbar?",false); ?></label></div>
-								<div class='span3'>
-									<select name='dispprog' id='dispprog'>
-										<option value='yes'>Yes</option>
-										<option value='no'>No</option>
-									</select>
+							<div class="form-group">
+								<div class='row'>
+									<div class='col-xs-12 col-sm-6 col-md-3'><label><?php $translate->__("Show Frontend Clock?",false); ?></label></div>
+									<div class='col-xs-12 col-sm-2'>
+										<select class='form-control' name='dispclock' id='dispclock'>
+											<option value='yes'>Yes</option>
+											<option value='no'>No</option>
+										</select>
+									</div>
 								</div>
 							</div>
-							<div class='row-fluid'>
-								<div class='span3'><label><?php $translate->__("Show Frontend Contact Form?",false); ?></label></div>
-								<div class='span3'>
-									<select name='shcf' id='shcf'>
-										<option value='yes'>Yes</option>
-										<option value='no'>No</option>
-									</select>
-								</div>
-								<div class='span3'><label><?php $translate->__("Enable Captcha?",false); ?></label></div>
-								<div class='span3'>
-									<select name='encaptcha' id='encaptcha'>
-										<option value='yes'>Yes</option>
-										<option value='no'>No</option>
-									</select>
+							<div class="form-group">
+								<div class='row'>
+									<div class='col-xs-12 col-sm-6 col-md-3'><label><?php $translate->__("Show Frontend Progressbar?",false); ?></label></div>
+									<div class='col-xs-12 col-sm-2'>
+										<select class='form-control' name='dispprog' id='dispprog'>
+											<option value='yes'>Yes</option>
+											<option value='no'>No</option>
+										</select>
+									</div>
 								</div>
 							</div>
-							<div class='row-fluid'>
-								<div class='span3'><label><?php $translate->__("Show Frontend Subscribe Form?",false); ?></label></div>
-								<div class='span3'>
-									<select name='shsf' id='shsf'>
-										<option value='yes'>Yes</option>
-										<option value='no'>No</option>
-									</select>
+							<div class="form-group">
+								<div class='row'>
+									<div class='col-xs-12 col-sm-6 col-md-3'><label><?php $translate->__("Show Frontend Contact Form?",false); ?></label></div>
+									<div class='col-xs-12 col-sm-2'>
+										<select class='form-control' name='shcf' id='shcf'>
+											<option value='yes'>Yes</option>
+											<option value='no'>No</option>
+										</select>
+									</div>
+									<div class='col-xs-12 col-sm-6 col-md-3'><label><?php $translate->__("Enable Captcha?",false); ?></label></div>
+									<div class='col-xs-12 col-sm-2'>
+										<select class='form-control' name='encaptcha' id='encaptcha'>
+											<option value='yes'>Yes</option>
+											<option value='no'>No</option>
+										</select>
+									</div>
 								</div>
 							</div>
-							<br/>
-							<label><?php $translate->__("Progressbar Phrase:",false); ?></label><textarea type="text" id="progph" name="progph" ><?php if(isset($frontph[1]) && $frontph[1]!='**@****nullo**@****') echo stripslashes($frontph[1]); ?></textarea>
-							<br/><br/>
-							<label><?php $translate->__("Footer Phrase:",false); ?></label><textarea type="text" id="footerph" name="footerph"><?php if(isset($frontph[0]) && $frontph[0]!='**@****nullo**@****') echo stripslashes($frontph[0]); ?></textarea>
-							<br/><br/>
+							<div class="form-group">
+								<div class='row'>
+									<div class='col-xs-12 col-sm-6 col-md-3'><label><?php $translate->__("Show Frontend Subscribe Form?",false); ?></label></div>
+									<div class='col-xs-12 col-sm-2'>
+										<select class='form-control' name='shsf' id='shsf'>
+											<option value='yes'>Yes</option>
+											<option value='no'>No</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="row">
+									<div class='col-xs-12'><label><?php $translate->__("Progressbar Phrase:",false); ?></label></div>
+									<div class='col-xs-12'><textarea class="form-control" type="text" id="progph" name="progph" ><?php if(isset($frontph[1]) && $frontph[1]!='**@****nullo**@****') echo stripslashes($frontph[1]); ?></textarea></div>
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="row">
+									<div class='col-xs-12'><label><?php $translate->__("Footer Phrase:",false); ?></label></div>
+									<div class='col-xs-12'><textarea class="form-control" type="text" id="footerph" name="footerph"><?php if(isset($frontph[0]) && $frontph[0]!='**@****nullo**@****') echo stripslashes($frontph[0]); ?></textarea></div>
+								</div>
+							</div>
 							
 							<h3>Email Setting</h3>
-							<label><?php $translate->__("Server Email Restriction",false); ?></label><br/>
-							<div class='row-fluid'>
-								<div class='span2'><?php $translate->__("Number of email",false); ?></div>
-								<div class='span3'><input type="text" id="mailimit" name="mailimit" <?php if(isset($var[14]) && $var[14]!='none') echo 'value="'.$var[14].'"'; ?> /></div>
-								<div class='span2'><?php $translate->__("per (in seconds)",false); ?></div>
-								<div class='span3'><input type="text" id="pertime" name="pertime" <?php if(isset($var[15]) && $var[15]!='none') echo 'value="'.$var[15].'"'; ?> /></div>
+							<h5><label><?php $translate->__("Server Email Restriction",false); ?></label></h5>
+							<div class="form-group">
+								<div class='row'>
+									<div class='col-xs-12 col-sm-4 col-md-2'><?php $translate->__("Number of email",false); ?></div>
+									<div class='col-xs-12 col-sm-6 col-md-2'><input class='form-control' type="text" id="mailimit" name="mailimit" <?php if(isset($var[14]) && $var[14]!='none') echo 'value="'.$var[14].'"'; ?> /></div>
+									<div class='col-xs-12 col-sm-4 col-md-2'><?php $translate->__("per (in seconds)",false); ?></div>
+									<div class='col-xs-12 col-sm-6 col-md-2'><input class='form-control' type="text" id="pertime" name="pertime" <?php if(isset($var[15]) && $var[15]!='none') echo 'value="'.$var[15].'"'; ?> /></div>
+								</div>
 							</div>
-							<br/><br/>
-							<div class='row-fluid'>
-								<div class='span3'><label><?php $translate->__("Show Unsubscribe Link Inside Email Footer?",false); ?></label></div>
-								<div class='span3'>
-									<select name='shunl' id='shunl'>
+							<div class="form-group">
+							<div class='row'>
+								<div class='col-xs-12 col-sm-6 col-md-2'><label><?php $translate->__("Show Unsubscribe Link Inside Email Footer?",false); ?></label></div>
+								<div class='col-xs-12 col-sm-2'>
+									<select class='form-control' name='shunl' id='shunl'>
 										<option value='yes'>Yes</option>
 										<option value='no'>No</option>
 									</select>
 								</div>
 							</div>
+							</div>
 							<p><?php $translate->__("Once you have saved these settings you can complete the email configuration under <a href='mail_setting.php'>Setup->Mail</a>",false); ?></p>
-							<br/><br/>
+							
 
 							<h3>Cronjob Setting</h3>
-							<div class='row-fluid'>
-								<div class='span3'><label><?php $translate->__("Checking Word:",false); ?>*</label></div>
-								<div class='span3'><input type="text" id="psphrase" name="psphrase" <?php if(isset($var[19]) && $var[19]!='**@****nullo**@****') echo 'value="'.$var[19].'"'; ?> required/></div>
+							<div class="form-group">
+							<div class='row'>
+								<div class='col-xs-12 col-sm-6 col-md-3'><label><?php $translate->__("Checking Word:",false); ?>*</label></div>
+								<div class='col-xs-12 col-sm-6 col-md-3'><input class='form-control' type="text" id="psphrase" name="psphrase" <?php if(isset($var[19]) && $var[19]!='**@****nullo**@****') echo 'value="'.$var[19].'"'; ?> required/></div>
 							</div>
-							<div class='row-fluid'>
-								<div class='span3'><label for='execpara' ><?php $translate->__("PHP Command Parameter(instant sending):",false); ?>*</label></div>
-								<div class='span3'><input type="text" id="execpara" name="execpara" <?php if(isset($var[21]) && $var[21]!='**@****nullo**@****') echo 'value="'.$var[21].'"'; ?> required /></div>
 							</div>
-							<div class='row-fluid'>
-								<div class='span3'><label for='cronpara' ><?php $translate->__("PHP Command Parameter(cronjob):",false); ?>*</label></div>
-								<div class='span3'><input type="text" id="cronpara" name="cronpara" <?php if(isset($var[22]) && $var[22]!='**@****nullo**@****') echo 'value="'.$var[22].'"'; ?> required /></div>
+							<div class="form-group">
+							<div class='row'>
+								<div class='col-xs-12 col-sm-6 col-md-3'><label for='execpara' ><?php $translate->__("PHP Command Parameter(instant sending):",false); ?>*</label></div>
+								<div class='col-xs-12 col-sm-6 col-md-3'><input class='form-control' type="text" id="execpara" name="execpara" <?php if(isset($var[21]) && $var[21]!='**@****nullo**@****') echo 'value="'.$var[21].'"'; ?> required /></div>
 							</div>
-							<br/><br/>
+							</div>
+							<div class="form-group">
+								<div class='row'>
+									<div class='col-xs-12 col-sm-6 col-md-3'><label for='cronpara' ><?php $translate->__("PHP Command Parameter(cronjob):",false); ?>*</label></div>
+									<div class='col-xs-12 col-sm-6 col-md-3'><input class='form-control' type="text" id="cronpara" name="cronpara" <?php if(isset($var[22]) && $var[22]!='**@****nullo**@****') echo 'value="'.$var[22].'"'; ?> required /></div>
+								</div>
+							</div>
 						<input onclick='javascript:return false;' type="submit" name="datacom" id="datacom" value="<?php $translate->__("Set",false); ?>" class="btn btn-success"/>
 					</form>
+
 					<?php if(isset($var[20])) {?>
 						<div class='formcor'><h2 class='titlesec'><?php $translate->__("Cronjob String",false); ?></h2>
 							<p><?php $translate->__("If you can't automatically update the Cronjob trough the php function you can try set it by your own, this is the string with the information:",false); ?></p>
-							<br/>
+							
 							<p id='cronstring'><?php echo $var[20]; ?></p>
 						</div>
 					<?php } ?>
 					
 					<form class='formcor'>
 						<h2 class='titlesec'><?php $translate->__("Monitoring Code",false); ?></h2>
+						<div class="form-group">
+							<div class='row'>
+								<div class='span12'><label><?php $translate->__('Write here your monitoring code(no script tags)',false); ?></label></div>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class='row'>
+								<div class='span12'><textarea class="form-control" id='analisyscode'><?php if(isset($monitoringcode)) echo stripslashes($monitoringcode); ?></textarea></div>
+							</div>
+						</div>
 						
-						<div class='row-fluid'>
-							<div class='span12'><label><?php $translate->__('Write here your monitoring code(no script tags)',false); ?></label></div>
-						</div>
-						<div class='row-fluid'>
-							<div class='span12'><textarea id='analisyscode'><?php if(isset($monitoringcode)) echo stripslashes($monitoringcode); ?></textarea></div>
-						</div>
-						<br/><br/>
 						<input onclick='javascript:return false;' type="submit" name="setmonit" id="setmonit" value="<?php $translate->__("Save Code",false); ?>" class="btn btn-success"/>
 					</form>
 					
 					<form name="passwordform" id="passwordform"  method="post"  class='formcor'>
-					<h2 class='titlesec'><?php $translate->__("Password Change",false); ?></h2>
+						<h2 class='titlesec'><?php $translate->__("Password Change",false); ?></h2>
+						<div class="form-group">
+							<div class='row'>
+								<div class='col-xs-12 col-sm-6 col-md-2'><label><?php $translate->__("Old Password:",false); ?></label></div>
+								<div class='col-xs-12 col-sm-6 col-md-4'><input class='form-control' type="password" id="oldpwd" name="oldpwd" /></div>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class='row'>
+								<div class='col-xs-12 col-sm-6 col-md-2'><label><?php $translate->__("New Password:",false); ?></label></div>
+								<div class='col-xs-12 col-sm-6 col-md-4'><input class='form-control' type="password" id="newpwd" name="newpwd"/></div>
+								<div class='col-xs-12 col-sm-6 col-md-2'><label><?php $translate->__("Repeat new Password:",false); ?></label></div>
+								<div class='col-xs-12 col-sm-6 col-md-4'><input class='form-control' type="password" name='cnewpwd' id='cnewpwd'/></div>
+							</div>
+						</div>
 					
-					<div class='row-fluid'>
-						<div class='span4'><label><?php $translate->__("Old Password:",false); ?></label><input type="password" id="oldpwd" name="oldpwd" /></div>
-						<div class='span4'><label><?php $translate->__("New Password:",false); ?></label><input type="password" id="newpwd" name="newpwd"/></div>
-						<div class='span4'><label><?php $translate->__("Repeat new Password:",false); ?></label><input type="password" name='cnewpwd' id='cnewpwd'/></div>
-					</div>
-					<br/><br/>
 						<input onclick='javascript:return false;' type="submit" name="updatepwd" id="updatepwd" value="<?php $translate->__("Update Password",false); ?>" class="btn btn-success"/>
 					</form>
 					
 					<form name="socialform" id="socialform"  method="post"  class='formcor form-horizontal'>
 					<h2 class='titlesec'><?php $translate->__("Social Network Link",false); ?></h2>
-						<div class="row-fluid">
-							<div class='span3'><label>Blogger</label><input type="text" id="blog" name="blog" <?php if(isset($social[0]) && $social[0]!='**@****nullo**@****') echo 'value="'.$social[0].'"'; ?> placeholder='Blogger Link'/></div>
-							<div class='span3'><label>DeviantArt</label><input type="text" id='devian' name='devian' <?php if(isset($social[1]) && $social[1]!='**@****nullo**@****') echo 'value="'.$social[1].'"'; ?> placeholder='DeviantArt Link'/></div>
-							<div class='span3'><label>Facebook</label><input 	type="text" id="fb" name="fb" <?php if(isset($social[2]) && $social[2]!='**@****nullo**@****') echo 'value="'.$social[2].'"'; ?> placeholder='Facebook Link'/></div>
-							<div class='span3'><label>Flickr</label><input type="text" id="fl" name="fl" <?php if(isset($social[3]) && $social[3]!='**@****nullo**@****') echo 'value="'.$social[3].'"'; ?> placeholder='Flickr Link'/></div>
+						<div class="form-group">
+							<div class="row">
+								<div class='col-xs-12 col-sm-6 col-md-3'><label>Blogger</label><input class='form-control' type="text" id="blog" name="blog" <?php if(isset($social[0]) && $social[0]!='**@****nullo**@****') echo 'value="'.$social[0].'"'; ?> placeholder='Blogger Link'/></div>
+								<div class='col-xs-12 col-sm-6 col-md-3'><label>DeviantArt</label><input class='form-control' type="text" id='devian' name='devian' <?php if(isset($social[1]) && $social[1]!='**@****nullo**@****') echo 'value="'.$social[1].'"'; ?> placeholder='DeviantArt Link'/></div>
+								<div class='col-xs-12 col-sm-6 col-md-3'><label>Facebook</label><input class='form-control' 	type="text" id="fb" name="fb" <?php if(isset($social[2]) && $social[2]!='**@****nullo**@****') echo 'value="'.$social[2].'"'; ?> placeholder='Facebook Link'/></div>
+								<div class='col-xs-12 col-sm-6 col-md-3'><label>Flickr</label><input class='form-control' type="text" id="fl" name="fl" <?php if(isset($social[3]) && $social[3]!='**@****nullo**@****') echo 'value="'.$social[3].'"'; ?> placeholder='Flickr Link'/></div>
+							</div>
 						</div>
-						<br/>
-						<div class="row-fluid">
-							<div class='span3'><label>Linkedin</label><input type="text" id="linkedin" name="linkedin" <?php if(isset($social[4]) && $social[4]!='**@****nullo**@****') echo 'value="'.$social[4].'"'; ?> placeholder='Linkedin Link'/></div>
-							<div class='span3'><label>Twitter</label><input type="text" id="tw" name="tw" <?php if(isset($social[5]) && $social[5]!='**@****nullo**@****') echo 'value="'.$social[5].'"';?> placeholder='Twitter Link'/></div>
-							<div class='span3'><label>Wordpress</label><input type="text" id="word" name="word" <?php if(isset($social[6]) && $social[6]!='**@****nullo**@****') echo 'value="'.$social[6].'"'; ?> placeholder='Wordpress Link'/></div>
-							<div class='span3'><label>Youtube</label><input type="text" id='yb' name='yb' <?php if(isset($social[7]) && $social[7]!='**@****nullo**@****') echo 'value="'.$social[7].'"'; ?> placeholder='Youtube Link'/></div>
+						
+						<div class="form-group">
+							<div class="row">
+								<div class='col-xs-12 col-sm-6 col-md-3'><label>Linkedin</label><input class='form-control' type="text" id="linkedin" name="linkedin" <?php if(isset($social[4]) && $social[4]!='**@****nullo**@****') echo 'value="'.$social[4].'"'; ?> placeholder='Linkedin Link'/></div>
+								<div class='col-xs-12 col-sm-6 col-md-3'><label>Twitter</label><input class='form-control' type="text" id="tw" name="tw" <?php if(isset($social[5]) && $social[5]!='**@****nullo**@****') echo 'value="'.$social[5].'"';?> placeholder='Twitter Link'/></div>
+								<div class='col-xs-12 col-sm-6 col-md-3'><label>Wordpress</label><input class='form-control' type="text" id="word" name="word" <?php if(isset($social[6]) && $social[6]!='**@****nullo**@****') echo 'value="'.$social[6].'"'; ?> placeholder='Wordpress Link'/></div>
+								<div class='col-xs-12 col-sm-6 col-md-3'><label>Youtube</label><input class='form-control' type="text" id='yb' name='yb' <?php if(isset($social[7]) && $social[7]!='**@****nullo**@****') echo 'value="'.$social[7].'"'; ?> placeholder='Youtube Link'/></div>
+							</div>
 						</div>
-						<br/><br/>
+						
 						<input onclick='javascript:return false;' type="submit" name="updatesocial" id="updatesocial" value="<?php $translate->__("Update Information",false); ?>" class="btn btn-success"/>
 					</form>
 					
 					<form name="logoutfor" id="logoutfor" method="post"  class='formcor'>
 						<input type="submit" name="logout" id="logout" value="Logout" class="btn btn-danger"/>
 					</form>
-				<!--</div>
-			</div>-->
 		</div>
 		<?php } else { ?>
-		<div class='row-fluid-fluid main'>
+		<div class='container main'>
 			<form name="formdata" id="formdata" method="post"  class='formcor form-inline'>
 				<h2 class='titlesec'>Login</h2>
-					<!--[if IE]><input type="text" style="display: none;" disabled="disabled" size="1" /><![endif]-->
+					<!--[if IE]><input class='form-control' type="text" style="display: none;" disabled="disabled" size="1" /><![endif]-->
 					<?php if(isset($acc) && $acc==false){ ?>
-					<div class='row-fluid'><div class='span12'><p><?php $translate->__("Wrong Password",false); ?><p></div></div>
+					<div class='row'><div class='span12'><p><?php $translate->__("Wrong Password",false); ?><p></div></div>
 					<?php } ?>
-				<div class='row-fluid'>
-					<div class='span2'><label>Password</label></div>
-					<div class='span4'><input type="password" id="pwd" name="pwd" placeholder="Password"></div>
+				<div class='row'>
+					<div class='col-xs-12 col-sm-4 col-md-2'><label>Password</label></div>
+					<div class='col-xs-12 col-sm-6 col-md-4'><input class='form-control' type="password" id="pwd" name="pwd" placeholder="Password"></div>
 				</div>
-				<br/><br/>
-				<input type="submit" name="loginb" id="loginb" value="Login" class="btn btn-success"/>
+				
+				<input class='form-control' type="submit" name="loginb" id="loginb" value="Login" class="btn btn-success"/>
 			</form>
 		</div>
 		<?php } 
 		?>
-	</div>
 	<?php if(isset($_SESSION['views']) && $_SESSION['views']==1946 ){ ?>
 		<script type="text/javascript"  src="../js/jquery-ui-1.10.3.custom.min.js"></script>
 		<script type="text/javascript"  src="../js/jquery.validate.min.js"></script>
@@ -593,7 +700,7 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 										if($('#cronstring').length)
 											$('#cronstring').html(data[1]);
 										else
-											$('#formdata').after("<div class='formcor'><h2 class='titlesec'><?php echo $translate->__("Cronjob String",true); ?></h2><p><?php echo $translate->__("If you can't automatically update the Cronjob trough the php function you can try set it by your own, this is the string with the information:",true); ?></p><br/><p id='cronstring'>"+data[1]+"</p></div>");
+											$('#formdata').after("<div class='formcor'><h2 class='titlesec'><?php echo $translate->__("Cronjob String",true); ?></h2><p><?php echo $translate->__("If you can't automatically update the Cronjob trough the php function you can try set it by your own, this is the string with the information:",true); ?></p><p id='cronstring'>"+data[1]+"</p></div>");
 									}
 									else{
 										noty({text: "<?php echo $translate->__("This is the first time,the page will be reloaded",true); ?>",type:'success',timeout:9000});

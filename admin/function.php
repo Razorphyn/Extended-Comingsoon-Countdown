@@ -39,7 +39,8 @@
 		session_unset();
 		session_destroy();
 	}
-	else if(isset($_SESSION['ip']) && $_SESSION['ip']!=retrive_ip()){
+	
+	if(isset($_SESSION['ip']) && $_SESSION['ip']!=retrive_ip()){
 		session_unset();
 		session_destroy();
 	}
@@ -119,7 +120,7 @@
 
 		$_POST[$_SESSION['tokens']['subject']]=trim(preg_replace('/\s+/',' ',$_POST[$_SESSION['tokens']['subject']]));
 		
-		if(trim(preg_replace('/\s+/','',$_POST[$_SESSION['tokens']['senname']]))!='' && preg_match("/^([a-zA-ZÀ-ÿ-' ]+)$/",$_POST[$_SESSION['tokens']['senname']])) 
+		if(trim(preg_replace('/\s+/','',$_POST[$_SESSION['tokens']['senname']]))!='' && preg_match("/^([0-9a-zA-ZÀ-ÿ-' ]{1,100})$/",$_POST[$_SESSION['tokens']['senname']]))
 			$_POST[$_SESSION['tokens']['senname']]=trim(preg_replace('/\s+/',' ',$_POST[$_SESSION['tokens']['senname']]));
 		else{
 			header('Content-Type: application/json; charset=utf-8');
@@ -166,7 +167,7 @@
 			exit();
 		}
 	}
-	
+
 	else if(isset($_POST['act']) && $_POST['act']=='subscribe'){
 		if(isset($_POST['nameinput']) && isset($_POST['mailinput'])){
 
@@ -277,7 +278,7 @@
 		else
 			echo json_encode(array(0=>'Empty'));
 	}
-	
+
 	else if(isset($_SESSION['views']) && isset($_POST['act']) && $_POST['act']=='send_mail_bk'){
 		if(isset($_POST['shtb']) && isset($_POST['sender']) && isset($_POST['object']) ){
 			$var=file($fileconfig, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -360,7 +361,6 @@
 					echo exec('crontab ../config/crontab.txt');
 					unlink('../config/crontab.txt');
 					file_put_contents('../config/scheduled/'.$iden,$bod."\n".$footer."\n".json_encode($mailist)."\n".$_POST['sender']."\n".$_POST['object']."\n".$var[11]."\n".$var[12]."\n".$var[13]."\n".$var[14]."\n".$var[15]."\n".$_POST['sdate'].' '.$_POST['stime']."\n".$_POST['shtb']."\n".$add);
-
 				}
 				else
 					echo json_encode(array(0=>'This Mail is Already Scheduled'));
@@ -386,7 +386,7 @@
 		fclose($fs);
 		echo json_encode(array(0=>'Saved'));
 	}
-	
+
 	else if(isset($_SESSION['views']) && isset($_POST['act']) && $_POST['act']=='complete_site_mail'){
 		$fs=fopen($filefnmail,"w+");
 			fwrite($fs,$_POST['senderfn']."\n".$_POST['objectfn']."\n".$_POST['warnus']);
@@ -396,7 +396,7 @@
 		fclose($fs);
 		echo json_encode(array(0=>'Saved'));
 	}
-	
+
 	else if(isset($_SESSION['views']) && isset($_POST['act']) && $_POST['act']=='update_password'){
 		include_once $passfile;
 		if($adminpassword==hash('whirlpool',$_POST['oldpwd'])){
@@ -412,44 +412,50 @@
 		else
 			echo json_encode(array(0=>'Wrong'));
 	}
-	
+
 	else if(isset($_SESSION['views']) && isset($_POST['act']) && $_POST['act']=='save_common_mail'){
 		$fs=fopen($filefnfooter,"w+");
 		fwrite($fs,preg_replace('/\s+/',' ',$_POST['footerfn']));
 		fclose($fs);
 		echo json_encode(array(0=>'Sent'));
 	}
-	
+
 	else if(isset($_SESSION['views']) && isset($_POST['act'])  && $_POST['act']=='save_stmp'){
-		$_POST['serv']=(is_numeric($_POST['serv'])) ? $_POST['serv']:exit();
-		$_POST['name']=(!empty($_POST['name'])) ?$_POST['name']:'';
-		$_POST['mail']=(!empty($_POST['mail'])) ?$_POST['mail']:'';
-		$_POST['host']=(!empty($_POST['host'])) ? $_POST['host']:'';
-		$_POST['port']=(is_numeric($_POST['port']) && !empty($_POST['port'])) ? $_POST['port']:'\'\'';
-		$_POST['ssl']=(is_numeric($_POST['ssl'])) ? $_POST['ssl']:0;
-		$_POST['auth']=($_POST['auth']==1) ? 1:0;
+		$serv=(is_numeric($_POST['serv'])) ? $_POST['serv']:exit();
+		$mustang=(string)$_POST['name'];
+		$viper=(string)$_POST['mail'];
+		$host=(string)$_POST['host'];
+		$port=(is_numeric($_POST['port'])) ? $_POST['port']:exit();
+		$ssl=(is_numeric($_POST['ssl'])) ? $_POST['ssl']:exit();
+		$auth=(is_numeric($_POST['auth'])) ? $_POST['auth']:exit();
 		
-		$usr=(!empty($_POST['usr'])) ? $_POST['usr']:'';
-		$pass=(!empty($_POST['pass'])) ? $_POST['pass']:'';
-		if(preg_replace('/\s+/','',$_POST['pass'])!=''){
-			$crypttable=array('a'=>'X','b'=>'k','c'=>'Z','d'=>2,'e'=>'d','f'=>6,'g'=>'o','h'=>'R','i'=>3,'j'=>'M','k'=>'s','l'=>'j','m'=>8,'n'=>'i','o'=>'L','p'=>'W','q'=>0,'r'=>9,'s'=>'G','t'=>'C','u'=>'t','v'=>4,'w'=>7,'x'=>'U','y'=>'p','z'=>'F',0=>'q',1=>'a',2=>'H',3=>'e',4=>'N',5=>1,6=>5,7=>'B',8=>'v',9=>'y','A'=>'K','B'=>'Q','C'=>'x','D'=>'u','E'=>'f','F'=>'T','G'=>'c','H'=>'w','I'=>'D','J'=>'b','K'=>'z','L'=>'V','M'=>'Y','N'=>'A','O'=>'n','P'=>'r','Q'=>'O','R'=>'g','S'=>'E','T'=>'I','U'=>'J','V'=>'P','W'=>'m','X'=>'S','Y'=>'h','Z'=>'l');
-			$pass=str_split($pass);
-			$c=count($pass);
-			for($i=0;$i<$c;$i++){
-				if(array_key_exists($pass[$i],$crypttable))
-					$pass[$i]=$crypttable[$crypttable[$pass[$i]]];
-			}
-			$pass=implode('',$pass);
+		$usr=(string)$_POST['usr'];
+		$pass=(string)$_POST['pass'];
+		if(!empty($pass)){
+			include_once ('endecrypt.php');
+			$key=uniqid('',true);
+			$e = new Encryption(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
+			$pass = base64_encode($e->encrypt($pass, $key));
 		}
 		
-		$string='<?php'."\n".'$smailservice='.$_POST['serv'].";\n".'$smailname=\''.$_POST['name']."';\n".'$settingmail=\''.$_POST['mail']."';\n".'$smailhost=\''.$_POST['host']."';\n".'$smailport='.$_POST['port'].";\n".'$smailssl='.$_POST['ssl'].";\n".'$smailauth='.$_POST['auth'].";\n".'$smailuser=\''.$mustang."';\n".'$smailpassword=\''.$mustang."';\n ?>";
+		$string='<?php'."\n";
+		$string.='$smailservice='.$serv.";\n";
+		$string.='$smailname="'.$mustang."\";\n";
+		$string.='$settingmail=\"'.$viper."\";\n";
+		$string.='$smailhost=\''.$host."';\n";
+		$string.='$smailport='.$port.";\n";
+		$string.='$smailssl='.$ssl.";\n";
+		$string.='$smailauth='.$auth.";\n";
+		$string.='$smailuser=\''.$mustang."';\n";
+		$string.='$smailpassword=\''.$pass."';\n";
+		$string.='$skey="'.$key."\";\n ?>";
 		if(file_put_contents('../config/stmp.php',$string))
 			echo json_encode(array(0=>'Saved'));
 		else
 			echo json_encode(array(0=>'Error'));
 		exit();
 	}
-	
+
 	else if(isset($_SESSION['views']) && isset($_POST['act'])  && $_POST['act']=='monitoring_code'){
 		if(is_file('../config/monintoring.php')){
 			include_once('../config/monintoring.php');
@@ -466,7 +472,7 @@
 		else
 			echo json_encode(array(0=>'Empty'));
 	}
-	
+
 	else if(isset($_SESSION['views']) && isset($_POST['act']) && $_POST['act']=='save_options'){
 		if(preg_replace('/\s+/','',$_POST['dataf'])!='' && preg_replace('/\s+/','',$_POST['datai'])!='' && trim(preg_replace('/\s+/','',$_POST['tz'])!='')){
 			$var = file($fileconfig, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -626,7 +632,7 @@
 			else{
 				file_put_contents('../config/crontab.txt', $output.$add.PHP_EOL);
 			}
-			echo exec('crontab ../config/crontab.txt');
+			exec('crontab ../config/crontab.txt');
 			unlink('../config/crontab.txt');
 			if(isset($var[10]) && $var[10]==$_POST['tz'])
 				echo json_encode(array(0=>'Saved',1=>$add));
@@ -636,10 +642,32 @@
 		else
 			echo json_encode(array(0=>'Empty'));
 	}
+
+	else if(isset($_SESSION['views']) && isset($_POST['act']) && $_POST['act']=='check_time'){
+		$var=file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+		date_default_timezone_set($var[10]);
+		list($oraf,$minuf,$secf)=explode(':',$var[3]);
+		list($orai,$minui,$seci)=explode(':',$var[1]);
+		
+		$offset=get_timezone_offset($var[10]);
+		
+		$fsec=dateDifference(date('Y/m/d H:i:s'),$var[2])*24*60*60+abs($oraf-$orai)*60*60+abs($minuf-$minui)*60+abs($secf-$seci);
+		
+		if(fsec>0){
+			return json_encode(array(0,$fsec));
+		else
+			return json_encode(array(1));
+	}
 	
 	else{
 		echo json_encode(array(0=>'No Action Selected'));
 	}
+	
+	function dateDifference($startDate, $endDate){
+		list($anno,$mese,$giorno)=explode('-',$startDate);
+		list($fanno,$fmese,$fgiorno)=explode('-',$endDate);
+		$days=gregoriantojd($fmese, $fgiorno, $fanno) -gregoriantojd($mese, $giorno, $anno);return $days;
+	} 
 	
 	function get_timezone_offset($remote_tz) {
 		$origin_tz=date_default_timezone_get();

@@ -31,8 +31,8 @@ $siteurl=$siteurl[0];
 	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
 	<!--[if lt IE 9]><script src="js/html5shiv-printshiv.js"></script><![endif]-->
 	
-	<link rel="stylesheet" type="text/css" href="<?php echo $siteurl.'/min/?b=css&amp;f=news.css,bootstrap.css,bootstrap-responsive.css&amp;5259487' ?>"/>
-	<script type="text/javascript"  src="<?php echo $siteurl.'/min/?b=js&amp;f=jquery-1.10.2.js,bootstrap.min.js&amp;5259487' ?>"></script>
+	<link rel="stylesheet" type="text/css" href="<?php echo $siteurl.'/min/?b=css&amp;f=news.css,bootstrap.min.css&amp;5259487' ?>"/>
+	<script type="text/javascript"  src="<?php echo $siteurl.'/min/?b=js&amp;f=jquery.js,bootstrap.min.js&amp;5259487' ?>"></script>
 
 	<?php
 		$filenews= 'config/news.txt';
@@ -53,8 +53,8 @@ $siteurl=$siteurl[0];
 <body>
 	<div class='container'>
 		<div id='main' class='ext2'>
-			<div class='row-fluid'>
-				<div id='span12 corp' class='newscont'>
+			<div class='row'>
+				<div id='col-xs-12 col-md-12 corp' class='newscont'>
 					<p class='titlenews'><?php echo htmlspecialchars($news[$id+2],ENT_QUOTES,'UTF-8'); ?></p>
 					<p class='datenews'><?php $translate->__('Posted on:',false); echo htmlspecialchars($news[$id+1],ENT_QUOTES,'UTF-8'); ?></p>
 					<div class='corpnews'><?php echo$news[$id]; ?></div>
@@ -71,8 +71,8 @@ $siteurl=$siteurl[0];
 <body>
 	<div class='container'>
 		<div id='main' class='ext2'>
-			<div class='row-fluid'>
-				<div id='corp' class='span12 newscont'>
+			<div class='row'>
+				<div id='corp' class='col-xs-12 col-sm-3 col-md-12 newscont'>
 				
 				<?php if($btn!=0){ ?><a href='index.php' class='moren btn btn-warning'><?php $translate->__('Back to Homepage',false); ?></a><?php } ?>
 				</div>

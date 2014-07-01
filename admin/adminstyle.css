@@ -20,30 +20,6 @@ body {line-height:1;background:#f2f2f2;padding: 0 20px 20px!important;margin:0!i
 .metacont{display:block;margin-bottom:0.34%;width:90%!important;position:relative:float:left}
 .row{margin:0 !important}
 
-.sidebar-nav-fixed{padding: 9px 0;margin-top:50px;background:#fff;width:250px}
-
- @media (max-width: 767px) {
-     .sidebar-nav-fixed {
-         width:auto;
-     }
- }
-
- @media (max-width: 979px) {
-     .sidebar-nav-fixed {
-         position:static;
-        width: auto;
-     }
- }
-
-@media (max-width: 979px) {
-     .sidebar-nav-fixed {
-         position:static;
-        width: auto;
-     }
- }
- 
-i {position:relative;float:right}
-
 table.table thead .sorting,
 table.table thead .sorting_asc,
 table.table thead .sorting_desc,

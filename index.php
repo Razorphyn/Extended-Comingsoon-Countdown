@@ -50,6 +50,7 @@
 	$filenews= 'config/news.txt';
 	$frontotinfo= 'config/indexfooter.txt';
 	$filemail='config/mail.txt';
+	$filemonitor='config/monintoring.php';
 	
 	if(isset($var)) unset($var);
 	if(isset($logo)) unset($logo);
@@ -78,14 +79,14 @@
 	$info2=$mese.'/'.$giorno.'/'.$anno;
 	
 	$offset=get_timezone_offset($var[10]);
-
-	$siteurl=explode('?',curPageURL());
-	$siteurl=$siteurl[0];
 	
 	$fsec=dateDifference($var[0],$var[2])*24*60*60+abs($oraf-$orai)*60*60+abs($minuf-$minui)*60+abs($secf-$seci);
 
 	$interval=round($fsec/10,0);
-	
+
+	$siteurl=explode('?',curPageURL());
+	$siteurl=$siteurl[0];
+
 	function get_timezone_offset($remote_tz) {
 		$origin_tz = 'Europe/London';
 		$origin_dtz = new DateTimeZone($origin_tz);
@@ -113,6 +114,22 @@
 		}
 		return $randomString;
 	}
+	
+	function dateDifference($startDate, $endDate){
+		list($anno,$mese,$giorno)=explode('-',$startDate);
+		list($fanno,$fmese,$fgiorno)=explode('-',$endDate);
+		$days=gregoriantojd($fmese, $fgiorno, $fanno) -gregoriantojd($mese, $giorno, $anno);return $days;
+	} 
+	
+	function accorcia($frase,$i,$str,$siteurl){
+		$frase=strip_tags($frase);
+		$len=strlen($frase);
+		if($len>120)
+			$frase=substr($frase,0,100).'...<br/><a title="'.$str.'" alt="'.$str.'" href="'.$siteurl.'news.php?id='.$i.'&btn=0" class="visible-md visible-lg snews">'.$str.'</a><a class="hidden-md hidden-lg" title="'.$str.'" alt="'.$str.'" href="'.$siteurl.'news.php?id='.$i.'&btn=1">'.$str.'</a>';
+		return $frase;
+	}
+	function curPageURL() {$pageURL = 'http';if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") $pageURL .= "s";$pageURL .= "://";if (isset($_SERVER["HTTPS"]) && $_SERVER["SERVER_PORT"] != "80") $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];else $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];return $pageURL;}
+
 	?>
 <!DOCTYPE html>
 <html lang="<?php echo $lang; ?>">
@@ -129,9 +146,9 @@
 
 	<!--[if lt IE 9]><script src="js/html5shiv-printshiv.js"></script><![endif]-->
 	
-	<link rel="stylesheet" type="text/css" href="<?php echo $siteurl.'min/?b=css&amp;f=style.css,bootstrap.css,bootstrap-responsive.css,jquery-ui.css,magnific-popup.css&amp;5259487' ?>"/>
+	<link rel="stylesheet" type="text/css" href="<?php echo $siteurl.'min/?b=css&amp;f=style.css,bootstrap.min.css,jquery-ui.css,magnific-popup.css&amp;5259487' ?>"/>
 	
-	<script type="text/javascript"  src="<?php echo $siteurl.'min/?b=js&amp;f=jquery-1.10.2.js,countdown.js,jquery-ui-1.10.3.custom.min.js,bootstrap.min.js,jquery.fittext.js&amp;5259487' ?>"></script>
+	<script type="text/javascript"  src="<?php echo $siteurl.'min/?b=js&amp;f=jquery.js,countdown.js,jquery-ui-1.10.3.custom.min.js,bootstrap.min.js,jquery.fittext.js&amp;5259487' ?>"></script>
 	
 	<title><?php if(isset($var[5]))echo $var[5];?></title>
 	<?php if(isset($monitoringcode)) echo '<script>'.stripslashes($monitoringcode).'</script>'; ?>
@@ -140,7 +157,7 @@
 <div class='wrapper'>
 	<div class="container">
 		<div class="masthead">
-			<img id='logo' src='css/images/<?php if(isset($logo) && rtrim($logo)!='') echo $logo;else echo "logo.png"; ?>' alt='<?php if(isset($var[5]))echo $var[5];?>' title='<?php if(isset($var[5]))echo $var[5];?>' />
+			<img id='logo' class='img-responsive' src='css/images/<?php if(isset($logo) && rtrim($logo)!='') echo $logo;else echo "logo.png"; ?>' alt='<?php if(isset($var[5]))echo $var[5];?>' title='<?php if(isset($var[5]))echo $var[5];?>' />
 			<div class='socialcont'>
 				<?php
 					if(isset($social[0]) && $social[0]!=''){
@@ -165,7 +182,7 @@
 			</div>
 		</div>
 		<div class='divider'></div>
-		<div class="jumbotron">
+		<div>
 			<?php if(isset($phrase) && $phrase!='**@****nullo**@****')echo '<div id="title" class="lead title">'.$phrase.'</div>';?>
 			<?php if(isset($var[16]) && $var[16]=='yes') { ?>
 				<div class="timer-area">
@@ -178,23 +195,24 @@
 				</div>
 			<?php } if(isset($var[17]) && $var[17]=='yes') { if(isset($frontph[1]) && $frontph[1]!='**@****nullo**@****') echo"<div class='progph'>".stripslashes($frontph[1]).'</div>'; ?>
 					<div id='cornice' >
-					<img  class='progbk' src='css/images/progress-container.png'/>
-					<div id="progressbar"></div></div>
+						<img  class='progbk img-responsive' src='css/images/progress-container.png'/>
+						<div id="progressbar"></div>
+					</div>
 					
 			<?php } ?>
-			<div class='divider'></div>
+			
 		</div>
-
+		<div class='divider'></div>
 		<div class="footer">
 			<?php if(count($news)>2){ ?>
 				<div class='sectioncol'><?php $translate->__('Last News',false); ?></div>
-					<div class='row-fluid collapsable newscol'>
+					<div class='row collapsable newscol'>
 						<?php
 						$news=array_reverse($news);
 						$max=(count($news)>12)? 12:count($news);
 						$lnew=array();
 						for($i=0;$i<$max;$i+=3){
-							$lnew[]= "<div class='span3'><h3><p class='ptitle'>".htmlspecialchars($news[$i+2],ENT_QUOTES,'UTF-8')."</p></h3>";
+							$lnew[]= "<div class='col-xs-12 col-sm-6 col-md-3'><h3><p class='ptitle'>".htmlspecialchars($news[$i+2],ENT_QUOTES,'UTF-8')."</p></h3>";
 							$lnew[]="<span class='datapost'>".htmlspecialchars($news[$i+1],ENT_QUOTES,'UTF-8')."</span>";
 							$ns=accorcia($news[$i],$i,$translate->__('Read More',true),$siteurl);
 							$lnew[]="<div class='pmessage'>".$ns."</div></div>";
@@ -212,21 +230,22 @@
 						<form class="form-horizontal" id="mailform" action="admin/function.php" method="post">
 							<input type='hidden' name='act' value='subscribe' />
 							<div class="row">
-								<div class="span2"><label for='nameinput'><?php $translate->__('Name',false); ?></label></div>
-								<div class="span3"><input type="text" id="nameinput" name="nameinput" placeholder="<?php $translate->__('Your Name',false); ?>" required></div>
+								<div class="col-xs-12 col-sm-6 col-md 3"><label for='nameinput'><?php $translate->__('Name',false); ?></label></div>
+								<div class="col-xs-12 col-sm-6"><input class='form-control' type="text" id="nameinput" name="nameinput" placeholder="<?php $translate->__('Your Name',false); ?>" required></div>
 							</div>
 							<br/>
 							<div class="row">
-								<div class="span2"><label for='lnameinput'><?php $translate->__('Lastname',false); ?></label></div>
-								<div class="span3"><input type="text" id="lnameinput" name="lnameinput" placeholder="<?php $translate->__('Your Lastname',false); ?>"></div>
+								<div class="col-xs-12 col-sm-6 col-md 3"><label for='lnameinput'><?php $translate->__('Lastname',false); ?></label></div>
+								<div class="col-xs-12 col-sm-6"><input class='form-control' type="text" id="lnameinput" name="lnameinput" placeholder="<?php $translate->__('Your Lastname',false); ?>"></div>
 							</div>
 							<br/>
 							<div class="row">
-								<div class="span2"><label for='mailinput'><?php $translate->__('Email',false); ?></label></div>
-								<div class="span3"><input type="text" id="mailinput" name="mailinput" placeholder="<?php $translate->__('Email',false); ?>" required></div>
+								<div class="col-xs-12 col-sm-6 col-md 3"><label for='mailinput'><?php $translate->__('Email',false); ?></label></div>
+								<div class="col-xs-12 col-sm-6"><input class='form-control' type="text" id="mailinput" name="mailinput" placeholder="<?php $translate->__('Email',false); ?>" required></div>
 							</div>
+							<br/>
 							<div class="row">
-								<div class="span2 offset2"><input onclick='javascript:return false;' type="submit" id="mailsubmit" name="mailsubmit" class="btn btn-success subform" value='<?php $translate->__('Subscribe',false); ?>' /></div>
+								<div class="col-xs-12 col-sm-6 col-md-3 offset2"><input onclick='javascript:return false;' type="submit" id="mailsubmit" name="mailsubmit" class="btn btn-success subform" value='<?php $translate->__('Subscribe',false); ?>' /></div>
 							</div>
 						</form>
 				</div>
@@ -234,40 +253,38 @@
 			<div class='sectioncol'><?php $translate->__('Contact',false); ?></div>
 				<div class='collapsable'>
 					<form class="form-horizontal" id="contactform" action="admin/function.php" method="POST" value='submessage'>
-						<input type='hidden' name='act' value='send_mail' />
-						<div class="row-fluid">
-							<div class="span1"><label for='<?php echo $_SESSION['tokens']['senname']; ?>'><?php $translate->__('Name',false); ?></label></div>
-							<div class="span4"><input type="text" id="<?php echo $_SESSION['tokens']['senname']; ?>" name="<?php echo $_SESSION['tokens']['senname']; ?>" placeholder="<?php $translate->__('Your/Company Name',false); ?>" required></div>
-							<div class="span1"><label for='<?php echo $_SESSION['tokens']['senphone'];?>'><?php $translate->__('Telephone',false); ?></label></div>
-							<div class="span4"><input type="tel" id="<?php echo $_SESSION['tokens']['senphone'];?>" name="<?php echo $_SESSION['tokens']['senphone'];?>" placeholder="<?php $translate->__('Telephone Number',false); ?>"></div>
+						<input class='form-control' type='hidden' name='act' value='send_mail' />
+						<div class="row">
+							<div class="col-xs-12 col-sm-6 col-md-2"><label for='<?php echo $_SESSION['tokens']['senname']; ?>'><?php $translate->__('Name',false); ?></label></div>
+							<div class="col-xs-12 col-sm-6 col-md-4"><input class='form-control' type="text" id="<?php echo $_SESSION['tokens']['senname']; ?>" name="<?php echo $_SESSION['tokens']['senname']; ?>" placeholder="<?php $translate->__('Your/Company Name',false); ?>" required></div>
+							<div class="col-xs-12 col-sm-6 col-md-2"><label for='<?php echo $_SESSION['tokens']['senphone'];?>'><?php $translate->__('Telephone',false); ?></label></div>
+							<div class="col-xs-12 col-sm-6 col-md-4"><input class='form-control' type="tel" id="<?php echo $_SESSION['tokens']['senphone'];?>" name="<?php echo $_SESSION['tokens']['senphone'];?>" placeholder="<?php $translate->__('Telephone Number',false); ?>"></div>
 						</div><br/>
-						<div class="row-fluid">
-							<div class="span1"><label for='<?php echo $_SESSION['tokens']['senmail'];?>'><?php $translate->__('Email',false); ?></label></div>
-							<input type="text" id="<?php echo $_SESSION['tokens']['smailf'];?>" name="<?php echo $_SESSION['tokens']['smailf'];?>" placeholder="<?php $translate->__('Mail',false); ?>" style='display:none' />
-							<div class="span4"><input type="email" id="<?php echo $_SESSION['tokens']['senmail'];?>" name="<?php echo $_SESSION['tokens']['senmail'];?>" placeholder="<?php $translate->__('Email',false); ?>" required /></div>
-							<div class="span1"><label for='<?php echo $_SESSION['tokens']['subject'];?>'><?php $translate->__('Subject',false); ?></label></div>
-							<div class="span4"><input type="text" id="<?php echo $_SESSION['tokens']['subject'];?>" name="<?php echo $_SESSION['tokens']['subject'];?>" placeholder="<?php $translate->__('Subject',false); ?>" required /></div>
-							<input type="text" id="<?php echo $_SESSION['tokens']['fmailf'];?>" name="<?php echo $_SESSION['tokens']['fmailf'];?>" placeholder="<?php $translate->__('Mail',false); ?>" style='display:none' />
+						<div class="row">
+							<div class="col-xs-12 col-sm-6 col-md-2"><label for='<?php echo $_SESSION['tokens']['senmail'];?>'><?php $translate->__('Email',false); ?></label></div>
+							<input class='form-control' type="text" id="<?php echo $_SESSION['tokens']['smailf'];?>" name="<?php echo $_SESSION['tokens']['smailf'];?>" placeholder="<?php $translate->__('Mail',false); ?>" style='display:none' />
+							<div class="col-xs-12 col-sm-6 col-md-4"><input class='form-control' type="email" id="<?php echo $_SESSION['tokens']['senmail'];?>" name="<?php echo $_SESSION['tokens']['senmail'];?>" placeholder="<?php $translate->__('Email',false); ?>" required /></div>
+							<div class="col-xs-12 col-sm-6 col-md-2"><label for='<?php echo $_SESSION['tokens']['subject'];?>'><?php $translate->__('Subject',false); ?></label></div>
+							<div class="col-xs-12 col-sm-6 col-md-4"><input class='form-control' type="text" id="<?php echo $_SESSION['tokens']['subject'];?>" name="<?php echo $_SESSION['tokens']['subject'];?>" placeholder="<?php $translate->__('Subject',false); ?>" required /></div>
+							<input class='form-control' type="text" id="<?php echo $_SESSION['tokens']['fmailf'];?>" name="<?php echo $_SESSION['tokens']['fmailf'];?>" placeholder="<?php $translate->__('Mail',false); ?>" style='display:none' />
 						</div>
 						<br/>
-						<div class="row-fluid">
-							<div class="span1"><label for='<?php echo $_SESSION['tokens']['message'];?>'><?php $translate->__('Message',false); ?> </label></div>
-							<div class="span4"><textarea cols='90' rows='5' id='<?php echo $_SESSION['tokens']['message'];?>' name='<?php echo $_SESSION['tokens']['message'];?>' placeholder='<?php $translate->__('Message',false); ?>' required></textarea></div>
+						<div class="row">
+							<div class="col-xs-12 col-md-2"><label for='<?php echo $_SESSION['tokens']['message'];?>'><?php $translate->__('Message',false); ?> </label></div>
+							<div class="col-xs-12 col-md-10"><textarea class='form-control' rows='5' id='<?php echo $_SESSION['tokens']['message'];?>' name='<?php echo $_SESSION['tokens']['message'];?>' placeholder='<?php $translate->__('Message',false); ?>' required></textarea></div>
 						</div>
 						<br/>
 						
 						<?php if(isset($var[24]) && $var[24]=='yes'){ ?>
-							<div class="row-fluid">
-								<div class="span2"><img src="admin/captcha_generator.php?rand=<?php echo rand(4,8);?>" id='captchaimg'></div>
-							</div>
-							<div class="row-fluid">
-								<div class="span1"><label for='verify_captcha'><?php $translate->__('Code:',false); ?></label></div>
-								<div class="span4"><input id="verify_captcha" name="verify_captcha" type="text" placeholder='<?php $translate->__('Insert the 4 Digit Code',false); ?>' autocomplete="off" required /></div>
-								<div class="span1"><a href='javascript:refreshCaptcha();'>Refresh Code</a></div>
+							<div class="row">
+								<div class="col-xs-12 col-sm-6 col-md-2"><img src="admin/captcha_generator.php?rand=<?php echo rand(4,8);?>" id='captchaimg'></div>
+								<div class="col-xs-12 col-sm-6 col-md-4"><input class='form-control' id="verify_captcha" name="verify_captcha" type="text" placeholder='<?php $translate->__('Insert the 4 Digit Code',false); ?>' autocomplete="off" required /></div>
+								<div class="col-xs-12 col-sm-6 col-md-3"><a href='javascript:refreshCaptcha();'>Refresh Code</a></div>
 							</div>
 						<?php } ?>
-						<div class="row-fluid">
-							<div class="span2 offset5"><input onclick='javascript:return false;' type="submit" id="sendmail" name="sendmail" class="btn btn-success subform" value='<?php $translate->__('Send Mail',false); ?>' /></div>
+						<br/><br/>
+						<div class="row">
+							<div class="col-xs-12 col-sm-6 col-md-3 offset5"><input onclick='javascript:return false;' type="submit" id="sendmail" name="sendmail" class="btn btn-success subform" value='<?php $translate->__('Send Mail',false); ?>' /></div>
 						</div>
 					</form>
 				</div>
@@ -282,7 +299,7 @@
 	</div>
 </div>
 	
-<script type="text/javascript"  src="<?php echo $siteurl.'min/?b=js&amp;f=jquery.validate.min.js,jquery.magnific-popup.min.js,noty/jquery.noty.js,noty/layouts/top.js,noty/themes/default.js&amp;5259487' ?>"></script>
+<script type="text/javascript"  src="<?php echo $siteurl.'min/?b=js&amp;f=jquery.magnific-popup.min.js,noty/jquery.noty.js,noty/layouts/top.js,noty/themes/default.js&amp;5259487' ?>"></script>
 <script type='text/javascript'>
 
 	$('.collapsable').slideToggle(100);
@@ -458,18 +475,5 @@
 		img.src = img.src.substring(0,img.src.lastIndexOf("?"))+"?rand="+Math.round(Math.random() * (5)) + 4;
 	}
 	</script>
-
-<?php
-
-	function dateDifference($startDate, $endDate){list($anno,$mese,$giorno)=explode('-',$startDate);list($fanno,$fmese,$fgiorno)=explode('-',$endDate);$days=gregoriantojd($fmese, $fgiorno, $fanno) -gregoriantojd($mese, $giorno, $anno);return $days;} 
-	function curPageURL() {$pageURL = 'http';if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") $pageURL .= "s";$pageURL .= "://";if (isset($_SERVER["HTTPS"]) && $_SERVER["SERVER_PORT"] != "80") $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];else $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];return $pageURL;}
-	function accorcia($frase,$i,$str,$siteurl){
-		$frase=strip_tags($frase);
-		$len=strlen($frase);
-		if($len>120)
-			$frase=substr($frase,0,100).'...<br/><a title="'.$str.'" alt="'.$str.'" href="'.$siteurl.'/news.php?id='.$i.'&btn=0" class="visible-desktop snews">'.$str.'</a><a class="hidden-desktop" title="'.$str.'" alt="'.$str.'" href="'.$siteurl.'/news.php?id='.$i.'&btn=1">'.$str.'</a>';
-		return $frase;
-	}
-?>
 </body>
 </html>

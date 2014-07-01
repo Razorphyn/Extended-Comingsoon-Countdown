@@ -176,64 +176,76 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 	
 	
 	<!--[if lt IE 9]><script src="../js/html5shiv-printshiv.js"></script><![endif]-->
-	<link rel="stylesheet" href="../css/bootstrap.css" />
-    <link rel="stylesheet" href="../css/bootstrap-responsive.css" />
+	<link rel="stylesheet" href="../css/bootstrap.min.css" />
+   
 	<link rel="stylesheet" href="adminstyle.css" type="text/css"/>
 	
 	<link rel="stylesheet" href="../lib/DataTables/css/jquery.dataTables.css">
 	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
 	
-	<script type="text/javascript"  src="../js/jquery-1.10.2.js"></script>
+	<script type="text/javascript"  src="../js/jquery.js"></script>
 	<script type="text/javascript"  src="../js/bootstrap.min.js"></script>
 	
 	</head>
 	<body>
-	<div class='container'>
 		<?php if(isset($_SESSION['views']) && $_SESSION['views']==1946 ){ ?>
-		<div class="masthead">
-			<div class="navbar navbar-fixed-top">
-			<div class="navbar-inner">
-				<div class="container">
-					<a class="btn btn-navbar hidden-desktop" data-toggle="collapse" data-target=".nav-collapse">
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-					</a>
-					<a class="brand" href='index.php'><?php $translate->__("Administration",false); ?></a>
-					<div class="nav-collapse navbar-responsive-collapse collapse">
-						<ul class="nav">
-							<li class="dropdown" role='button'>
-								<a id="drop1" class="dropdown-toggle" role='button' data-toggle="dropdown" href="#"><?php $translate->__("Setup",false); ?><b class="caret"></b></a>
-								<ul class="dropdown-menu" aria-labelledby="drop1" role="menu">
-									<li role="presentation"><a href="index.php" tabindex="-1" role="menuitem"><?php $translate->__("Site",false); ?></a></li>
-									<li role="presentation"><a href="mail_setting.php" tabindex="-1" role="menuitem"><?php $translate->__("Mail",false); ?></a></li>
-								</ul>
-							</li>
-							<li class="dropdown" role='button'>
-								<a id="drop1" class="dropdown-toggle" role='button' data-toggle="dropdown" href="#"><?php $translate->__("Mail",false); ?><b class="caret"></b></a>
-								<ul class="dropdown-menu" aria-labelledby="drop1" role="menu">
-									<li role="presentation"><a href="mail.php" tabindex="-1" role="menuitem"><?php $translate->__("Send Mail",false); ?></a></li>
-									<li role="presentation"><a href="managesched.php" tabindex="-1" role="menuitem"><?php $translate->__("Manage Scheduled Mail",false); ?></a></li>
-								</ul>
-							</li>
-							<li><a href='managesub.php'><?php $translate->__("Manage Subscriptions",false); ?></a></li>
-							<li><a href='postnews.php'><?php $translate->__("Post News",false); ?></a></li>
-							<li class='active'><a href='managenews.php'><?php $translate->__("Manage News",false); ?></a></li>
-						</ul>
+		<header>
+			<div class="container">
+				<nav class="navbar navbar-default" role="navigation">
+					<div class="container-fluid">
+						<div class="navbar-header">
+							<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+								<span class="sr-only">Toggle navigation</span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+							</button>
+							<a class="navbar-brand" href='index.php'><?php $translate->__("Administration",false); ?></a>
+						</div>
+									
+						<div class="nav-collapse" id='navbar-collapse'>
+							<ul class="nav navbar-nav">
+								<li class="dropdown" role='button'>
+									<a id="drop1" class="dropdown-toggle" role='button' data-toggle="dropdown" href="#"><?php $translate->__("Setup",false); ?> <b class="caret"></b></a>
+									<ul class="dropdown-menu" role="menu">
+										<li role="presentation"><a href="index.php" tabindex="-1" role="menuitem"><?php $translate->__("Site",false); ?></a></li>
+										<li role="presentation"><a href="mail_setting.php" tabindex="-1" role="menuitem"><?php $translate->__("Mail",false); ?></a></li>
+									</ul>
+								</li>
+								<li class="dropdown" role='button'>
+									<a id="drop1" class="dropdown-toggle" role='button' data-toggle="dropdown" href="#"><?php $translate->__("Mail",false); ?><b class="caret"></b></a>
+									<ul class="dropdown-menu" aria-labelledby="drop1" role="menu">
+										<li role="presentation"><a href="mail.php" tabindex="-1" role="menuitem"><?php $translate->__("Send Mail",false); ?></a></li>
+										<li role="presentation"><a href="managesched.php" tabindex="-1" role="menuitem"><?php $translate->__("Manage Scheduled Mail",false); ?></a></li>
+									</ul>
+								</li>
+								<li><a href='managesub.php'><?php $translate->__("Manage Subscriptions",false); ?></a></li>
+								<li><a href='postnews.php'><?php $translate->__("Post News",false); ?></a></li>
+								<li><a href='managenews.php' class='active'><?php $translate->__("Manage News",false); ?></a></li>
+							</ul>
+						</div>
 					</div>
-				</div>
+				</nav>
 			</div>
-		</div>
-		</div>
-		<div class='row-fluid main'>
+		</header>
+		<div class='main container'>
 			<div  class='formcor'>
 				<?php if(isset($_GET['act'])&& isset($_GET['id']) && $_GET['act']=='edit'){ $id=$_GET['id']; ?>
 					<form name="formnews" id="formnews"  method="post" value='Data' >
 						<h2 class='titlesec'><?php $translate->__("Edit News",false); ?></h2>
-							<label><?php $translate->__("News Title:",false); ?></label><input type="text" id="tnews" name="tnews" value='<?php echo $news[$id+2]; ?>' required/>
-							<label><?php $translate->__("News:",false); ?></label><textarea type="text" id="nnews" name="nnews" class='ckeditor' required><?php echo $news[$id]; ?></textarea>
 							<input  type="hidden" id='id' name='id' value='<?php echo $id; ?>'/>
-							<br/><br/>
+							<div class='form-group'>
+								<div class='row'>
+									<div class='col-xs-12'><label><?php $translate->__("News Title:",false); ?></label></div>
+									<div class='col-xs-12'><input class='form-control' type="text" id="tnews" name="tnews" value='<?php echo $news[$id+2]; ?>' /></div>
+								</div>
+							</div>
+							<div class='form-group'>
+								<div class='row'>
+									<div class='col-xs-12'><label><?php $translate->__("News:",false); ?></label></div>
+									<div class='col-xs-12'><textarea class='form-control' type="text" id="nnews" name="nnews" class='ckeditor'><?php echo $news[$id]; ?></textarea></div>
+								</div>
+							</div>
 						<input type="submit" name="bnews" id="bnews" value="<?php $translate->__("Save Changes",false); ?>" class="btn btn-success"/>
 					</form>
 				<?php } else { ?>
@@ -243,7 +255,7 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 					$count=count($news);
 					if($count>0){
 						for($i=0,$j=$count/3;$i<$count;$i+=3,$j--)
-							echo '<tr><td>'.$j.'</td><td>'.$news[$i+2].'</td><td>'.$news[$i+1].'</td><td><div class="btn-group"><button class="btn btn-danger" title="'.$translate->__("Delete News",true).'" onclick="javascript:contrch(\'managenews.php?act=del&id='.$i.'\');" ><i class="icon-remove"></i></button><button class="btn btn-info" onclick="javascript:location.href=\'managenews.php?act=edit&id='.$i.'\';" title="'.$translate->__("Edit News",true).'"><i class="icon-edit"></i></button></div></td></tr>';
+							echo '<tr><td>'.$j.'</td><td>'.$news[$i+2].'</td><td>'.$news[$i+1].'</td><td><div class="btn-group"><button class="btn btn-danger" title="'.$translate->__("Delete News",true).'" onclick="javascript:contrch(\'managenews.php?act=del&id='.$i.'\');" ><span class="glyphicon glyphicon-remove"></span></button><button class="btn btn-info" onclick="javascript:location.href=\'managenews.php?act=edit&id='.$i.'\';" title="'.$translate->__("Edit News",true).'"><span class="glyphicon glyphicon-edit"></button></div></td></tr>';
 					}
 					?>
 					</tbody>
@@ -255,16 +267,16 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 			</form>
 		</div>
 		<?php } else { ?>
-		<div class='row-fluid main'>
+		<div class='container main'>
 			<form name="formdata" id="formdata" method="post"  class='formcor form-inline'>
 				<h2 class='titlesec'>Login</h2>
 					<!--[if IE]><input type="text" style="display: none;" disabled="disabled" size="1" /><![endif]-->
 					<?php if(isset($acc) && $acc==false){ ?>
-					<div class='row-fluid'><div class='span12'><p><?php $translate->__("Wrong Password",false); ?><p></div></div>
+					<div class='row'><div class='col-xs-12 col-sm-3 col-md-12'><p><?php $translate->__("Wrong Password",false); ?><p></div></div>
 					<?php } ?>
-				<div class='row-fluid'>
-					<div class='span2'><label>Password</label></div>
-					<div class='span4'><input type="password" id="pwd" name="pwd" placeholder="Password"></div>
+				<div class='row'>
+					<div class='col-xs-12 col-sm-6 col-md-2'><label>Password</label></div>
+					<div class='col-xs-12 col-sm-6 col-md-4'><input type="password" id="pwd" name="pwd" placeholder="Password"></div>
 				</div>
 				<br/><br/>
 				<input type="submit" name="loginb" id="loginb" value="Login" class="btn btn-success"/>
@@ -272,19 +284,19 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 		</div>
 		<?php } 
 		?>
-	</div>
 	<?php if(isset($_SESSION['views']) && $_SESSION['views']==1946 ){ ?>
 		<script type="text/javascript"  src="../lib/DataTables/js/jquery.dataTables.js"></script>
 		<script type="text/javascript"	src="../ckeditor/ckeditor.js"></script>
 		<script type="text/javascript">
 			$(document).ready(function() {
+				if($('#nnews').length>0) CKEDITOR.replace('nnews');
 				$('#news').dataTable({
-					"sDom": "<<'span6'l><'span6'f>r>t<<'span6'i><'span6'p>>",
+					"sDom": "<<'col-xs-12 col-md-6'l><'col-xs-12 col-md-6'f>r>t<<'col-xs-12 col-md-6'i><'col-xs-12 col-md-6'p>>",
 					"aoColumns": [
 							{ "sTitle": "<?php $translate->__("Number",false); ?>",'sWidth':'60px' },
 							{ "sTitle": "<?php $translate->__("Title",false); ?>" },
 							{ "sTitle": "<?php $translate->__("Posted Date",false); ?>",'sWidth':'150px' },
-							{ "sTitle": "<?php $translate->__("Toggle",false); ?>","bSortable": false,"bSearchable":false,'sWidth':'60px' }
+							{ "sTitle": "<?php $translate->__("Toggle",false); ?>","bSortable": false,"bSearchable":false,'sWidth':'95px' }
 						]
 				});
 				$.extend( $.fn.dataTableExt.oStdClasses, {

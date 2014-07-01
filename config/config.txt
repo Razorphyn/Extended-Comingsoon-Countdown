@@ -1,0 +1,25 @@
+2014-05-01
+00:00:00
+2014-08-08
+00:00:00
+http://localhost.com/comingsoon/admin/
+Razorphyn
+**@****nullo**@****
+**@****nullo**@****
+yes
+yes
+Europe/Rome
+yes
+localhost
+/comingsoon
+500
+500
+yes
+yes
+yes
+Etertg
+00 0 8 8 * php -f C:\xampp\htdocs\comingsoon\admin/sendmailcron.php Etertg C:\xampp\htdocs\comingsoon
+php -f
+php -f
+yes
+yes

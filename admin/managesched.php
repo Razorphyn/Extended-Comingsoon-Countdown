@@ -231,45 +231,48 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 	
 	
 	<!--[if lt IE 9]><script src="../js/html5shiv-printshiv.js"></script><![endif]-->
-	<link rel="stylesheet" href="../css/bootstrap.css" />
-    <link rel="stylesheet" href="../css/bootstrap-responsive.css" />
+	<link rel="stylesheet" href="../css/bootstrap.min.css" />
+   
 	<link rel="stylesheet" href="adminstyle.css" type="text/css"/>
 	<link rel="stylesheet" href="../css/jquery-ui.css" type="text/css"/>
 	
 	<link rel="stylesheet" href="../lib/DataTables/css/jquery.dataTables.css">
 	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
 	
-	<script type="text/javascript"  src="../js/jquery-1.10.2.js"></script>
+	<script type="text/javascript"  src="../js/jquery.js"></script>
 	<script type="text/javascript"  src="../js/bootstrap.min.js"></script>
 	
 	</head>
 	<body>
-	<div class='container'>
 		<?php if(isset($_SESSION['views']) && $_SESSION['views']==1946 ){ ?>
-		<div class="masthead">
-			<div class="navbar navbar-fixed-top">
-				<div class="navbar-inner">
-					<div class="container">
-						<a class="btn btn-navbar hidden-desktop" data-toggle="collapse" data-target=".nav-collapse">
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-						</a>
-						<a class="brand" href='index.php'><?php $translate->__("Administration",false); ?></a>
-						<div class="nav-collapse navbar-responsive-collapse collapse">
-							<ul class="nav">
+		<header>
+			<div class="container">
+				<nav class="navbar navbar-default" role="navigation">
+					<div class="container-fluid">
+						<div class="navbar-header">
+							<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+								<span class="sr-only">Toggle navigation</span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+							</button>
+							<a class="navbar-brand" href='index.php'><?php $translate->__("Administration",false); ?></a>
+						</div>
+									
+						<div class="nav-collapse" id='navbar-collapse'>
+							<ul class="nav navbar-nav">
 								<li class="dropdown" role='button'>
-									<a id="drop1" class="dropdown-toggle" role='button' data-toggle="dropdown" href="#"><?php $translate->__("Setup",false); ?><b class="caret"></b></a>
-									<ul class="dropdown-menu" aria-labelledby="drop1" role="menu">
+									<a id="drop1" class="dropdown-toggle" role='button' data-toggle="dropdown" href="#"><?php $translate->__("Setup",false); ?> <b class="caret"></b></a>
+									<ul class="dropdown-menu" role="menu">
 										<li role="presentation"><a href="index.php" tabindex="-1" role="menuitem"><?php $translate->__("Site",false); ?></a></li>
 										<li role="presentation"><a href="mail_setting.php" tabindex="-1" role="menuitem"><?php $translate->__("Mail",false); ?></a></li>
 									</ul>
 								</li>
-								<li class="dropdown" role='button'>
+								<li class="dropdown active" role='button'>
 									<a id="drop1" class="dropdown-toggle" role='button' data-toggle="dropdown" href="#"><?php $translate->__("Mail",false); ?><b class="caret"></b></a>
 									<ul class="dropdown-menu" aria-labelledby="drop1" role="menu">
 										<li role="presentation"><a href="mail.php" tabindex="-1" role="menuitem"><?php $translate->__("Send Mail",false); ?></a></li>
-										<li role="presentation"><a href="managesched.php" tabindex="-1" role="menuitem"><?php $translate->__("Manage Scheduled Mail",false); ?></a></li>
+										<li role="presentation"  class='active'><a href="managesched.php" tabindex="-1" role="menuitem"><?php $translate->__("Manage Scheduled Mail",false); ?></a></li>
 									</ul>
 								</li>
 								<li><a href='managesub.php'><?php $translate->__("Manage Subscriptions",false); ?></a></li>
@@ -278,10 +281,10 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 							</ul>
 						</div>
 					</div>
-				</div>
+				</nav>
 			</div>
-		</div>
-		<div class='row-fluid main'>			
+		</header>
+		<div class='main container'>			
 			<div  class='formcor'>
 				<?php 
 					if(isset($_GET['act']) && isset($_GET['id']) && $_GET['act']=='edit'){
@@ -304,17 +307,19 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 						<form name="formmail" id="formmail"  method="post" >
 							<h2 class='titlesec'><?php $translate->__("Edit Scheduled Mail",false); ?></h2>
 							<input  type="hidden" id='fsched' name='fsched' value='<?php echo $fsched; ?>'/>
-							<div class='row scheduled'>
-								<div class='span1'><label><?php $translate->__("Date:",false); ?></label></div><div class='span3'><input type="text" id="sendate" name="sendate" value='<?php echo $d; ?>' required /></div>
-								<div class='span2'><label><?php $translate->__("Time:",false); ?> (hh:mm)</label></div><div class='span3'><input type="time" id="sentime" name="sentime" pattern='([01]?[0-9]|[2]?[0-3]):[0-5][0-9]' value='<?php echo $time; ?>' required /></div>
+							<div class='row form-group scheduled'>
+								<div class='col-xs-6 col-sm-6 col-md-2'><label><?php $translate->__("Date:",false); ?></label></div>
+								<div class='col-xs-12 col-sm-6 col-md-4'><input type="text" id="sendate" name="sendate" class='form-control' value='<?php echo $d; ?>' /></div>
+								<div class='col-xs-12 col-sm-6 col-md-2'><label><?php $translate->__("Time:",false); ?> (hh:mm)</label></div>
+								<div class='col-xs-12 col-sm-6 col-md-4'><input type="time" id="sentime" name="sentime" pattern='([01]?[0-9]|[2]?[0-3]):[0-5][0-9]' value='<?php echo $time; ?>' class='form-control' /></div>
 							</div>
-							<br/><br/>
-							<div class='row-fluid'>
-								<div class='span3'><label><?php $translate->__("Do you want to contact all the users?",false); ?></label></div>
-								<div class='span1'><label class="radio"><input type="radio" name="shtb" value="yes" onclick='javascript:$("#conttab").css("display","none");' <?php if($sched[11]=='yes') echo 'checked' ?> /><?php $translate->__("Yes",false); ?></label></div>
-								<div class='span1'><label class="radio"><input type="radio" name="shtb" value="no" onclick='javascript:$("#conttab").css("display","block");' <?php if($sched[11]=='no') echo 'checked' ?> /><?php $translate->__("No",false); ?></label></div>
+							
+							<div class='row form-group'>
+								<div class='col-xs-12 col-sm-6 col-md-2'><label><?php $translate->__("Do you want to contact all the users?",false); ?></label></div>
+								<div class='col-xs-12 col-sm-3 col-md-1'><label class="radio"><input type="radio" name="shtb" value="yes" onclick='javascript:$("#conttab").css("display","none");' <?php if($sched[11]=='yes') echo 'checked' ?> /><?php $translate->__("Yes",false); ?></label></div>
+								<div class='col-xs-12 col-sm-3 col-md-1'><label class="radio"><input type="radio" name="shtb" value="no" onclick='javascript:$("#conttab").css("display","block");' <?php if($sched[11]=='no') echo 'checked' ?> /><?php $translate->__("No",false); ?></label></div>
 							</div>
-							<div id='conttab'>
+							<div class='form-group' id='conttab'>
 								<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="mails" width="100%">
 									<thead>
 									<tr>
@@ -342,14 +347,26 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 									</tbody>
 								</table>
 							</div>
-							<div class='row'>
-								<div class='span4'><label><?php $translate->__("Sender:",false); ?></label><input type="text" id="sender" name="sender" value='<?php echo $sched[3]; ?>' required/></div>
-								<div class='span4'><label><?php $translate->__("Object:",false); ?></label><input	type="text" id="object" name="object" value='<?php echo $sched[4]; ?>' required/></div>
+							
+							<div class='row form-group'>
+								<div class='col-xs-12 col-sm-6 col-md-2'><label><?php $translate->__("Sender:",false); ?></label></div>
+								<div class='col-xs-12 col-sm-6 col-md-4'><input type="text" class='form-control' id="sender" name="sender" value='<?php echo $sched[3]; ?>' required/></div>
+								<div class='col-xs-12 col-sm-6 col-md-2'><label><?php $translate->__("Object:",false); ?></label></div>
+								<div class='col-xs-12 col-sm-6 col-md-4'><input	type="text" class='form-control' id="object" name="object" value='<?php echo $sched[4]; ?>' required/></div>
 							</div>
-								<label><?php $translate->__("Message:",false); ?></label><textarea id='message' name='message' rows='10' cols='100' required><?php echo $sched[0]; ?></textarea>
-								<br/><br/>
-								<label><?php $translate->__("Use Different Footer:",false); ?></label><textarea id='footerfn' name='footerfn' class='footerfn' rows='10' cols='100'><?php echo $sched[1]; ?></textarea>
-							<br/><br/>
+							
+							<div class='form-group'>
+								<div class='row'>
+									<div class='col-xs-12'><label><?php $translate->__("Message:",false); ?></label></div>
+									<div class='col-xs-12'><textarea id='message' name='message' rows='10' cols='100' required > <?php echo $sched[0]; ?></textarea></div>
+								</div>
+							</div>
+							<div class='form-group'>
+								<div class='row'>
+									<div class='col-xs-12'><label><?php $translate->__("Use Different Footer:",false); ?></label></div>
+									<div class='col-xs-12'><textarea id='footerfn' name='footerfn' class='footerfn' rows='10' cols='100'><?php echo $sched[1]; ?></textarea></div>
+								</div>
+							</div>
 							<input type="submit" name="smail" id="smail" value="<?php $translate->__("Save Changes",false); ?>" class="btn btn-success"/>
 						</form>
 				<?php 	
@@ -369,18 +386,20 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 						<form name="formmail" id="formmail"  method="post" >
 							<strong><?php echo $error;?></strong>
 							<h2 class='titlesec'><?php $translate->__("Edit Scheduled Mail",false); ?></h2>
-							<input  type="hidden" id='fsched' name='fsched' value='<?php echo $fsched; ?>'/>
-							<div class='row scheduled'>
-								<div class='span1'><label><?php $translate->__("Date:",false); ?></label></div><div class='span3'><input type="text" id="sendate" name="sendate" value='<?php echo $_POST['sendate']; ?>' required /></div>
-								<div class='span2'><label><?php $translate->__("Time:",false); ?> (hh:mm)</label></div><div class='span3'><input type="time" id="sentime" name="sentime" pattern='([01]?[0-9]|[2]?[0-3]):[0-5][0-9]' value='<?php echo $_POST['sentime']; ?>' required /></div>
+							<input  type="hidden" id='fsched' name='fsched' value='<?php echo $fsched; ?>' />
+							<div class='row form-group scheduled'>
+								<div class='col-xs-12 col-sm-3 col-md-3'><label><?php $translate->__("Date:",false); ?></label></div>
+								<div class='col-xs-12 col-sm-6 col-md-3'><input type="text" id="sendate" name="sendate" value='<?php echo $_POST['sendate']; ?>' required /></div>
+								<div class='col-xs-12 col-sm-6 col-md-3'><label><?php $translate->__("Time:",false); ?> (hh:mm)</label></div>
+								<div class='col-xs-12 col-sm-6 col-md-3'><input type="time" id="sentime" name="sentime" pattern='([01]?[0-9]|[2]?[0-3]):[0-5][0-9]' value='<?php echo $_POST['sentime']; ?>' required /></div>
 							</div>
 							<br/><br/>
-							<div class='row-fluid'>
-								<div class='span3'><label><?php $translate->__("Do you want to contact all the users?",false); ?></label></div>
-								<div class='span1'><label class="radio"><input type="radio" name="shtb" value="yes" onclick='javascript:$("#conttab").css("display","none");' <?php if($_POST['shtb']=='yes') echo 'checked' ?> /><?php $translate->__("Yes",false); ?></label></div>
-								<div class='span1'><label class="radio"><input type="radio" name="shtb" value="no" onclick='javascript:$("#conttab").css("display","block");' <?php if($_POST['shtb']=='no') echo 'checked' ?> /><?php $translate->__("No",false); ?></label></div>
+							<div class='row form-group'>
+								<div class='col-xs-12 col-sm-6 col-md-3'><label><?php $translate->__("Do you want to contact all the users?",false); ?></label></div>
+								<div class='col-xs-12 col-sm-3 col-md-1'><label class="radio"><input type="radio" name="shtb" value="yes" onclick='javascript:$("#conttab").css("display","none");' <?php if($_POST['shtb']=='yes') echo 'checked' ?> /><?php $translate->__("Yes",false); ?></label></div>
+								<div class='col-xs-12 col-sm-3 col-md-1'><label class="radio"><input type="radio" name="shtb" value="no" onclick='javascript:$("#conttab").css("display","block");' <?php if($_POST['shtb']=='no') echo 'checked' ?> /><?php $translate->__("No",false); ?></label></div>
 							</div>
-							<div id='conttab'>
+							<div class='form-group' id='conttab'>
 								<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="mails" width="100%">
 									<thead>
 									<tr>
@@ -408,14 +427,28 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 									</tbody>
 								</table>
 							</div>
-							<div class='row'>
-								<div class='span4'><label><?php $translate->__("Sender:",false); ?></label><input type="text" id="sender" name="sender" value='<?php echo $_POST['sender']; ?>' required/></div>
-								<div class='span4'><label><?php $translate->__("Object:",false); ?></label><input	type="text" id="object" name="object" value='<?php echo $_POST['object']; ?>' required/></div>
+							<div class='row form-group'>
+								<div class='col-xs-12 col-sm-6 col-md-4'><label><?php $translate->__("Sender:",false); ?></label><input type="text" id="sender" name="sender" value='<?php echo $_POST['sender']; ?>' required/></div>
+								<div class='col-xs-12 col-sm-6 col-md-4'><label><?php $translate->__("Object:",false); ?></label><input	type="text" id="object" name="object" value='<?php echo $_POST['object']; ?>' required/></div>
 							</div>
-								<label><?php $translate->__("Message:",false); ?></label><textarea id='message' name='message' rows='10' cols='100' required><?php echo $_POST['message']; ?></textarea>
+								
+							<textarea id='message' name='message' rows='10' cols='100' required></textarea>
 								<br/><br/>
-								<label><?php $translate->__("Use Different Footer:",false); ?></label><textarea id='footerfn' name='footerfn' class='footerfn' rows='10' cols='100'><?php echo $_POST['footerfn']; ?></textarea>
+								<label><?php $translate->__("Use Different Footer:",false); ?></label><textarea id='footerfn' name='footerfn' class='footerfn' rows='10' cols='100'></textarea>
 							<br/><br/>
+							
+							<div class='form-group'>
+								<div class='row'>
+									<div class='col-xs-12'><label><?php $translate->__("Message:",false); ?></label></div>
+									<div class='col-xs-12'><textarea id='message' name='message' rows='10' cols='100' required > <?php echo $_POST['message']; ?></textarea></div>
+								</div>
+							</div>
+							<div class='form-group'>
+								<div class='row'>
+									<div class='col-xs-12'><label><?php $translate->__("Use Different Footer:",false); ?></label></div>
+									<div class='col-xs-12'><textarea id='footerfn' name='footerfn' class='footerfn' rows='10' cols='100'><?php echo $_POST['footerfn']; ?></textarea></div>
+								</div>
+							</div>
 							<input type="submit" name="smail" id="smail" value="<?php $translate->__("Save Changes",false); ?>" class="btn btn-success"/>
 						</form>
 				<?php	
@@ -429,7 +462,7 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 					$count=count($sched);
 					if(isset($sched[0]) && $count>0){
 						for($i=0;$i<$count;$i++){
-							echo '<tr><td>'.($i+1).'</td><td>'.$sched[$i][1].'</td><td>'.$sched[$i][2].'</td><td><div class="btn-group"><button class="btn btn-danger" title="'.$translate->__("Delete Contact",true).'" onclick="javascript:contrch(\'managesched.php?act=del&id='.$sched[$i][0].'\');" ><i class="icon-remove"></i></button><button class="btn btn-info" title="'.$translate->__("Edit Contact",true).'" onclick="javascript:location.href=\'managesched.php?act=edit&id='.$sched[$i][0].'\';" ><i class="icon-edit"></i></button></div></td></tr>';
+							echo '<tr><td>'.($i+1).'</td><td>'.$sched[$i][1].'</td><td>'.$sched[$i][2].'</td><td><div class="btn-group"><button class="btn btn-danger" title="'.$translate->__("Delete Contact",true).'" onclick="javascript:contrch(\'managesched.php?act=del&id='.$sched[$i][0].'\');" ><span class="glyphicon glyphicon-remove"></span></button><button class="btn btn-info" title="'.$translate->__("Edit Contact",true).'" onclick="javascript:location.href=\'managesched.php?act=edit&id='.$sched[$i][0].'\';" ><span class="glyphicon glyphicon-edit"></span></button></div></td></tr>';
 						}
 					}
 					?>
@@ -443,16 +476,16 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 			<iframe id="hidden_upload" name="hidden_upload" style="display:none"></iframe>
 		</div>
 		<?php } else { ?>
-		<div class='row-fluid main'>
+		<div class='container main'>
 			<form name="formdata" id="formdata" method="post"  class='formcor form-inline'>
 				<h2 class='titlesec'>Login</h2>
 					<!--[if IE]><input type="text" style="display: none;" disabled="disabled" size="1" /><![endif]-->
 					<?php if(isset($acc) && $acc==false){ ?>
-					<div class='row-fluid'><div class='span12'><p><?php $translate->__("Wrong Password",false); ?><p></div></div>
+					<div class='row'><div class='col-xs-12 col-sm-3 col-md-12'><p><?php $translate->__("Wrong Password",false); ?><p></div></div>
 					<?php } ?>
-				<div class='row-fluid'>
-					<div class='span2'><label>Password</label></div>
-					<div class='span4'><input type="password" id="pwd" name="pwd" placeholder="Password"></div>
+				<div class='row'>
+					<div class='col-xs-12 col-sm-6 col-md-2'><label>Password</label></div>
+					<div class='col-xs-12 col-sm-6 col-md-4'><input type="password" id="pwd" name="pwd" placeholder="Password"></div>
 				</div>
 				<br/><br/>
 				<input type="submit" name="loginb" id="loginb" value="Login" class="btn btn-success"/>
@@ -460,7 +493,6 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 		</div>
 		<?php } 
 		?>
-	</div>
 	<?php if(isset($_SESSION['views']) && $_SESSION['views']==1946 ){ ?>
 		<script type="text/javascript"  src="../lib/DataTables/js/jquery.dataTables.js"></script>
 		<script type="text/javascript"  src="../ckeditor/ckeditor.js"></script>
@@ -471,7 +503,7 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 					CKEDITOR.replace('message');
 					CKEDITOR.replace('footerfn'); 
 					$('#mails').dataTable({
-						"sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<<'span6'i><'span6'p>>",
+						"sDom": "<'row'<'span6'l><'span6'f>r>t<<'span6'i><'span6'p>>",
 						"aoColumns": [
 							{ "sTitle": "<?php echo $translate->__("Send Mail",true); ?>","bSortable": false,"bSearchable":false,'sWidth':'60px'},
 							{ "sTitle": "<?php echo $translate->__("Mail",true); ?>"}
@@ -486,12 +518,12 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 				$("#sendate" ).datepicker("option", "minDate", dateObject);
 				
 				$('#tbschedmails').dataTable({
-					"sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<<'span6'i><'span6'p>>",
+					"sDom": "<'row'<'span6'l><'span6'f>r>t<<'span6'i><'span6'p>>",
 					"aoColumns": [
 						{ "sTitle": "<?php echo $translate->__("Number",true); ?>",'sWidth':'60px'},
 						{ "sTitle": "<?php echo $translate->__("Subject",true); ?>"},
 						{ "sTitle": "<?php echo $translate->__("Date",true); ?>",'sWidth':'160px' },
-						{ "sTitle": "<?php echo $translate->__("Toggle",true); ?>","bSortable": false,"bSearchable":false,'sWidth':'60px' }
+						{ sTitle: "<?php echo $translate->__("Toggle",true); ?>",bSortable: false,bSearchable:false, sWidth:'95px' }
 					]
 				});
 			} );
