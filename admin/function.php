@@ -653,7 +653,7 @@
 		
 		$fsec=dateDifference(date('Y/m/d H:i:s'),$var[2])*24*60*60+abs($oraf-$orai)*60*60+abs($minuf-$minui)*60+abs($secf-$seci);
 		
-		if(fsec>0){
+		if(fsec>0)
 			return json_encode(array(0,$fsec));
 		else
 			return json_encode(array(1));
