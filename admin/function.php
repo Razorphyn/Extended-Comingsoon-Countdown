@@ -330,8 +330,13 @@
 			}
 			$bod=preg_replace('/\s+/',' ',$_POST['message']);
 			$footer=preg_replace('/\s+/',' ',$_POST['footerfn']);
+			$config = HTMLPurifier_Config::createDefault();
+			$purifier = new HTMLPurifier($config);
+			$bod= $purifier->purify($bod);
+			$footer= $purifier->purify($footer);
 			
 			if($_POST['sched']=='no'){
+				/*$manip="<html><head></head><body>".$bod.'<div id="footer" style="display:block;clear:both;width:100%;position:relative;margin:10px 0;border-top:1px solid #000">'.$footer;*/
 				$manip="<html><head></head><body>".$bod.'<div id="footer" style="display:block;clear:both;width:100%;position:relative;margin:10px 0;border-top:1px solid #000">'.$footer;
 				file_put_contents('../config/tmpinfo.txt',$manip."\n".json_encode($mailist)."\n".$_POST['sender']."\n".$_POST['object']."\n".$var[11]."\n".$var[12]."\n".$var[13]."\n".$var[14]."\n".$var[15]);
 				$ex=$var[21].' '.trim(dirname(__FILE__))."/sendmail.php";
@@ -441,7 +446,7 @@
 		$string='<?php'."\n";
 		$string.='$smailservice='.$serv.";\n";
 		$string.='$smailname="'.$mustang."\";\n";
-		$string.='$settingmail=\"'.$viper."\";\n";
+		$string.='$settingmail="'.$viper."\";\n";
 		$string.='$smailhost=\''.$host."';\n";
 		$string.='$smailport='.$port.";\n";
 		$string.='$smailssl='.$ssl.";\n";
