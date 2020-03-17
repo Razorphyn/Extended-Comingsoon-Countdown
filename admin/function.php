@@ -330,6 +330,7 @@
 			}
 			$bod=preg_replace('/\s+/',' ',$_POST['message']);
 			$footer=preg_replace('/\s+/',' ',$_POST['footerfn']);
+			require_once 'htmlpurifier/HTMLPurifier.auto.php';
 			$config = HTMLPurifier_Config::createDefault();
 			$purifier = new HTMLPurifier($config);
 			$bod= $purifier->purify($bod);
