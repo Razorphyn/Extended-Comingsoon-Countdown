@@ -113,12 +113,7 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 	$footermail= file_get_contents($filefnfooter);
 	
 	if(is_file('../config/stmp.php')) include_once '../config/stmp.php';
-	if(isset($smailpassword)){
-		include_once ('endecrypt.php');
-		$smailpassword=base64_decode($smailpassword);
-		$e = new Encryption(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
-		$pass = $e->decrypt($smailpassword, $skey);
-	}
+
 	if(isset($_POST['fcheck'])){
 		header('Location: datacheck.php');
 	}
@@ -236,7 +231,7 @@ if(isset($_SESSION['views']) && $_SESSION['views']==1946){
 								<div class='col-xs-12 col-sm-6 col-md-2'><label for='stmpusr'>Username</label></div>
 								<div class='col-xs-12 col-sm-6 col-md-4'><input id='stmpusr' type='text' class='form-control'  value='<?php if(isset($smailuser)) echo $smailuser; ?>' /></div>
 								<div class='col-xs-12 col-sm-6 col-md-2'><label for='stmppas'>Password</label></div>
-								<div class='col-xs-12 col-sm-6 col-md-4'><input id='stmppas' class='form-control' type='password' value='<?php if(isset($smailpassword)) echo $smailpassword; ?>' /></div>
+								<div class='col-xs-12 col-sm-6 col-md-4'><input id='stmppas' class='form-control' type='password' value='' /></div>
 						</div>
 					</div>
 					<br/>
